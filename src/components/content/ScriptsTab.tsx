@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, Plus, Edit, Trash2, Link as LinkIcon, FileText } from 'lucide-react';
+import { Loader2, Plus, Edit, Trash2, Link as LinkIcon, FileText, Sparkles, Wand2 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
@@ -35,6 +35,11 @@ export function ScriptsTab({ clientId }: { clientId: string }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [editingScript, setEditingScript] = useState<Partial<ContentScript> | null>(null);
+
+  // AI State
+  const [isAiOpen, setIsAiOpen] = useState(false);
+  const [aiPrompt, setAiPrompt] = useState("");
+  const [generatingAi, setGeneratingAi] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -174,6 +179,64 @@ export function ScriptsTab({ clientId }: { clientId: string }) {
     }
   };
 
+  const handleGenerateAI = async () => {
+    if (!aiPrompt.trim()) {
+      toast.error('Digite sobre o que será o vídeo.');
+      return;
+    }
+    setGeneratingAi(true);
+    try {
+      // Get the client's editorial line for context
+      const { data: edLine } = await supabase
+        .from('content_editorial_lines')
+        .select('*')
+        .eq('client_id', clientId)
+        .maybeSingle();
+        
+      const systemPrompt = `Você é um copywriter de alto nível e roteirista para redes sociais. Sua missão é criar um roteiro curto, engajador e direto ao ponto para Reels/TikTok.
+      Aqui está o Contexto Estratégico do Cliente:
+      - Nicho: ${edLine?.niche || 'Geral'}
+      - Público-alvo: ${edLine?.audience || 'Público geral focado em conteúdo rápido'}
+      - Tom de voz: ${edLine?.tone || 'Descontraído mas agregando valor'}
+      - Objetivo principal: ${edLine?.objective || 'Visualizações e Engajamento'}
+      
+      Com base no tema que o usuário pedir, escreva o roteiro com 3 partes:
+      1) Gancho inicial: Uma primeira frase extremamente forte e curiosa (os primeiros 3 segundos).
+      2) Desenvolvimento: O corpo do vídeo contando de forma rápida, fluída e sem se arrastar sobre o assunto. Use quebras curtas.
+      3) CTA: Chamada para ação simples e clara no final.
+      
+      Retorne EXCLUSIVAMENTE um objeto JSON válido no formato:
+      {"hook": "texto", "development": "texto", "cta": "texto"}
+      
+      Não inclua marcações de markdown e nem explique nada. Apenas responda com o JSON puro.`;
+
+      const { data, error } = await supabase.functions.invoke('ai-copywriter', {
+        body: { systemPrompt, userMessage: aiPrompt }
+      });
+
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+
+      if (data?.result) {
+        setEditingScript(prev => ({
+          ...prev,
+          title: prev?.title || aiPrompt.substring(0, 30) + '...',
+          hook: data.result.hook || prev?.hook,
+          development: data.result.development || prev?.development,
+          cta: data.result.cta || prev?.cta
+        }));
+        toast.success('Roteiro gerado com sucesso!');
+        setIsAiOpen(false);
+        setAiPrompt("");
+      }
+    } catch (err: any) {
+      console.error('AI Error:', err);
+      toast.error(`Erro na IA: ${err.message || 'Falha ao conectar com o serviço'}`);
+    } finally {
+      setGeneratingAi(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center p-12">
@@ -267,6 +330,38 @@ export function ScriptsTab({ clientId }: { clientId: string }) {
               Estruture seu roteiro com gancho, desenvolvimento e chamada para ação.
             </DialogDescription>
           </DialogHeader>
+
+          {!isAiOpen ? (
+            <Button
+              variant="outline"
+              className="w-full justify-start border-primary/20 text-primary bg-primary/5 hover:bg-primary/10 mt-2"
+              onClick={() => setIsAiOpen(true)}
+            >
+              <Sparkles className="w-4 h-4 mr-2" />
+              ✨ Gerar Roteiro com IA
+            </Button>
+          ) : (
+            <div className="p-4 rounded-xl bg-primary/5 border border-primary/20 space-y-3 mt-2 animate-in fade-in zoom-in-95 duration-200">
+              <Label className="text-primary font-semibold flex items-center gap-2">
+                <Wand2 className="w-4 h-4" /> Sobre o que será este vídeo?
+              </Label>
+              <Textarea 
+                placeholder="Ex: Dá 3 dicas de como evitar quebra de cabelo no banho..." 
+                value={aiPrompt}
+                onChange={e => setAiPrompt(e.target.value)}
+                className="bg-black/40 border-primary/20 focus-visible:ring-primary/30 min-h-[80px]"
+              />
+              <div className="flex gap-2 justify-end">
+                <Button variant="ghost" size="sm" onClick={() => setIsAiOpen(false)} disabled={generatingAi}>
+                  Cancelar
+                </Button>
+                <Button size="sm" onClick={handleGenerateAI} disabled={generatingAi} className="bg-primary text-primary-foreground">
+                  {generatingAi ? <Loader2 className="w-4 h-4 animate-spin mr-2"/> : <Sparkles className="w-4 h-4 mr-2"/>}
+                  {generatingAi ? 'Pensando...' : 'Criar Mágica'}
+                </Button>
+              </div>
+            </div>
+          )}
 
           <div className="grid gap-4 py-4">
             
