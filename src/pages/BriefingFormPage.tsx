@@ -401,25 +401,22 @@ export default function BriefingFormPage() {
 
       // 2. Save to Google Sheets via Webhook (if URL is provided)
       const webhookUrl = import.meta.env.VITE_GOOGLE_SHEETS_WEBHOOK_URL;
-      console.log('Tentando conexão com Google Sheets...', webhookUrl ? 'URL OK' : 'URL Ausente');
       
       if (webhookUrl) {
+        console.log('Disparando Webhook para:', webhookUrl);
         try {
-          // Usamos text/plain para evitar problemas de CORS com o Apps Script
+          // Simplificamos ao máximo para o Google Apps Script aceitar sem preflight/CORS
           await fetch(webhookUrl, {
             method: 'POST',
             mode: 'no-cors',
-            headers: {
-              'Content-Type': 'text/plain',
-            },
             body: JSON.stringify({
               ...briefingData,
-              sheet_name: 'Briefings'
+              origem: 'Plataforma Inova'
             }),
           });
-          console.log('Requisição enviada ao Webhook do Google Sheets.');
+          console.log('✅ Webhook executado.');
         } catch (webhookError) {
-          console.error('Erro na chamada do Webhook:', webhookError);
+          console.error('❌ Erro no Webhook:', webhookError);
         }
       }
 
