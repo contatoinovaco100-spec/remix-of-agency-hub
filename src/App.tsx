@@ -23,6 +23,7 @@ import MeetingsPage from "./pages/MeetingsPage";
 import PortfolioPage from "./pages/PortfolioPage";
 import EquipmentPage from "./pages/EquipmentPage";
 import ShootingSchedulePage from "./pages/ShootingSchedulePage";
+import WhiteboardPage from "./pages/WhiteboardPage";
 
 import PublicPortfolioPage from "./pages/PublicPortfolioPage";
 import NotFound from "./pages/NotFound";
@@ -69,6 +70,7 @@ function AppRoutes() {
                 <Route path="/portfolio" element={<PortfolioPage />} />
                 <Route path="/equipamentos" element={<EquipmentPage />} />
                 <Route path="/gravacoes" element={<ShootingSchedulePage />} />
+                <Route path="/whiteboard" element={<WhiteboardPage />} />
                 
                 <Route path="*" element={<NotFound />} />
               </Routes>

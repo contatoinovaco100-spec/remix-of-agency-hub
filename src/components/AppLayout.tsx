@@ -16,6 +16,7 @@ import {
   Film,
   Camera,
   Clapperboard,
+  Palette,
 } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
@@ -36,6 +37,7 @@ const allNavItems: NavItem[] = [
   { title: 'Portfólio', url: '/portfolio', icon: Film, module: 'operacional' },
   { title: 'Equipamentos', url: '/equipamentos', icon: Camera, module: 'operacional' },
   { title: 'Gravações', url: '/gravacoes', icon: Clapperboard, module: 'operacional' },
+  { title: 'Whiteboard', url: '/whiteboard', icon: Palette },
 ];
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
