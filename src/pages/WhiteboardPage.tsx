@@ -37,9 +37,17 @@ export default function WhiteboardPage() {
 
   // Prevent body scroll when on this page
   useEffect(() => {
+    const originalStyle = window.getComputedStyle(document.body).overflow;
+    document.documentElement.style.overflow = 'hidden';
     document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.width = '100%';
+    
     return () => {
-      document.body.style.overflow = 'auto';
+      document.documentElement.style.overflow = 'auto';
+      document.body.style.overflow = originalStyle;
+      document.body.style.position = 'static';
+      document.body.style.width = 'auto';
     };
   }, []);
 
@@ -65,19 +73,24 @@ export default function WhiteboardPage() {
       tempCanvas.height = canvas.height;
       if (tempCtx) tempCtx.drawImage(canvas, 0, 0);
 
-      canvas.width = width * window.devicePixelRatio;
-      canvas.height = height * window.devicePixelRatio;
-      ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
       
-      // Restore content
-      ctx.drawImage(tempCanvas, 0, 0, width, height);
+      // Reset transform before scale
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.scale(dpr, dpr);
+      
+      // Restore content scaled
+      ctx.drawImage(tempCanvas, 0, 0, tempCanvas.width, tempCanvas.height, 0, 0, width, height);
       
       // Default settings
       ctx.lineCap = 'round';
       ctx.lineJoin = 'round';
     };
 
-    resize();
+    // Use requestAnimationFrame for smoother resize and initial calculation
+    requestAnimationFrame(resize);
     window.addEventListener('resize', resize);
     return () => window.removeEventListener('resize', resize);
   }, []);
@@ -103,16 +116,15 @@ export default function WhiteboardPage() {
       clientY = (e as MouseEvent).clientY;
     }
 
-    // Direct calculation relative to canvas element
-    const x = clientX - rect.left;
-    const y = clientY - rect.top;
+    // High precision: Use the ratio between CSS pixels and Buffer pixels
+    const x = (clientX - rect.left) * (canvas.width / rect.width / (window.devicePixelRatio || 1));
+    const y = (clientY - rect.top) * (canvas.height / rect.height / (window.devicePixelRatio || 1));
 
     return { x, y };
   };
 
   const startDrawing = (e: React.MouseEvent | React.TouchEvent) => {
     if ('touches' in e) {
-      // Prevents scrolling on touch
       if (e.cancelable) e.preventDefault();
     }
     
@@ -144,12 +156,8 @@ export default function WhiteboardPage() {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Smoothing logic: Draw a quadratic curve to the midpoint of the current and next point
     ctx.lineTo(x, y);
     ctx.stroke();
-    
-    // Note: for even better smoothing, one would store the last few points 
-    // and draw a curve through them. For now, ensures we stay pixel-perfect.
   };
 
   const stopDrawing = () => {
@@ -169,7 +177,6 @@ export default function WhiteboardPage() {
     const canvas = canvasRef.current;
     if (!canvas) return;
     
-    // Create a temporary canvas with black background for export
     const exportCanvas = document.createElement('canvas');
     exportCanvas.width = canvas.width;
     exportCanvas.height = canvas.height;
@@ -201,7 +208,7 @@ export default function WhiteboardPage() {
   return (
     <div 
       ref={containerRef}
-      className={`relative h-[calc(100vh-8rem)] w-full max-w-7xl mx-auto bg-[#0a0a0a] rounded-3xl overflow-hidden border border-white/5 shadow-2xl flex flex-col transition-all duration-300 ${isFullscreen ? 'h-screen w-screen rounded-none max-w-none m-0' : ''}`}
+      className={`relative h-[calc(100vh-8rem)] w-full bg-[#0a0a0a] rounded-3xl overflow-hidden border border-white/5 shadow-2xl flex flex-col transition-all duration-300 ${isFullscreen ? 'h-screen w-screen rounded-none m-0 p-0 fixed top-0 left-0 z-[100]' : ''}`}
       style={{ touchAction: 'none' }} // Crucial for mobile
     >
       {/* Dynamic Cursor */}

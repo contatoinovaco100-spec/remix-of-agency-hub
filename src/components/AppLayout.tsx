@@ -123,7 +123,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       </aside>
 
       {/* Main */}
-      <main className={cn('flex-1 transition-default', collapsed ? 'ml-16' : 'ml-60')}>
+      <main className={cn('flex-1 transition-default overflow-x-hidden', collapsed ? 'ml-16' : 'ml-60')}>
         <div className="mx-auto max-w-7xl px-6 py-6 lg:px-8">
           {children}
         </div>
