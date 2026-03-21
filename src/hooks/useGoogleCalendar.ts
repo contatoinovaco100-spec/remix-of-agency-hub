@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -168,13 +168,15 @@ export function useGoogleCalendar() {
   }, [getValidAccessToken]);
 
   // Check connection on mount and handle OAuth callback
+  const isExchanging = useRef(false);
   useEffect(() => {
     const tokens = getTokens();
     if (tokens) setConnected(true);
 
     const params = new URLSearchParams(window.location.search);
     const code = params.get('code');
-    if (code) {
+    if (code && !isExchanging.current) {
+      isExchanging.current = true;
       handleOAuthCallback(code);
     }
   }, [handleOAuthCallback]);
