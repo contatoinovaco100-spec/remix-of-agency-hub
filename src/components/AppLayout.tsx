@@ -47,7 +47,6 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const navItems = [
     ...allNavItems.filter(item => !item.module || hasModule(item.module)),
     ...(isAdmin ? [
-      { title: 'Briefings', url: '/briefings', icon: FileText },
       { title: 'Contratos', url: '/contratos', icon: FileText },
       { title: 'Relatórios', url: '/relatorios', icon: BarChart3 },
       { title: 'Permissões', url: '/permissoes', icon: Shield },

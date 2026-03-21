@@ -390,17 +390,7 @@ export default function BriefingFormPage() {
     };
 
     try {
-      // 1. Save to Supabase
-      const { error: supabaseError } = await supabase
-        .from('client_briefings')
-        .insert([briefingData]);
-
-      if (supabaseError) {
-        console.error('SUPABASE_ERROR:', supabaseError);
-        // We don't throw yet, let's try the webhook too
-      }
-
-      // 2. Save to Google Sheets via Webhook
+      // 1. Save to Google Sheets via Webhook
       const webhookUrl = WEBHOOK_CONFIG.GOOGLE_SHEETS_URL || import.meta.env.VITE_GOOGLE_SHEETS_WEBHOOK_URL;
       
       console.log('📡 [DEBUG] Disparando Webhook para:', webhookUrl);
@@ -419,11 +409,6 @@ export default function BriefingFormPage() {
         } catch (webhookError) {
           console.error('❌ [DEBUG] Erro ao enviar Webhook:', webhookError);
         }
-      }
-
-      // If both failed, then we show an error
-      if (supabaseError && !webhookUrl) {
-        throw supabaseError;
       }
 
       setSubmitted(true);
