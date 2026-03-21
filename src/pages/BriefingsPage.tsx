@@ -66,19 +66,40 @@ export default function BriefingsPage() {
       return;
     }
 
-    // Define columns to export
-    const cols = [
-      'company_name', 'responsible_name', 'phone', 'segment', 'instagram', 
-      'goals_3_months', 'target_age_range', 'target_gender', 'audience_pain_points', 
-      'audience_desires', 'purchase_triggers', 'purchase_blockers', 'current_perception', 
-      'desired_perception', 'differentials', 'competitors', 'communication_style', 
-      'things_to_avoid', 'monthly_revenue', 'status', 'created_at'
-    ];
+    // Mapping technical keys to Portuguese labels
+    const columnMap: Record<string, string> = {
+      company_name: 'Empresa',
+      responsible_name: 'Responsável',
+      phone: 'Telefone',
+      segment: 'Segmento',
+      instagram: 'Instagram',
+      goals_3_months: 'Objetivos 3 Meses',
+      target_age_range: 'Faturamento Público',
+      target_gender: 'Gênero Público',
+      audience_pain_points: 'Dores do Público',
+      audience_desires: 'Desejos do Público',
+      purchase_triggers: 'Gatilhos de Compra',
+      purchase_blockers: 'Barreiras de Compra',
+      current_perception: 'Percepção Atual',
+      desired_perception: 'Percepção Desejada',
+      differentials: 'Diferenciais',
+      competitors: 'Concorrentes',
+      communication_style: 'Estilo de Comunicação',
+      things_to_avoid: 'O que evitar',
+      monthly_revenue: 'Faturamento Mensal',
+      status: 'Status',
+      created_at: 'Data de Envio'
+    };
 
-    const headers = cols.join(';');
+    const keys = Object.keys(columnMap);
+    const headers = Object.values(columnMap).join(';');
+    
     const rows = briefings.map(b => 
-      cols.map(col => {
-        const val = (b as any)[col] || '';
+      keys.map(key => {
+        let val = (b as any)[key] || '';
+        if (key === 'created_at' && val) {
+          val = new Date(val).toLocaleString('pt-BR');
+        }
         return typeof val === 'string' ? `"${val.replace(/"/g, '""')}"` : val;
       }).join(';')
     ).join('\n');
@@ -95,7 +116,7 @@ export default function BriefingsPage() {
     link.click();
     document.body.removeChild(link);
     
-    toast.success('Arquivo CSV gerado com sucesso!');
+    toast.success('Arquivo CSV (Português) gerado com sucesso!');
   };
 
   const filteredBriefings = briefings.filter(b => 
