@@ -35,6 +35,14 @@ export default function WhiteboardPage() {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [showCursor, setShowCursor] = useState(false);
 
+  // Prevent body scroll when on this page
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, []);
+
   // Initialize Canvas
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -149,6 +157,7 @@ export default function WhiteboardPage() {
   };
 
   const clearCanvas = () => {
+    if (!confirm('Tem certeza que deseja limpar todo o whiteboard?')) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -192,7 +201,7 @@ export default function WhiteboardPage() {
   return (
     <div 
       ref={containerRef}
-      className={`relative h-[calc(100vh-8rem)] w-full bg-[#0a0a0a] rounded-3xl overflow-hidden border border-white/5 shadow-2xl flex flex-col transition-all duration-300 ${isFullscreen ? 'h-screen rounded-none' : ''}`}
+      className={`relative h-[calc(100vh-8rem)] w-full max-w-7xl mx-auto bg-[#0a0a0a] rounded-3xl overflow-hidden border border-white/5 shadow-2xl flex flex-col transition-all duration-300 ${isFullscreen ? 'h-screen w-screen rounded-none max-w-none m-0' : ''}`}
       style={{ touchAction: 'none' }} // Crucial for mobile
     >
       {/* Dynamic Cursor */}
