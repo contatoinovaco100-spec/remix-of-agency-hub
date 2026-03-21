@@ -27,12 +27,13 @@ import ShootingSchedulePage from "./pages/ShootingSchedulePage";
 import PublicPortfolioPage from "./pages/PublicPortfolioPage";
 import NotFound from "./pages/NotFound";
 import ClientPortalPage from "./pages/ClientPortalPage";
+import BriefingFormPage from "./pages/BriefingFormPage";
 
 const queryClient = new QueryClient();
 
 function AppRoutes() {
   const location = useLocation();
-  const isPublicPage = location.pathname.startsWith('/conteudo/') || location.pathname.startsWith('/contrato/') || location.pathname === '/vitrine';
+  const isPublicPage = location.pathname.startsWith('/conteudo/') || location.pathname.startsWith('/contrato/') || location.pathname === '/vitrine' || location.pathname === '/briefing';
 
   if (isPublicPage) {
     return (
@@ -40,6 +41,7 @@ function AppRoutes() {
         <Route path="/conteudo/:taskId" element={<ClientContentPage />} />
         <Route path="/contrato/:contractId" element={<ContractSignPage />} />
         <Route path="/vitrine" element={<PublicPortfolioPage />} />
+        <Route path="/briefing" element={<BriefingFormPage />} />
       </Routes>
     );
   }

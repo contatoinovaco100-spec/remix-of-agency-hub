@@ -3,10 +3,11 @@ import { useModuleAccess } from '@/hooks/useUserRole';
 import { ExpensesPanel } from '@/components/dashboard/ExpensesPanel';
 import { SmartAlerts } from '@/components/dashboard/SmartAlerts';
 import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
 import {
   Users, DollarSign, Target, CheckSquare, FolderOpen,
   TrendingUp, PieChart, BarChart3, ArrowUpRight, ArrowDownRight,
-  Clock, AlertTriangle, CheckCircle2, Briefcase,
+  Clock, AlertTriangle, CheckCircle2, Briefcase, FileText,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -16,6 +17,8 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart as RechartsPie, Pie, Cell, Legend, AreaChart, Area,
 } from 'recharts';
+import { supabase } from '@/integrations/supabase/client';
+import BriefingDetailDialog, { type BriefingRow } from '@/components/BriefingDetailDialog';
 
 const statusColors: Record<string, string> = {
   'Ativo': 'bg-[hsl(var(--success))]/10 text-[hsl(var(--success))]',
@@ -41,6 +44,23 @@ function formatCurrency(v: number) {
 export default function Dashboard() {
   const { clients, tasks, leads } = useAgency();
   const { isAdmin } = useModuleAccess();
+
+  // Briefings state
+  const [briefings, setBriefings] = useState<BriefingRow[]>([]);
+  const [selectedBriefing, setSelectedBriefing] = useState<BriefingRow | null>(null);
+  const [briefingDialogOpen, setBriefingDialogOpen] = useState(false);
+
+  useEffect(() => {
+    if (!isAdmin) return;
+    supabase
+      .from('client_briefings')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(20)
+      .then(({ data }) => {
+        if (data) setBriefings(data as BriefingRow[]);
+      });
+  }, [isAdmin]);
 
   const activeClients = clients.filter(c => c.status === 'Ativo');
   const pausedClients = clients.filter(c => c.status === 'Pausado');
@@ -123,12 +143,20 @@ export default function Dashboard() {
 
       {/* Tabs */}
       <Tabs defaultValue="financeiro" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-2 sm:w-auto sm:grid-cols-none sm:inline-flex">
+        <TabsList className="grid w-full grid-cols-3 sm:w-auto sm:grid-cols-none sm:inline-flex">
           <TabsTrigger value="financeiro" className="gap-2">
             <DollarSign className="h-4 w-4" /> Financeiro
           </TabsTrigger>
           <TabsTrigger value="entregas" className="gap-2">
             <CheckSquare className="h-4 w-4" /> Entregas
+          </TabsTrigger>
+          <TabsTrigger value="briefings" className="gap-2">
+            <FileText className="h-4 w-4" /> Briefings
+            {briefings.filter(b => b.status === 'novo').length > 0 && (
+              <Badge variant="destructive" className="ml-1 h-5 min-w-[20px] px-1.5 text-[10px]">
+                {briefings.filter(b => b.status === 'novo').length}
+              </Badge>
+            )}
           </TabsTrigger>
         </TabsList>
 
@@ -502,7 +530,103 @@ export default function Dashboard() {
             </Card>
           </motion.div>
         </TabsContent>
+
+        {/* ==================== BRIEFINGS TAB ==================== */}
+        <TabsContent value="briefings" className="space-y-6">
+          <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
+            {[
+              { label: 'Total de Briefings', value: briefings.length, accent: 'text-primary', bg: 'bg-primary/10' },
+              { label: 'Novos', value: briefings.filter(b => b.status === 'novo').length, accent: 'text-[hsl(var(--info))]', bg: 'bg-[hsl(var(--info))]/10' },
+              { label: 'Concluídos', value: briefings.filter(b => b.status === 'concluído').length, accent: 'text-[hsl(var(--success))]', bg: 'bg-[hsl(var(--success))]/10' },
+            ].map((kpi, i) => (
+              <motion.div key={kpi.label} {...anim(i)}>
+                <Card className="border-border/50">
+                  <CardContent className="p-5">
+                    <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{kpi.label}</span>
+                    <p className={`mt-2 text-2xl font-bold tabular-nums ${kpi.accent}`}>{kpi.value}</p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+
+          <motion.div {...anim(3)}>
+            <Card className="border-border/50">
+              <CardHeader className="pb-2">
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <FileText className="h-4 w-4 text-primary" /> Briefings Recebidos
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                {briefings.length === 0 ? (
+                  <div className="flex flex-col items-center gap-2 py-12 text-center">
+                    <FileText className="h-10 w-10 text-muted-foreground/30" />
+                    <p className="text-sm text-muted-foreground">Nenhum briefing recebido ainda</p>
+                    <p className="text-xs text-muted-foreground">Compartilhe o link <span className="font-mono text-primary">/briefing</span> com seus clientes</p>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-border text-xs text-muted-foreground">
+                          <th className="px-5 py-3 text-left font-medium">Empresa</th>
+                          <th className="px-5 py-3 text-left font-medium">Responsável</th>
+                          <th className="px-5 py-3 text-left font-medium">Segmento</th>
+                          <th className="px-5 py-3 text-left font-medium">Estilo</th>
+                          <th className="px-5 py-3 text-center font-medium">Status</th>
+                          <th className="px-5 py-3 text-left font-medium">Data</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {briefings.map(b => {
+                          const statusColor = b.status === 'novo'
+                            ? 'bg-blue-500/10 text-blue-400'
+                            : b.status === 'em análise'
+                            ? 'bg-amber-500/10 text-amber-400'
+                            : 'bg-green-500/10 text-green-400';
+                          return (
+                            <tr
+                              key={b.id}
+                              className="border-b border-border/30 hover:bg-secondary/30 transition-colors cursor-pointer"
+                              onClick={() => { setSelectedBriefing(b); setBriefingDialogOpen(true); }}
+                            >
+                              <td className="px-5 py-3">
+                                <p className="font-medium text-foreground">{b.company_name || '—'}</p>
+                                <p className="text-xs text-muted-foreground">{b.instagram || ''}</p>
+                              </td>
+                              <td className="px-5 py-3 text-muted-foreground">{b.responsible_name || '—'}</td>
+                              <td className="px-5 py-3 text-muted-foreground">{b.segment || '—'}</td>
+                              <td className="px-5 py-3">
+                                {b.communication_style && (
+                                  <Badge variant="secondary" className="text-xs">{b.communication_style}</Badge>
+                                )}
+                              </td>
+                              <td className="px-5 py-3 text-center">
+                                <span className={`inline-flex rounded-md px-2 py-0.5 text-xs font-medium ${statusColor}`}>
+                                  {b.status.charAt(0).toUpperCase() + b.status.slice(1)}
+                                </span>
+                              </td>
+                              <td className="px-5 py-3 text-xs text-muted-foreground">
+                                {new Date(b.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </motion.div>
+        </TabsContent>
       </Tabs>
+
+      <BriefingDetailDialog
+        briefing={selectedBriefing}
+        open={briefingDialogOpen}
+        onOpenChange={setBriefingDialogOpen}
+      />
     </div>
   );
 }
