@@ -79,7 +79,7 @@ const STEPS: Step[] = [
   {
     id: 'welcome',
     section: 'Boas-vindas',
-    botMessage: 'Seja bem-vindo ao portal estratégico da Inova.\n\nEste briefing é o passo fundamental para compreendermos a fundo a identidade da sua marca e os objetivos do seu negócio.\n\nAs informações fornecidas servirão de base para todo o nosso planejamento de posicionamento digital.\n\nPodemos iniciar?',
+    botMessage: 'Olá! 👋 Que bom te ver por aqui. VAMOS JUNTOS construir a base estratégica da sua marca.\n\nEsse briefing é o primeiro passo pra eu entender quem é você, o que sua empresa representa e como podemos posicionar ela com força no digital.\n\nBora construir algo FODA juntos?',
     gif: GIFS.WELCOME,
     type: 'welcome',
   },
@@ -370,7 +370,7 @@ export default function BriefingFormPage() {
     setHistory(prev => [
       ...prev,
       { type: 'bot', text: currentBotMessage, gif: step.gif },
-      { type: 'user', text: 'Iniciar Briefing' },
+      { type: 'user', text: 'Bora! 🚀' },
     ]);
     setCurrentStep(1);
   };
@@ -401,21 +401,25 @@ export default function BriefingFormPage() {
 
       // 2. Save to Google Sheets via Webhook (if URL is provided)
       const webhookUrl = import.meta.env.VITE_GOOGLE_SHEETS_WEBHOOK_URL;
+      console.log('Tentando conexão com Google Sheets...', webhookUrl ? 'URL OK' : 'URL Ausente');
+      
       if (webhookUrl) {
         try {
+          // Usamos text/plain para evitar problemas de CORS com o Apps Script
           await fetch(webhookUrl, {
             method: 'POST',
             mode: 'no-cors',
             headers: {
-              'Content-Type': 'application/json',
+              'Content-Type': 'text/plain',
             },
             body: JSON.stringify({
               ...briefingData,
               sheet_name: 'Briefings'
             }),
           });
+          console.log('Requisição enviada ao Webhook do Google Sheets.');
         } catch (webhookError) {
-          console.error('WEBHOOK_ERROR:', webhookError);
+          console.error('Erro na chamada do Webhook:', webhookError);
         }
       }
 
