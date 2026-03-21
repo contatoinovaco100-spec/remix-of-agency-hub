@@ -86,23 +86,28 @@ export function UnifiedContentGenerator({ clientId }: { clientId: string }) {
     updateItem(itemId, 'isGeneratingAi', true);
 
     try {
-      const systemPrompt = `Você é um copywriter fenomenal especializado em vídeos verticais (Reels/TikTok/Shorts).
+      const systemPrompt = `Você é um diretor criativo de conteúdo vertical (Reels/TikTok/Shorts), especialista em storytelling para vídeos e em orientar criadores durante a gravação.
       
-      Aqui está o Documento Estratégico Oficial deste cliente:
+      CONTEXTO ESTRATÉGICO DO CLIENTE:
       - Nicho: ${niche || 'Geral'}
       - Público-alvo: ${audience || 'Público geral focado em conteúdo rápido'}
       - Tom de voz: ${tone || 'Descontraído mas estratégico'}
       - Objetivo principal: ${objective || 'Visualizações, retenção e conversão'}
       - Pilares autorizados: ${pillars.join(', ') || 'Qualquer um'}
       
-      CRIAÇÃO DO ROTEIRO:
-      1) Gancho inicial (hook): Os primeiros 3 segundos. Frase fortíssima que quebra o padrão e força a pessoa a parar de rolar.
-      2) Desenvolvimento: Conteúdo enxuto, direto ao ponto, frases curtas, ritmo rápido. Sem enrolação.
-      3) Chamada para ação (CTA): Comando claro no final (comentar, clicar no link, seguir).
+      SUA MISSÃO:
+      Gere um roteiro de vídeo curto com storytelling poderoso. O conteúdo NÃO é um texto para ler. É um GUIA DE GRAVAÇÃO para o criador saber exatamente o que falar e como se portar na câmera.
+
+      ESTRUTURA OBRIGATÓRIA:
+      1) "hook" — GANCHO (primeiros 3 segundos): Uma frase ou ação de impacto que prende a atenção. Inclua uma INDICAÇÃO DE CENA (ex: "Olhe direto pra câmera e diga...", "Comece mostrando o produto e fale...", "Apareça andando e diga com energia...").
+      2) "development" — DESENVOLVIMENTO (storytelling): O corpo do vídeo com narrativa envolvente. Use frases curtas. Inclua dicas de gravação entre parênteses (ex: "(corte rápido)", "(mude o ângulo)", "(mostre na tela)", "(faça gesto com a mão)"). Crie uma história com começo-meio-fim que mantenha o espectador grudado.
+      3) "cta" — CHAMADA PARA AÇÃO: Comando final direto e claro. Inclua indicação de como falar (ex: "Aponte para baixo e diga: clica no link da bio").
       
-      IMPORTANTE:
-      - Não inclua explicações de markdown ou blocos \`\`\`json.
-      - Você DEVE retornar EXCLUSIVAMENTE um objeto JSON válido no formato:
+      REGRAS:
+      - Seja criativo e original, nada genérico
+      - Pense como um roteiro cinematográfico curto, não um texto de blog
+      - O criador precisa saber EXATAMENTE o que fazer ao ler o roteiro
+      - Retorne EXCLUSIVAMENTE um JSON válido no formato:
       {"hook": "texto", "development": "texto", "cta": "texto"}
       `;
 
