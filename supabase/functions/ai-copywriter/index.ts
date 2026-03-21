@@ -11,11 +11,11 @@ serve(async (req) => {
   }
 
   try {
-    const { systemPrompt, userMessage, model = "gpt-4o-mini" } = await req.json();
+    const { systemPrompt, userMessage, apiKey, model = "gpt-4o-mini" } = await req.json();
 
-    const openAiKey = Deno.env.get('OPENAI_API_KEY');
+    const openAiKey = apiKey || Deno.env.get('OPENAI_API_KEY');
     if (!openAiKey) {
-      throw new Error("A chave OPENAI_API_KEY não foi configurada nos Secrets do Supabase.");
+      throw new Error("A chave OPENAI_API_KEY não foi configurada e não foi enviada pelo painel.");
     }
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {

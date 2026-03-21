@@ -225,50 +225,43 @@ export function ScriptsTab({ clientId }: { clientId: string }) {
       
       Não inclua marcações de markdown e nem explique nada. Apenas responda com o JSON puro.`;
 
-      const response = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify({
-          model: "gpt-4o-mini",
-          response_format: { type: "json_object" },
-          messages: [
-            { role: "system", content: systemPrompt },
-            { role: "user", content: aiPrompt }
-          ],
-          temperature: 0.7,
-        }),
+      const { data, error } = await supabase.functions.invoke('ai-copywriter', {
+        body: { 
+          systemPrompt, 
+          userMessage: aiPrompt,
+          apiKey: apiKey
+        }
       });
 
-      if (!response.ok) {
-        if (response.status === 401) {
-           localStorage.removeItem('OPENAI_API_KEY');
-           throw new Error("Chave da OpenAI inválida ou expirada. Tente novamente.");
-        }
-        const errorData = await response.json();
-        throw new Error(errorData.error?.message || "Erro de comunicação com a OpenAI");
+      if (error) {
+        // Handle Edge function invocation error
+        console.error("Invoke error:", error);
+        throw new Error("Falha ao comunicar com o servidor (Edge Function). Verifique sua conexão.");
       }
 
-      const data = await response.json();
-      const content = data.choices[0]?.message?.content;
-      
-      if (!content) throw new Error("A resposta da IA veio vazia.");
-      
-      const result = JSON.parse(content);
+      if (data?.error) {
+        // Handle explicit error from Edge function (e.g., API Key invalid)
+        if (data.error.toLowerCase().includes("auth") || data.error.toLowerCase().includes("key")) {
+           localStorage.removeItem('OPENAI_API_KEY');
+           setHasApiKey(false);
+           setTempApiKey('');
+        }
+        throw new Error(data.error);
+      }
 
-      if (result) {
+      if (data?.result) {
         setEditingScript(prev => ({
           ...prev,
           title: prev?.title || aiPrompt.substring(0, 30) + '...',
-          hook: result.hook || prev?.hook,
-          development: result.development || prev?.development,
-          cta: result.cta || prev?.cta
+          hook: data.result.hook || prev?.hook,
+          development: data.result.development || prev?.development,
+          cta: data.result.cta || prev?.cta
         }));
         toast.success('Roteiro gerado com sucesso!');
         setIsAiOpen(false);
         setAiPrompt("");
+      } else {
+        throw new Error("A resposta da IA veio vazia ou corrompida.");
       }
     } catch (err: any) {
       console.error('AI Error:', err);
