@@ -2,8 +2,10 @@ import { useState } from 'react';
 import { useAgency } from '@/contexts/AgencyContext';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { LayoutList, Lightbulb, PenTool, Calendar as CalendarIcon } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { LayoutList, Lightbulb, PenTool, Calendar as CalendarIcon, Share2 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { toast } from 'sonner';
 
 // Componentes das abas que serão criados a seguir
 import { EditorialLineTab } from '@/components/content/EditorialLineTab';
@@ -33,19 +35,35 @@ export default function ContentPlanningPage() {
           </p>
         </div>
 
-        <div className="w-full sm:w-[300px]">
-          <Select value={selectedClientId} onValueChange={setSelectedClientId}>
-            <SelectTrigger className="w-full bg-black/40 border-white/10">
-              <SelectValue placeholder="Selecione um cliente..." />
-            </SelectTrigger>
-            <SelectContent>
-              {clients.map(client => (
-                <SelectItem key={client.id} value={client.id}>
-                  {client.companyName}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        <div className="w-full sm:w-auto flex flex-col sm:flex-row items-center gap-2">
+          <div className="w-full sm:w-[300px]">
+            <Select value={selectedClientId} onValueChange={setSelectedClientId}>
+              <SelectTrigger className="w-full bg-black/40 border-white/10">
+                <SelectValue placeholder="Selecione um cliente..." />
+              </SelectTrigger>
+              <SelectContent>
+                {clients.map(client => (
+                  <SelectItem key={client.id} value={client.id}>
+                    {client.companyName}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          {selectedClientId && (
+            <Button 
+              variant="outline" 
+              className="w-full sm:w-auto border-primary/50 text-primary hover:bg-primary/10 transition-colors"
+              onClick={() => {
+                const url = `${window.location.origin}/portal/${selectedClientId}`;
+                navigator.clipboard.writeText(url);
+                toast.success('Link do portal copiado para a área de transferência!');
+              }}
+            >
+              <Share2 className="w-4 h-4 mr-2" />
+              Portal do Cliente
+            </Button>
+          )}
         </div>
       </div>
 

@@ -27,6 +27,7 @@ import WhiteboardPage from "./pages/WhiteboardPage";
 import ContentPlanningPage from "@/pages/ContentPlanningPage";
 
 import PublicPortfolioPage from "./pages/PublicPortfolioPage";
+import ClientPortalPage from "./pages/ClientPortalPage";
 import NotFound from "./pages/NotFound";
 import BriefingFormPage from "./pages/BriefingFormPage";
 import BriefingsPage from "./pages/BriefingsPage";
@@ -35,12 +36,13 @@ const queryClient = new QueryClient();
 
 function AppRoutes() {
   const location = useLocation();
-  const isPublicPage = location.pathname.startsWith('/conteudo/') || location.pathname.startsWith('/contrato/') || location.pathname === '/vitrine' || location.pathname === '/briefing';
+  const isPublicPage = location.pathname.startsWith('/conteudo/') || location.pathname.startsWith('/portal/') || location.pathname.startsWith('/contrato/') || location.pathname === '/vitrine' || location.pathname === '/briefing';
 
   if (isPublicPage) {
     return (
       <Routes>
         <Route path="/conteudo/:taskId" element={<ClientContentPage />} />
+        <Route path="/portal/:clientId" element={<ClientPortalPage />} />
         <Route path="/contrato/:contractId" element={<ContractSignPage />} />
         <Route path="/vitrine" element={<PublicPortfolioPage />} />
         <Route path="/briefing" element={<BriefingFormPage />} />
