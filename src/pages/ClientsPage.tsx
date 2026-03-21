@@ -58,18 +58,18 @@ export default function ClientsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-heading font-semibold text-foreground">Clientes</h1>
           <p className="text-body text-muted-foreground">{clients.length} clientes cadastrados</p>
         </div>
-        <Button onClick={openNew} className="gap-2">
+        <Button onClick={openNew} className="gap-2 w-full sm:w-auto">
           <Plus className="h-4 w-4" /> Novo Cliente
         </Button>
       </div>
 
       {/* Search */}
-      <div className="relative max-w-sm">
+      <div className="relative w-full max-w-sm">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
           placeholder="Buscar clientes..."
@@ -85,25 +85,27 @@ export default function ClientsPage() {
           <motion.div
             key={client.id}
             layout
-            className="card-shadow rounded-lg bg-card"
+            className="card-shadow rounded-lg bg-card overflow-hidden"
           >
             <div
-              className="flex cursor-pointer items-center gap-4 px-5 py-4 transition-default hover:bg-secondary/30"
+              className="flex cursor-pointer items-center gap-3 px-4 py-4 transition-default hover:bg-secondary/30 sm:gap-4 sm:px-5"
               onClick={() => setExpandedId(expandedId === client.id ? null : client.id)}
             >
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-body font-semibold text-primary">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-body font-semibold text-primary">
                 {client.companyName.substring(0, 2).toUpperCase()}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-medium text-foreground">{client.companyName}</p>
-                <p className="text-caption text-muted-foreground">{client.contactName} · {client.scope}</p>
+                <p className="font-medium text-foreground truncate">{client.companyName}</p>
+                <p className="text-caption text-muted-foreground truncate hidden sm:block">{client.contactName} · {client.scope}</p>
               </div>
-              <span className="tabular-nums text-body font-medium text-foreground">
-                R$ {client.monthlyValue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-              </span>
-              <span className={`rounded-md px-2 py-0.5 text-caption font-medium ${statusColors[client.status]}`}>
-                {client.status}
-              </span>
+              <div className="text-right shrink-0">
+                <p className="tabular-nums text-sm font-medium text-foreground sm:text-body">
+                  R$ {client.monthlyValue.toLocaleString('pt-BR')}
+                </p>
+                <p className={`inline-block rounded px-1.5 py-0.5 text-[10px] sm:text-caption font-medium ${statusColors[client.status]}`}>
+                  {client.status}
+                </p>
+              </div>
               {expandedId === client.id ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
             </div>
 
@@ -116,18 +118,18 @@ export default function ClientsPage() {
                   transition={{ duration: 0.2 }}
                   className="overflow-hidden"
                 >
-                   <div className="border-t border-border px-5 py-4">
+                   <div className="border-t border-border px-4 py-4 sm:px-5">
                      <Tabs defaultValue="info">
-                       <TabsList className="mb-4">
+                       <TabsList className="mb-4 w-full justify-start overflow-x-auto scroller-hide">
                          <TabsTrigger value="info">Informações</TabsTrigger>
-                         <TabsTrigger value="insights" className="gap-1.5">
+                         <TabsTrigger value="insights" className="gap-1.5 flex-shrink-0">
                            <BarChart3 className="h-3.5 w-3.5" /> Insights Meta
                          </TabsTrigger>
                        </TabsList>
 
                        <TabsContent value="info" className="space-y-4">
-                         <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-                           <div><p className="text-caption text-muted-foreground">Email</p><p className="text-body text-foreground">{client.email}</p></div>
+                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                           <div><p className="text-caption text-muted-foreground">Email</p><p className="text-body text-foreground break-all">{client.email}</p></div>
                            <div><p className="text-caption text-muted-foreground">Telefone</p><p className="text-body text-foreground">{client.phone}</p></div>
                            <div><p className="text-caption text-muted-foreground">Início do contrato</p><p className="text-body text-foreground">{new Date(client.contractStartDate).toLocaleDateString('pt-BR')}</p></div>
                            <div><p className="text-caption text-muted-foreground">Responsável</p><p className="text-body text-foreground">{client.accountManager}</p></div>
@@ -135,30 +137,30 @@ export default function ClientsPage() {
 
                          <div className="flex flex-wrap gap-1">
                            {client.serviceType.map(s => (
-                             <span key={s} className="rounded-md bg-primary/10 px-2 py-0.5 text-caption font-medium text-primary">{s}</span>
+                             <span key={s} className="rounded bg-primary/10 px-2 py-0.5 text-[10px] sm:text-caption font-medium text-primary">{s}</span>
                            ))}
                          </div>
 
                          {client.scopeDetails && (
-                           <div className="rounded-md bg-secondary/50 p-4 space-y-3">
+                           <div className="rounded-xl border border-border bg-secondary/30 p-4 space-y-3">
                              <h3 className="text-body font-semibold text-foreground">Escopo do Contrato</h3>
-                             <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+                             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
                                {client.scopeDetails.monthlyDeliverables.length > 0 && (
                                  <div>
                                    <p className="text-caption text-muted-foreground mb-1">Entregas mensais</p>
-                                   <ul className="space-y-1">{client.scopeDetails.monthlyDeliverables.map((d, i) => <li key={i} className="text-body text-foreground">• {d}</li>)}</ul>
+                                   <ul className="space-y-1">{client.scopeDetails.monthlyDeliverables.map((d, i) => <li key={i} className="text-sm sm:text-body text-foreground">• {d}</li>)}</ul>
                                  </div>
                                )}
                                {client.scopeDetails.includedServices.length > 0 && (
                                  <div>
                                    <p className="text-caption text-muted-foreground mb-1">Serviços incluídos</p>
-                                   <ul className="space-y-1">{client.scopeDetails.includedServices.map((s, i) => <li key={i} className="text-body text-foreground">• {s}</li>)}</ul>
+                                   <ul className="space-y-1">{client.scopeDetails.includedServices.map((s, i) => <li key={i} className="text-sm sm:text-body text-foreground">• {s}</li>)}</ul>
                                  </div>
                                )}
                                {client.scopeDetails.demandLimits && (
                                  <div>
                                    <p className="text-caption text-muted-foreground mb-1">Limite de demandas</p>
-                                   <p className="text-body text-foreground">{client.scopeDetails.demandLimits}</p>
+                                   <p className="text-sm sm:text-body text-foreground">{client.scopeDetails.demandLimits}</p>
                                  </div>
                                )}
                                {client.scopeDetails.platforms.length > 0 && (
@@ -171,18 +173,18 @@ export default function ClientsPage() {
                              {client.scopeDetails.strategicNotes && (
                                <div>
                                  <p className="text-caption text-muted-foreground mb-1">Informações estratégicas</p>
-                                 <p className="text-body text-foreground">{client.scopeDetails.strategicNotes}</p>
+                                 <p className="text-sm sm:text-body text-foreground">{client.scopeDetails.strategicNotes}</p>
                                </div>
                              )}
                            </div>
                          )}
 
-                         {client.notes && <p className="text-caption text-muted-foreground">Obs: {client.notes}</p>}
+                         {client.notes && <p className="text-caption text-muted-foreground italic">Obs: {client.notes}</p>}
 
-                         <div className="flex gap-2">
+                         <div className="flex flex-wrap gap-2 pt-2 border-t border-border/50">
                            {client.phone && <WhatsAppButton phone={client.phone} name={client.contactName} size="md" />}
-                           <Button size="sm" variant="outline" onClick={() => openEdit(client)}>Editar</Button>
-                           <Button size="sm" variant="outline" className="text-destructive hover:bg-destructive/10" onClick={() => deleteClient(client.id)}>Excluir</Button>
+                           <Button size="sm" variant="outline" onClick={() => openEdit(client)} className="flex-1 sm:flex-none">Editar</Button>
+                           <Button size="sm" variant="outline" className="text-destructive hover:bg-destructive/10 flex-1 sm:flex-none" onClick={() => deleteClient(client.id)}>Excluir</Button>
                          </div>
                        </TabsContent>
 
@@ -200,20 +202,20 @@ export default function ClientsPage() {
 
       {/* Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
+        <DialogContent className="max-h-[95vh] w-[95vw] sm:max-w-2xl overflow-y-auto scroller-hide">
           <DialogHeader>
             <DialogTitle>{editing ? 'Editar Cliente' : 'Novo Cliente'}</DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-2">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div><Label>Nome da empresa</Label><Input value={form.companyName || ''} onChange={e => setForm({ ...form, companyName: e.target.value })} /></div>
               <div><Label>Responsável</Label><Input value={form.contactName || ''} onChange={e => setForm({ ...form, contactName: e.target.value })} /></div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div><Label>Email</Label><Input type="email" value={form.email || ''} onChange={e => setForm({ ...form, email: e.target.value })} /></div>
               <div><Label>Telefone</Label><Input value={form.phone || ''} onChange={e => setForm({ ...form, phone: e.target.value })} /></div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div><Label>Data início contrato</Label><Input type="date" value={form.contractStartDate || ''} onChange={e => setForm({ ...form, contractStartDate: e.target.value })} /></div>
               <div><Label>Valor mensal (R$)</Label><Input type="number" value={form.monthlyValue || ''} onChange={e => setForm({ ...form, monthlyValue: Number(e.target.value) })} /></div>
             </div>

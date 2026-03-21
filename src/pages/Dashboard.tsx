@@ -137,7 +137,7 @@ export default function Dashboard() {
         {/* ==================== FINANCIAL TAB ==================== */}
         <TabsContent value="financeiro" className="space-y-6">
           {/* Top KPIs */}
-          <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {[
               { label: 'MRR', value: formatCurrency(mrr), icon: DollarSign, accent: 'text-[hsl(var(--success))]', bg: 'bg-[hsl(var(--success))]/10' },
               { label: 'Receita Anual Projetada', value: formatCurrency(mrr * 12), icon: TrendingUp, accent: 'text-primary', bg: 'bg-primary/10' },
@@ -367,7 +367,7 @@ export default function Dashboard() {
         {/* ==================== DELIVERY TAB ==================== */}
         <TabsContent value="entregas" className="space-y-6">
           {/* Delivery KPIs */}
-          <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {[
               { label: 'Total de Tarefas', value: tasks.length, icon: CheckSquare, accent: 'text-primary', bg: 'bg-primary/10' },
               { label: 'Concluídas', value: completedTasks.length, icon: CheckCircle2, accent: 'text-[hsl(var(--success))]', bg: 'bg-[hsl(var(--success))]/10' },
@@ -535,7 +535,7 @@ function SimpleDashboard({ clients, tasks, leads, mrr, activeClients, pendingTas
       </div>
 
       {/* KPIs */}
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {kpis.map((kpi, i) => (
           <motion.div key={kpi.label} {...anim(i)}>
             <Card className="border-border/50">

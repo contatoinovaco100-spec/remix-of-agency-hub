@@ -145,19 +145,19 @@ export default function CRMPage() {
             <DialogTitle>{editing ? 'Editar Lead' : 'Novo Lead'}</DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-2">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div><Label>Nome</Label><Input value={form.name || ''} onChange={e => setForm({ ...form, name: e.target.value })} /></div>
               <div><Label>Empresa</Label><Input value={form.company || ''} onChange={e => setForm({ ...form, company: e.target.value })} /></div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div><Label>Email</Label><Input type="email" value={form.email || ''} onChange={e => setForm({ ...form, email: e.target.value })} /></div>
               <div><Label>Telefone</Label><Input value={form.phone || ''} onChange={e => setForm({ ...form, phone: e.target.value })} /></div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div><Label>Origem</Label><Input value={form.source || ''} onChange={e => setForm({ ...form, source: e.target.value })} /></div>
               <div><Label>Valor estimado</Label><Input type="number" value={form.estimatedValue || ''} onChange={e => setForm({ ...form, estimatedValue: Number(e.target.value) })} /></div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <Label>Etapa</Label>
                 <Select value={form.stage || 'Lead novo'} onValueChange={v => setForm({ ...form, stage: v as LeadStage })}>
