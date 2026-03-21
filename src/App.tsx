@@ -24,6 +24,7 @@ import PortfolioPage from "./pages/PortfolioPage";
 import EquipmentPage from "./pages/EquipmentPage";
 import ShootingSchedulePage from "./pages/ShootingSchedulePage";
 import WhiteboardPage from "./pages/WhiteboardPage";
+import ContentPlanningPage from "@/pages/ContentPlanningPage";
 
 import PublicPortfolioPage from "./pages/PublicPortfolioPage";
 import NotFound from "./pages/NotFound";
@@ -60,8 +61,8 @@ function AppRoutes() {
                 <Route path="/clientes" element={<ClientsPage />} />
                 <Route path="/crm" element={<CRMPage />} />
                 <Route path="/tarefas" element={<TasksPage />} />
-                <Route path="/equipe" element={<TeamPage />} />
                 <Route path="/calendario" element={<CalendarPage />} />
+                <Route path="/planejamento" element={<ContentPlanningPage />} />
                 <Route path="/permissoes" element={<PermissionsPage />} />
                 <Route path="/contratos" element={<ContractsPage />} />
             <Route path="/briefings" element={<BriefingsPage />} />

@@ -17,6 +17,7 @@ import {
   Camera,
   Clapperboard,
   Palette,
+  LayoutList,
 } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
@@ -34,6 +35,7 @@ const allNavItems: NavItem[] = [
   { title: 'Equipe', url: '/equipe', icon: UserCog, module: 'operacional' },
   { title: 'Calendário', url: '/calendario', icon: Calendar, module: 'operacional' },
   { title: 'Reuniões', url: '/reunioes', icon: Video, module: 'operacional' },
+  { title: 'Planejamento', url: '/planejamento', icon: LayoutList, module: 'operacional' },
   { title: 'Portfólio', url: '/portfolio', icon: Film, module: 'operacional' },
   { title: 'Equipamentos', url: '/equipamentos', icon: Camera, module: 'operacional' },
   { title: 'Gravações', url: '/gravacoes', icon: Clapperboard, module: 'operacional' },

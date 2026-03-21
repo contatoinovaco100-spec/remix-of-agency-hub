@@ -14,6 +14,141 @@ export type Database = {
   }
   public: {
     Tables: {
+      content_editorial_lines: {
+        Row: {
+          id: string
+          client_id: string
+          niche: string | null
+          audience: string | null
+          tone: string | null
+          objective: string | null
+          pillars: string[] | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          client_id: string
+          niche?: string | null
+          audience?: string | null
+          tone?: string | null
+          objective?: string | null
+          pillars?: string[] | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          client_id?: string
+          niche?: string | null
+          audience?: string | null
+          tone?: string | null
+          objective?: string | null
+          pillars?: string[] | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_editorial_lines_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      content_ideas: {
+        Row: {
+          id: string
+          client_id: string
+          title: string
+          content_type: string | null
+          pillar: string | null
+          objective: string | null
+          status: string | null
+          scheduled_date: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          client_id: string
+          title: string
+          content_type?: string | null
+          pillar?: string | null
+          objective?: string | null
+          status?: string | null
+          scheduled_date?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          client_id?: string
+          title?: string
+          content_type?: string | null
+          pillar?: string | null
+          objective?: string | null
+          status?: string | null
+          scheduled_date?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_ideas_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      content_scripts: {
+        Row: {
+          id: string
+          idea_id: string | null
+          title: string | null
+          hook: string | null
+          development: string | null
+          cta: string | null
+          observations: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          idea_id?: string | null
+          title?: string | null
+          hook?: string | null
+          development?: string | null
+          cta?: string | null
+          observations?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          idea_id?: string | null
+          title?: string | null
+          hook?: string | null
+          development?: string | null
+          cta?: string | null
+          observations?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_scripts_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "content_ideas"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       budget_items: {
         Row: {
           actual_cost: number
