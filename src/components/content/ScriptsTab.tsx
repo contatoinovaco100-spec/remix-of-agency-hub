@@ -201,16 +201,22 @@ export function ScriptsTab({ clientId }: { clientId: string }) {
 
     setGeneratingAi(true);
     try {
-      // Get the client's editorial line for context
-      const { data: edLine } = await supabase
-        .from('content_editorial_lines')
-        .select('*')
-        .eq('client_id', clientId)
-        .maybeSingle();
+      // Tenta buscar a linha editorial para contexto, ignorando erros se a tabela não existir
+      let edLine = null;
+      try {
+        const { data } = await supabase
+          .from('content_editorial_lines')
+          .select('*')
+          .eq('client_id', clientId)
+          .maybeSingle();
+        edLine = data;
+      } catch (e) {
+        console.log("Tabela de linha editorial não existe ou não acessível, usando contexto geral.");
+      }
         
       const systemPrompt = `Você é um copywriter de alto nível e roteirista para redes sociais. Sua missão é criar um roteiro curto, engajador e direto ao ponto para Reels/TikTok.
       Aqui está o Contexto Estratégico do Cliente:
-      - Nicho: ${edLine?.niche || 'Geral'}
+      - Nicho: ${edLine?.niche || 'Geral (Qualquer nicho)'}
       - Público-alvo: ${edLine?.audience || 'Público geral focado em conteúdo rápido'}
       - Tom de voz: ${edLine?.tone || 'Descontraído mas agregando valor'}
       - Objetivo principal: ${edLine?.objective || 'Visualizações e Engajamento'}

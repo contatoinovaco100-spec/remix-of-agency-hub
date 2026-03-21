@@ -1,16 +1,14 @@
-import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Loader2, Plus, X, Save } from 'lucide-react';
+import { Plus, X, FileDown, Edit3 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { useAgency } from '@/contexts/AgencyContext';
 
 interface EditorialLine {
-  id?: string;
   niche: string;
   audience: string;
   tone: string;
@@ -19,8 +17,10 @@ interface EditorialLine {
 }
 
 export function EditorialLineTab({ clientId }: { clientId: string }) {
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+  const { clients } = useAgency();
+  const clientName = clients.find(c => c.id === clientId)?.companyName || 'Cliente';
+
+  const [previewMode, setPreviewMode] = useState(false);
   const [editorialLine, setEditorialLine] = useState<EditorialLine>({
     niche: '',
     audience: '',
@@ -29,93 +29,6 @@ export function EditorialLineTab({ clientId }: { clientId: string }) {
     pillars: [],
   });
   const [newPillar, setNewPillar] = useState('');
-
-  useEffect(() => {
-    async function loadEditorialLine() {
-      if (!clientId) return;
-      
-      setLoading(true);
-      try {
-        const { data, error } = await supabase
-          .from('content_editorial_lines')
-          .select('*')
-          .eq('client_id', clientId)
-          .maybeSingle();
-
-        if (error) throw error;
-        
-        if (data) {
-          setEditorialLine({
-            id: data.id,
-            niche: data.niche || '',
-            audience: data.audience || '',
-            tone: data.tone || '',
-            objective: data.objective || '',
-            pillars: data.pillars || [],
-          });
-        } else {
-          // Reset form if no data
-          setEditorialLine({
-            niche: '',
-            audience: '',
-            tone: '',
-            objective: '',
-            pillars: [],
-          });
-        }
-      } catch (error: any) {
-        console.error('Error loading editorial line:', error);
-        toast.error(`Erro ao carregar: ${error.message || 'Erro no banco de dados'}`);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    loadEditorialLine();
-  }, [clientId]);
-
-  const handleSave = async () => {
-    if (!clientId) return;
-    
-    setSaving(true);
-    try {
-      const payload = {
-        client_id: clientId,
-        niche: editorialLine.niche,
-        audience: editorialLine.audience,
-        tone: editorialLine.tone,
-        objective: editorialLine.objective,
-        pillars: editorialLine.pillars,
-      };
-
-      if (editorialLine.id) {
-        // Update
-        const { error } = await supabase
-          .from('content_editorial_lines')
-          .update(payload)
-          .eq('id', editorialLine.id);
-        
-        if (error) throw error;
-      } else {
-        // Insert
-        const { data, error } = await supabase
-          .from('content_editorial_lines')
-          .insert(payload)
-          .select()
-          .single();
-          
-        if (error) throw error;
-        if (data) setEditorialLine(prev => ({ ...prev, id: data.id }));
-      }
-      
-      toast.success('Linha Editorial salva com sucesso!');
-    } catch (error: any) {
-      console.error('Error saving editorial line:', error);
-      toast.error(`Erro Supabase: ${error?.message || error?.details || 'Erro desconhecido'}`);
-    } finally {
-      setSaving(false);
-    }
-  };
 
   const addPillar = () => {
     if (!newPillar.trim()) return;
@@ -142,21 +55,106 @@ export function EditorialLineTab({ clientId }: { clientId: string }) {
     }
   };
 
-  if (loading) {
+  const handlePrint = () => {
+    window.print();
+  };
+
+  if (previewMode) {
     return (
-      <div className="flex justify-center p-12">
-        <Loader2 className="w-8 h-8 text-primary animate-spin" />
+      <div className="space-y-6">
+        <div className="flex justify-end gap-2 print:hidden">
+          <Button variant="outline" onClick={() => setPreviewMode(false)} className="border-white/10">
+            <Edit3 className="w-4 h-4 mr-2" />
+            Voltar para Edição
+          </Button>
+          <Button onClick={handlePrint} className="bg-primary text-primary-foreground">
+            <FileDown className="w-4 h-4 mr-2" />
+            Imprimir / Salvar PDF
+          </Button>
+        </div>
+
+        <div className="bg-white text-black p-8 sm:p-12 rounded-xl shadow-2xl max-w-4xl mx-auto print:shadow-none print:w-full print:m-0 print:p-0">
+          <div className="border-b-2 border-primary pb-6 mb-8 mt-4">
+            <h1 className="text-4xl font-black text-zinc-900 tracking-tight">Manual de Marca e Conteúdo</h1>
+            <p className="text-xl text-zinc-500 mt-2 font-medium">Doc Estratégico Oficial: {clientName}</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
+            
+            <div className="space-y-3">
+              <h3 className="text-sm font-bold uppercase tracking-widest text-primary">Nicho de Mercado</h3>
+              <p className="text-lg text-zinc-800 leading-relaxed border-l-4 border-primary/20 pl-4">
+                {editorialLine.niche || 'Não definido'}
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              <h3 className="text-sm font-bold uppercase tracking-widest text-primary">Objetivo do Conteúdo</h3>
+              <p className="text-lg text-zinc-800 leading-relaxed border-l-4 border-primary/20 pl-4">
+                {editorialLine.objective || 'Não definido'}
+              </p>
+            </div>
+
+            <div className="space-y-3 md:col-span-2">
+              <h3 className="text-sm font-bold uppercase tracking-widest text-primary">Público-alvo / Avatar</h3>
+              <p className="text-lg text-zinc-800 leading-relaxed bg-zinc-50 p-6 rounded-lg border border-zinc-100 italic">
+                "{editorialLine.audience || 'Não definido'}"
+              </p>
+            </div>
+
+            <div className="space-y-3 md:col-span-2">
+              <h3 className="text-sm font-bold uppercase tracking-widest text-primary">Tom de Comunicação</h3>
+              <p className="text-lg text-zinc-800 leading-relaxed bg-zinc-50 p-6 rounded-lg border border-zinc-100 italic">
+                "{editorialLine.tone || 'Não definido'}"
+              </p>
+            </div>
+
+            <div className="space-y-4 md:col-span-2 pt-6 border-t border-zinc-100">
+              <h3 className="text-sm font-bold uppercase tracking-widest text-primary mb-4">Pilares de Conteúdo Aprovados</h3>
+              {editorialLine.pillars.length === 0 ? (
+                <p className="text-zinc-500 italic">Nenhum pilar estratégico definido.</p>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {editorialLine.pillars.map((pillar, index) => (
+                     <div key={index} className="flex items-start gap-4 p-4 rounded-xl border border-zinc-200 bg-white shadow-sm">
+                       <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0">
+                         {index + 1}
+                       </div>
+                       <p className="font-semibold text-zinc-800 pt-1 text-lg">{pillar}</p>
+                     </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+          </div>
+          
+          <div className="mt-16 pt-8 border-t border-zinc-200 text-center text-sm text-zinc-400 print:mt-24">
+            Gerado via Painel Estratégico Interativo
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
+      <div className="bg-primary/10 border border-primary/20 p-4 rounded-lg flex items-center justify-between">
+        <div>
+          <h3 className="text-primary font-semibold flex items-center gap-2">
+            <FileDown className="w-4 h-4" /> Gerador Offline de Linha Editorial
+          </h3>
+          <p className="text-sm text-primary/80 mt-1">
+            Reúna as informações e gere um documento visual instantâneo para baixar e enviar pro cliente.
+          </p>
+        </div>
+      </div>
+
       <Card className="border-white/5 bg-black/20 backdrop-blur-sm">
         <CardHeader>
-          <CardTitle>Identidade do Cliente</CardTitle>
+          <CardTitle>Identidade Estratégica</CardTitle>
           <CardDescription>
-            Defina o posicionamento estratégico e a comunicação do conteúdo do cliente.
+            Defina o posicionamento do cliente. Estas informações vão focar exclusivamente no PDF de saída.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -184,13 +182,13 @@ export function EditorialLineTab({ clientId }: { clientId: string }) {
             </div>
 
             <div className="space-y-2 md:col-span-2">
-              <Label htmlFor="audience">Público-alvo</Label>
+              <Label htmlFor="audience">Público-alvo / Avatar</Label>
               <Textarea 
                 id="audience" 
                 placeholder="Descreva quem é o cliente ideal. Ex: Homens e mulheres de 25 a 45 anos que buscam investir em imóveis de alto padrão."
                 value={editorialLine.audience}
                 onChange={(e) => setEditorialLine({ ...editorialLine, audience: e.target.value })}
-                className="min-h-[100px] bg-black/40 border-white/10 resize-none"
+                className="min-h-[80px] bg-black/40 border-white/10 resize-none"
               />
             </div>
 
@@ -212,7 +210,7 @@ export function EditorialLineTab({ clientId }: { clientId: string }) {
         <CardHeader>
           <CardTitle>Pilares de Conteúdo</CardTitle>
           <CardDescription>
-            Adicione os pilares que sustentarão as ideias (ex: Educação, Bastidores, Prova Social).
+            Adicione as bases centrais que norteiam a produção diária.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -259,10 +257,10 @@ export function EditorialLineTab({ clientId }: { clientId: string }) {
         </CardContent>
       </Card>
 
-      <div className="flex justify-end">
-        <Button onClick={handleSave} disabled={saving} className="w-full sm:w-auto">
-          {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
-          Salvar Linha Editorial
+      <div className="flex justify-end pt-2">
+        <Button onClick={() => setPreviewMode(true)} className="w-full sm:w-auto h-12 px-8 text-md shadow-lg shadow-primary/20">
+          <FileDown className="w-5 h-5 mr-2" />
+          Gerar Documento Final (PDF)
         </Button>
       </div>
     </div>
