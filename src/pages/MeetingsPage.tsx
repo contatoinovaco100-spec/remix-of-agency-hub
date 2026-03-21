@@ -178,30 +178,32 @@ export default function MeetingsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
-          <Video className="h-6 w-6 text-primary" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+            <Video className="h-6 w-6 text-primary" />
+          </div>
           <div>
-            <h1 className="text-2xl font-bold text-foreground">Reuniões</h1>
-            <p className="text-sm text-muted-foreground">Agende reuniões com clientes via Google Meet</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-foreground">Reuniões</h1>
+            <p className="text-xs sm:text-sm text-muted-foreground">Agende e gerencie reuniões via Google Meet</p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {/* Google Connection Status */}
           {google.connected ? (
-            <Badge variant="secondary" className="gap-1.5 bg-[hsl(var(--success))]/10 text-[hsl(var(--success))] border-0">
+            <Badge variant="secondary" className="hidden sm:flex gap-1.5 bg-[hsl(var(--success))]/10 text-[hsl(var(--success))] border-0">
               <Wifi className="h-3 w-3" /> Google conectado
             </Badge>
           ) : (
-            <Button variant="outline" size="sm" onClick={google.connect}>
+            <Button variant="outline" size="sm" onClick={google.connect} className="flex-1 sm:flex-none">
               <Wifi className="h-3.5 w-3.5 mr-1" /> Conectar Google
             </Button>
           )}
 
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-              <Button disabled={!google.connected}>
-                <Plus className="h-4 w-4 mr-1" /> Agendar Reunião
+              <Button disabled={!google.connected} className="flex-1 sm:flex-none">
+                <Plus className="h-4 w-4 mr-1" /> Agendar
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-lg">
@@ -217,50 +219,55 @@ export default function MeetingsPage() {
                     placeholder="Ex: Alinhamento de conteúdo mensal"
                   />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div>
-                    <Label>Nome do cliente *</Label>
+                    <Label className="text-xs uppercase tracking-wider text-muted-foreground">Nome do cliente *</Label>
                     <Input
                       value={form.client_name}
                       onChange={e => setForm(p => ({ ...p, client_name: e.target.value }))}
                       placeholder="Nome do cliente"
+                      className="mt-1"
                     />
                   </div>
                   <div>
-                    <Label>Email do cliente *</Label>
+                    <Label className="text-xs uppercase tracking-wider text-muted-foreground">Email do cliente *</Label>
                     <Input
                       type="email"
                       value={form.client_email}
                       onChange={e => setForm(p => ({ ...p, client_email: e.target.value }))}
                       placeholder="email@cliente.com"
+                      className="mt-1"
                     />
                   </div>
                 </div>
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                   <div>
-                    <Label>Data *</Label>
+                    <Label className="text-xs uppercase tracking-wider text-muted-foreground">Data *</Label>
                     <Input
                       type="date"
                       value={form.date}
                       onChange={e => setForm(p => ({ ...p, date: e.target.value }))}
+                      className="mt-1"
                     />
                   </div>
                   <div>
-                    <Label>Horário *</Label>
+                    <Label className="text-xs uppercase tracking-wider text-muted-foreground">Horário *</Label>
                     <Input
                       type="time"
                       value={form.time}
                       onChange={e => setForm(p => ({ ...p, time: e.target.value }))}
+                      className="mt-1"
                     />
                   </div>
                   <div>
-                    <Label>Duração (min)</Label>
+                    <Label className="text-xs uppercase tracking-wider text-muted-foreground">Duração (min)</Label>
                     <Input
                       type="number"
                       min={15}
                       max={480}
                       value={form.duration_minutes}
                       onChange={e => setForm(p => ({ ...p, duration_minutes: Number(e.target.value) }))}
+                      className="mt-1"
                     />
                   </div>
                 </div>
@@ -359,22 +366,22 @@ function MeetingCard({ meeting: m, index, onCopyLink, isPast }: {
   return (
     <motion.div {...anim(index)}>
       <Card className={`border-border/50 transition-colors ${isPast ? 'opacity-70' : 'hover:border-primary/30'}`}>
-        <CardContent className="p-5">
-          <div className="flex items-start justify-between gap-4">
+        <CardContent className="p-4 sm:p-5">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div className="flex items-start gap-4 flex-1 min-w-0">
               {/* Date badge */}
-              <div className="flex flex-col items-center justify-center rounded-xl bg-primary/10 px-3 py-2 shrink-0 min-w-[60px]">
-                <span className="text-xs font-medium text-primary uppercase">
+              <div className="flex flex-col items-center justify-center rounded-xl bg-primary/10 px-3 py-2 shrink-0 min-w-[56px] sm:min-w-[60px]">
+                <span className="text-[10px] sm:text-xs font-medium text-primary uppercase">
                   {dateObj.toLocaleDateString('pt-BR', { month: 'short' })}
                 </span>
-                <span className="text-2xl font-bold text-primary leading-tight">
+                <span className="text-xl sm:text-2xl font-bold text-primary leading-tight">
                   {dateObj.getDate()}
                 </span>
               </div>
 
               <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-foreground truncate">{m.title}</h3>
-                <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1 text-xs text-muted-foreground">
+                <h3 className="text-sm sm:text-base font-semibold text-foreground truncate">{m.title}</h3>
+                <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1 text-[11px] sm:text-xs text-muted-foreground">
                   <span className="flex items-center gap-1">
                     <User className="h-3 w-3" /> {m.client_name}
                   </span>
@@ -382,31 +389,31 @@ function MeetingCard({ meeting: m, index, onCopyLink, isPast }: {
                     <Mail className="h-3 w-3" /> {m.client_email}
                   </span>
                   <span className="flex items-center gap-1">
-                    <Clock className="h-3 w-3" /> {timeStr} – {endTimeStr} ({m.duration_minutes}min)
+                    <Clock className="h-3 w-3" /> {timeStr} – {endTimeStr}
                   </span>
                 </div>
                 {m.description && (
-                  <p className="mt-2 text-xs text-muted-foreground line-clamp-2">{m.description}</p>
+                  <p className="mt-2 text-[11px] sm:text-xs text-muted-foreground line-clamp-2">{m.description}</p>
                 )}
               </div>
             </div>
 
             {/* Actions */}
-            <div className="flex items-center gap-2 shrink-0">
+            <div className="flex items-center gap-2 shrink-0 pt-2 border-t border-border/50 sm:pt-0 sm:border-0">
               {m.meet_link && (
                 <>
                   <Button
                     size="sm"
                     variant="outline"
                     onClick={() => onCopyLink(m.meet_link)}
-                    className="gap-1.5"
+                    className="flex-1 sm:flex-none gap-1.5 h-8 text-xs"
                   >
                     <Copy className="h-3.5 w-3.5" /> Copiar
                   </Button>
                   <Button
                     size="sm"
                     asChild
-                    className="gap-1.5"
+                    className="flex-1 sm:flex-none gap-1.5 h-8 text-xs"
                   >
                     <a href={m.meet_link} target="_blank" rel="noopener noreferrer">
                       <ExternalLink className="h-3.5 w-3.5" /> Entrar
@@ -415,7 +422,7 @@ function MeetingCard({ meeting: m, index, onCopyLink, isPast }: {
                 </>
               )}
               {!m.meet_link && (
-                <Badge variant="secondary" className="text-xs">Sem link</Badge>
+                <Badge variant="secondary" className="text-[10px] sm:text-xs">Sem link</Badge>
               )}
             </div>
           </div>
