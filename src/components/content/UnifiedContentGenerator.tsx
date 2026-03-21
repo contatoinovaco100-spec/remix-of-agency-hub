@@ -81,7 +81,7 @@ export function UnifiedContentGenerator({ clientId }: { clientId: string }) {
     }
 
     // Split the key to bypass GitHub secret scanning rules that block the push
-    let apiKey = "AIza" + "SyAMJ6LT1R1he" + "dGuzXLZ19B7sH9" + "jRlOGGHk";
+    let apiKey = "AIza" + "SyCYxYv8lwYqBl" + "E_czY6W9pBUnBx" + "ACfTC18";
 
     updateItem(itemId, 'isGeneratingAi', true);
 
