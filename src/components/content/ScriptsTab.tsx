@@ -40,9 +40,15 @@ export function ScriptsTab({ clientId }: { clientId: string }) {
   const [isAiOpen, setIsAiOpen] = useState(false);
   const [aiPrompt, setAiPrompt] = useState("");
   const [generatingAi, setGeneratingAi] = useState(false);
+  const [hasApiKey, setHasApiKey] = useState(false);
+  const [tempApiKey, setTempApiKey] = useState("");
 
   useEffect(() => {
     loadData();
+    // Check if API key exists on mount
+    if (localStorage.getItem('OPENAI_API_KEY')) {
+      setHasApiKey(true);
+    }
   }, [clientId]);
 
   async function loadData() {
@@ -188,16 +194,9 @@ export function ScriptsTab({ clientId }: { clientId: string }) {
     // Check for API key
     let apiKey = localStorage.getItem('OPENAI_API_KEY');
     if (!apiKey) {
-      // In a real app we'd have a Settings page, but for now we prompt:
-      const userKey = window.prompt("Para usar a Inteligência Artificial, por favor cole sua chave da API da OpenAI (sk-...):");
-      if (userKey && userKey.startsWith('sk-')) {
-        localStorage.setItem('OPENAI_API_KEY', userKey.trim());
-        apiKey = userKey.trim();
-        toast.success("Chave da API salva com sucesso no seu navegador!");
-      } else {
-        toast.error("Chave inválida ou cancelada. A IA não pode funcionar sem a chave.");
-        return;
-      }
+      toast.error("Chave da API não encontrada. Por favor, configure a sua chave.");
+      setHasApiKey(false);
+      return;
     }
 
     setGeneratingAi(true);
@@ -384,24 +383,63 @@ export function ScriptsTab({ clientId }: { clientId: string }) {
             </Button>
           ) : (
             <div className="p-4 rounded-xl bg-primary/5 border border-primary/20 space-y-3 mt-2 animate-in fade-in zoom-in-95 duration-200">
-              <Label className="text-primary font-semibold flex items-center gap-2">
-                <Wand2 className="w-4 h-4" /> Sobre o que será este vídeo?
-              </Label>
-              <Textarea 
-                placeholder="Ex: Dá 3 dicas de como evitar quebra de cabelo no banho..." 
-                value={aiPrompt}
-                onChange={e => setAiPrompt(e.target.value)}
-                className="bg-black/40 border-primary/20 focus-visible:ring-primary/30 min-h-[80px]"
-              />
-              <div className="flex gap-2 justify-end">
-                <Button variant="ghost" size="sm" onClick={() => setIsAiOpen(false)} disabled={generatingAi}>
-                  Cancelar
-                </Button>
-                <Button size="sm" onClick={handleGenerateAI} disabled={generatingAi} className="bg-primary text-primary-foreground">
-                  {generatingAi ? <Loader2 className="w-4 h-4 animate-spin mr-2"/> : <Sparkles className="w-4 h-4 mr-2"/>}
-                  {generatingAi ? 'Pensando...' : 'Criar Mágica'}
-                </Button>
-              </div>
+              {!hasApiKey ? (
+                <>
+                  <Label className="text-primary font-semibold flex items-center gap-2">
+                    <Wand2 className="w-4 h-4" /> Configurar Inteligência Artificial
+                  </Label>
+                  <p className="text-sm text-muted-foreground">Para começar a gerar roteiros magicamente, cole sua chave da API da OpenAI (sk-...). Ela ficará salva com segurança apenas no seu navegador.</p>
+                  <Input 
+                    type="password"
+                    placeholder="sk-proj-..." 
+                    value={tempApiKey}
+                    onChange={e => setTempApiKey(e.target.value)}
+                    className="bg-black/40 border-primary/20 focus-visible:ring-primary/30"
+                  />
+                  <div className="flex gap-2 justify-end">
+                    <Button variant="ghost" size="sm" onClick={() => setIsAiOpen(false)}>Cancelar</Button>
+                    <Button size="sm" onClick={() => {
+                      if(tempApiKey.trim().startsWith('sk-')) {
+                        localStorage.setItem('OPENAI_API_KEY', tempApiKey.trim());
+                        setHasApiKey(true);
+                        toast.success("Chave salva com sucesso!");
+                      } else {
+                        toast.error("Formato de chave inválido. Deve começar com 'sk-'");
+                      }
+                    }} className="bg-primary text-primary-foreground">Atualizar Chave</Button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <Label className="text-primary font-semibold flex items-center gap-2">
+                    <Wand2 className="w-4 h-4" /> Sobre o que será este vídeo?
+                  </Label>
+                  <Textarea 
+                    placeholder="Ex: Dá 3 dicas de como evitar quebra de cabelo no banho..." 
+                    value={aiPrompt}
+                    onChange={e => setAiPrompt(e.target.value)}
+                    className="bg-black/40 border-primary/20 focus-visible:ring-primary/30 min-h-[80px]"
+                  />
+                  <div className="flex gap-2 justify-between items-center mt-2">
+                    <button onClick={() => {
+                      localStorage.removeItem('OPENAI_API_KEY');
+                      setHasApiKey(false);
+                      setTempApiKey('');
+                    }} className="text-xs text-muted-foreground hover:text-red-400 transition-colors underline">
+                      Trocar chave da API
+                    </button>
+                    <div className="flex gap-2">
+                      <Button variant="ghost" size="sm" onClick={() => setIsAiOpen(false)} disabled={generatingAi}>
+                        Cancelar
+                      </Button>
+                      <Button size="sm" onClick={handleGenerateAI} disabled={generatingAi} className="bg-primary text-primary-foreground">
+                        {generatingAi ? <Loader2 className="w-4 h-4 animate-spin mr-2"/> : <Sparkles className="w-4 h-4 mr-2"/>}
+                        {generatingAi ? 'Pensando...' : 'Criar Mágica'}
+                      </Button>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           )}
 
