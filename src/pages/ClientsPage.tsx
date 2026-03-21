@@ -156,6 +156,9 @@ export default function ClientsPage() {
                          <TabsTrigger value="insights" className="gap-1.5">
                            <BarChart3 className="h-3.5 w-3.5" /> Insights Meta
                          </TabsTrigger>
+                          <TabsTrigger value="portal" className="gap-1.5">
+                            🔐 Portal do Cliente
+                          </TabsTrigger>
                        </TabsList>
 
                        <TabsContent value="info" className="space-y-4">
@@ -215,13 +218,34 @@ export default function ClientsPage() {
                          <div className="flex gap-2">
                            {client.phone && <WhatsAppButton phone={client.phone} name={client.contactName} size="md" />}
                            <Button size="sm" variant="outline" onClick={() => openEdit(client)}>Editar</Button>
-                           <Button size="sm" variant="outline" className="text-primary hover:bg-primary/10 border-primary/20" onClick={() => setAccessDialog({open: true, clientId: client.id})}>Gerar Acesso</Button>
                            <Button size="sm" variant="outline" className="text-destructive hover:bg-destructive/10" onClick={() => deleteClient(client.id)}>Excluir</Button>
                          </div>
                        </TabsContent>
 
                        <TabsContent value="insights">
                          <MetaInsightsPanel clientId={client.id} />
+                       </TabsContent>
+
+                       <TabsContent value="portal" className="space-y-4">
+                         <div className="rounded-md bg-secondary/50 p-5 space-y-4">
+                           <div>
+                             <h3 className="text-body font-semibold text-foreground">🔑 Gerar Acesso ao Portal</h3>
+                             <p className="text-caption text-muted-foreground mt-1">Crie um login exclusivo para este cliente visualizar seu planejamento de conteúdo de forma segura.</p>
+                           </div>
+                           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                             <div className="space-y-1.5">
+                               <Label className="text-caption">Email do Cliente</Label>
+                               <Input type="email" value={accessEmail} onChange={e => setAccessEmail(e.target.value)} placeholder="email@cliente.com" />
+                             </div>
+                             <div className="space-y-1.5">
+                               <Label className="text-caption">Senha (mín. 6 caracteres)</Label>
+                               <Input type="password" value={accessPassword} onChange={e => setAccessPassword(e.target.value)} placeholder="******" />
+                             </div>
+                           </div>
+                           <Button onClick={() => { setAccessDialog({open: true, clientId: client.id}); handleGenerateAccess(); }} disabled={accessLoading} className="text-white">
+                             {accessLoading ? 'Gerando...' : '🔑 Criar Acesso do Cliente'}
+                           </Button>
+                         </div>
                        </TabsContent>
                      </Tabs>
                    </div>
