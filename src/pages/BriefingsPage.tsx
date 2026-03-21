@@ -17,6 +17,7 @@ const anim = (i: number) => ({
 
 export default function BriefingsPage() {
   const [briefings, setBriefings] = useState<BriefingRow[]>([]);
+  const [clients, setClients] = useState<{ id: string; name: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedBriefing, setSelectedBriefing] = useState<BriefingRow | null>(null);
@@ -24,7 +25,19 @@ export default function BriefingsPage() {
 
   useEffect(() => {
     fetchBriefings();
+    fetchClients();
   }, []);
+
+  async function fetchClients() {
+    const { data, error } = await supabase
+      .from('clients')
+      .select('id, company_name')
+      .order('company_name');
+    
+    if (!error && data) {
+      setClients(data.map(c => ({ id: c.id, name: c.company_name })));
+    }
+  }
 
   async function fetchBriefings() {
     setLoading(true);
@@ -137,6 +150,7 @@ export default function BriefingsPage() {
                       <th className="px-5 py-3 text-left font-medium">Segmento</th>
                       <th className="px-5 py-3 text-left font-medium">Estilo</th>
                       <th className="px-5 py-3 text-center font-medium">Status</th>
+                      <th className="px-5 py-3 text-left font-medium">Cliente Vinculado</th>
                       <th className="px-5 py-3 text-left font-medium">Data</th>
                     </tr>
                   </thead>
@@ -170,6 +184,9 @@ export default function BriefingsPage() {
                             </span>
                           </td>
                           <td className="px-5 py-3 text-xs text-muted-foreground">
+                            {clients.find(c => c.id === b.client_id)?.name || '—'}
+                          </td>
+                          <td className="px-5 py-3 text-xs text-muted-foreground">
                             {new Date(b.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
                           </td>
                         </tr>
@@ -187,6 +204,8 @@ export default function BriefingsPage() {
         briefing={selectedBriefing}
         open={briefingDialogOpen}
         onOpenChange={setBriefingDialogOpen}
+        clients={clients}
+        onUpdate={fetchBriefings}
       />
     </div>
   );

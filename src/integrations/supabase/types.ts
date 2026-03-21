@@ -91,6 +91,7 @@ export type Database = {
         Row: {
           audience_desires: string
           audience_pain_points: string
+          client_id: string | null
           communication_style: string
           company_name: string
           competitors: string
@@ -115,6 +116,7 @@ export type Database = {
         Insert: {
           audience_desires?: string
           audience_pain_points?: string
+          client_id?: string | null
           communication_style?: string
           company_name?: string
           competitors?: string
@@ -139,6 +141,7 @@ export type Database = {
         Update: {
           audience_desires?: string
           audience_pain_points?: string
+          client_id?: string | null
           communication_style?: string
           company_name?: string
           competitors?: string
@@ -160,7 +163,15 @@ export type Database = {
           target_gender?: string
           things_to_avoid?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "client_briefings_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       client_meta_accounts: {
         Row: {
