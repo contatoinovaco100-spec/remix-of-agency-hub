@@ -12,6 +12,8 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { motion, AnimatePresence } from 'framer-motion';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 const serviceOptions: ServiceType[] = ['Tráfego Pago', 'Social Media', 'Design', 'Copy', 'SEO', 'Landing Page', 'Branding', 'Email Marketing'];
 const statusOptions: ClientStatus[] = ['Ativo', 'Pausado', 'Cancelado'];
@@ -32,6 +34,12 @@ export default function ClientsPage() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const [form, setForm] = useState<Partial<Client>>({});
+  
+  // Client Access Dialog
+  const [accessDialog, setAccessDialog] = useState<{open: boolean, clientId: string | null}>({open: false, clientId: null});
+  const [accessEmail, setAccessEmail] = useState('');
+  const [accessPassword, setAccessPassword] = useState('');
+  const [accessLoading, setAccessLoading] = useState(false);
 
   const filtered = clients.filter(c =>
     c.companyName.toLowerCase().includes(search.toLowerCase()) ||
@@ -54,6 +62,31 @@ export default function ClientsPage() {
   const toggleService = (s: ServiceType) => {
     const current = form.serviceType || [];
     setForm({ ...form, serviceType: current.includes(s) ? current.filter(x => x !== s) : [...current, s] });
+  };
+
+  const handleGenerateAccess = async () => {
+    if (!accessEmail || !accessPassword || !accessDialog.clientId) {
+      toast.error('Preencha email e senha');
+      return;
+    }
+    setAccessLoading(true);
+    const { error } = await supabase.auth.signUp({
+      email: accessEmail,
+      password: accessPassword,
+      options: {
+        data: { role: 'client', client_id: accessDialog.clientId }
+      }
+    });
+    setAccessLoading(false);
+    
+    if (error) {
+      toast.error(error.message);
+    } else {
+      toast.success('Acesso gerado com sucesso! O cliente já pode logar.');
+      setAccessDialog({open: false, clientId: null});
+      setAccessEmail('');
+      setAccessPassword('');
+    }
   };
 
   return (
@@ -182,6 +215,7 @@ export default function ClientsPage() {
                          <div className="flex gap-2">
                            {client.phone && <WhatsAppButton phone={client.phone} name={client.contactName} size="md" />}
                            <Button size="sm" variant="outline" onClick={() => openEdit(client)}>Editar</Button>
+                           <Button size="sm" variant="outline" className="text-primary hover:bg-primary/10 border-primary/20" onClick={() => setAccessDialog({open: true, clientId: client.id})}>Gerar Acesso</Button>
                            <Button size="sm" variant="outline" className="text-destructive hover:bg-destructive/10" onClick={() => deleteClient(client.id)}>Excluir</Button>
                          </div>
                        </TabsContent>
@@ -257,6 +291,31 @@ export default function ClientsPage() {
             </div>
 
             <Button onClick={handleSave}>{editing ? 'Salvar' : 'Adicionar'}</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Access Dialog */}
+      <Dialog open={accessDialog.open} onOpenChange={(open) => setAccessDialog(prev => ({...prev, open}))}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Gerar Acesso do Cliente</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <p className="text-sm text-muted-foreground">
+              Crie um login para que este cliente possa acessar o Portal do Cliente e visualizar seu planejamento de conteúdo de forma segura.
+            </p>
+            <div className="space-y-2">
+              <Label>Email do Cliente</Label>
+              <Input type="email" value={accessEmail} onChange={e => setAccessEmail(e.target.value)} placeholder="email@cliente.com" />
+            </div>
+            <div className="space-y-2">
+              <Label>Senha (mín. 6 caracteres)</Label>
+              <Input type="password" value={accessPassword} onChange={e => setAccessPassword(e.target.value)} placeholder="******" />
+            </div>
+            <Button onClick={handleGenerateAccess} disabled={accessLoading} className="mt-2 text-white">
+              {accessLoading ? 'Gerando...' : 'Criar Acesso'}
+            </Button>
           </div>
         </DialogContent>
       </Dialog>

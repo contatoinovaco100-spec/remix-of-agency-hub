@@ -26,6 +26,7 @@ import ShootingSchedulePage from "./pages/ShootingSchedulePage";
 
 import PublicPortfolioPage from "./pages/PublicPortfolioPage";
 import NotFound from "./pages/NotFound";
+import ClientPortalPage from "./pages/ClientPortalPage";
 
 const queryClient = new QueryClient();
 
@@ -46,6 +47,14 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
+      <Route
+        path="/portal"
+        element={
+          <ProtectedRoute>
+            <ClientPortalPage />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/*"
         element={

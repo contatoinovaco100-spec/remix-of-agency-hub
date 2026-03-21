@@ -1,6 +1,6 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { Navigate, useLocation } from 'react-router-dom';
-import { useModuleAccess, ROUTE_MODULE_MAP } from '@/hooks/useUserRole';
+import { useModuleAccess, ROUTE_MODULE_MAP, useUserRole } from '@/hooks/useUserRole';
 
 const ADMIN_ONLY_ROUTES = ['/contratos', '/relatorios', '/permissoes'];
 
@@ -8,6 +8,7 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
   const location = useLocation();
   const { hasModule, isAdmin, loading: moduleLoading } = useModuleAccess();
+  const { isClient } = useUserRole();
 
   if (loading || moduleLoading) {
     return (
@@ -19,6 +20,10 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
   if (!user) {
     return <Navigate to="/login" replace />;
+  }
+
+  if (isClient && !location.pathname.startsWith('/portal')) {
+    return <Navigate to="/portal" replace />;
   }
 
   // Admin-only routes
