@@ -8,10 +8,7 @@ import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 
 // Componentes das abas que serão criados a seguir
-import { EditorialLineTab } from '@/components/content/EditorialLineTab';
-import { ContentIdeasTab } from '@/components/content/ContentIdeasTab';
-import { ScriptsTab } from '@/components/content/ScriptsTab';
-import { ContentCalendarTab } from '@/components/content/ContentCalendarTab';
+import { UnifiedContentGenerator } from '@/components/content/UnifiedContentGenerator';
 
 export default function ContentPlanningPage() {
   const { clients } = useAgency();
@@ -80,42 +77,9 @@ export default function ContentPlanningPage() {
           </div>
         </div>
       ) : (
-        <Tabs defaultValue="linha-editorial" className="w-full space-y-4">
-          <TabsList className="w-full flex h-auto overflow-x-auto justify-start lg:w-auto bg-black/40 border border-white/5 p-1 scrollbar-hide">
-            <TabsTrigger value="linha-editorial" className="flex-shrink-0 flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              <LayoutList className="w-4 h-4 hidden sm:block" />
-              <span className="whitespace-nowrap">Linha Editorial</span>
-            </TabsTrigger>
-            <TabsTrigger value="ideias" className="flex-shrink-0 flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              <Lightbulb className="w-4 h-4 hidden sm:block" />
-              <span className="whitespace-nowrap">Ideias</span>
-            </TabsTrigger>
-            <TabsTrigger value="roteiros" className="flex-shrink-0 flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              <PenTool className="w-4 h-4 hidden sm:block" />
-              <span className="whitespace-nowrap">Roteiros</span>
-            </TabsTrigger>
-            <TabsTrigger value="calendario" className="flex-shrink-0 flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              <CalendarIcon className="w-4 h-4 hidden sm:block" />
-              <span className="whitespace-nowrap">Calendário</span>
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="linha-editorial" className="m-0 mt-4 focus-visible:outline-none focus-visible:ring-0">
-            <EditorialLineTab clientId={selectedClientId} />
-          </TabsContent>
-
-          <TabsContent value="ideias" className="m-0 mt-4 focus-visible:outline-none focus-visible:ring-0">
-            <ContentIdeasTab clientId={selectedClientId} />
-          </TabsContent>
-
-          <TabsContent value="roteiros" className="m-0 mt-4 focus-visible:outline-none focus-visible:ring-0">
-            <ScriptsTab clientId={selectedClientId} />
-          </TabsContent>
-
-          <TabsContent value="calendario" className="m-0 mt-4 focus-visible:outline-none focus-visible:ring-0">
-            <ContentCalendarTab clientId={selectedClientId} />
-          </TabsContent>
-        </Tabs>
+        <div className="w-full mt-4">
+          <UnifiedContentGenerator clientId={selectedClientId} />
+        </div>
       )}
     </motion.div>
   );
