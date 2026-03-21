@@ -33,6 +33,7 @@ export default function ProspectionPage() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [agencyName, setAgencyName] = useState('Inova Lab');
   const [agencyService, setAgencyService] = useState('gestão de redes sociais e produção de conteúdo em vídeo');
+  const [messageTemplate, setMessageTemplate] = useState('Oi! Tudo bem? Aqui é da {agencia} 👋\nVi o trabalho da {empresa} e achei incrível! Estamos ajudando negócios como o seu a crescer nas redes sociais com vídeos estratégicos.\nPosso te mandar alguns resultados que tivemos com clientes parecidos?');
 
   // Manual lead add
   const [showManualAdd, setShowManualAdd] = useState(false);
@@ -89,18 +90,24 @@ export default function ProspectionPage() {
         return;
       }
 
-      const newLeads: Lead[] = data.places.map((place: any) => ({
-        id: crypto.randomUUID(),
-        name: place.displayName?.text || 'Sem nome',
-        address: place.formattedAddress || '',
-        phone: place.nationalPhoneNumber || '',
-        rating: place.rating || 0,
-        website: place.websiteUri || '',
-        category: place.primaryType?.replace(/_/g, ' ') || searchNiche,
-        aiMessage: '',
-        isGenerating: false,
-        status: 'novo' as const,
-      }));
+      const newLeads: Lead[] = data.places.map((place: any) => {
+        const name = place.displayName?.text || 'Sem nome';
+        const filledMessage = messageTemplate
+          .replace(/{empresa}/gi, name)
+          .replace(/{agencia}/gi, agencyName);
+        return {
+          id: crypto.randomUUID(),
+          name,
+          address: place.formattedAddress || '',
+          phone: place.nationalPhoneNumber || '',
+          rating: place.rating || 0,
+          website: place.websiteUri || '',
+          category: place.primaryType?.replace(/_/g, ' ') || searchNiche,
+          aiMessage: filledMessage,
+          isGenerating: false,
+          status: 'novo' as const,
+        };
+      });
 
       setLeads(prev => [...prev, ...newLeads]);
       toast.success(`🎯 ${newLeads.length} leads encontrados!`);
@@ -120,6 +127,10 @@ export default function ProspectionPage() {
       return;
     }
 
+    const filledMessage = messageTemplate
+      .replace(/{empresa}/gi, manualName)
+      .replace(/{agencia}/gi, agencyName);
+
     const newLead: Lead = {
       id: crypto.randomUUID(),
       name: manualName,
@@ -128,7 +139,7 @@ export default function ProspectionPage() {
       rating: 0,
       website: '',
       category: manualCategory || searchNiche || 'Geral',
-      aiMessage: '',
+      aiMessage: filledMessage,
       isGenerating: false,
       status: 'novo',
     };
@@ -261,15 +272,30 @@ Retorne SOMENTE o texto da mensagem, sem aspas, sem explicações.`;
           <CardTitle className="text-lg text-primary flex items-center gap-2">
             <Zap className="w-4 h-4" /> Identidade do Prospector
           </CardTitle>
+          <CardDescription className="text-zinc-400 text-sm">Configure sua agência e a mensagem que será enviada para cada lead.</CardDescription>
         </CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-1">
-            <Label className="text-xs">Nome da Agência</Label>
-            <Input value={agencyName} onChange={e => setAgencyName(e.target.value)} className="bg-black/60 border-white/10" placeholder="Sua agência" />
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-1">
+              <Label className="text-xs">Nome da Agência</Label>
+              <Input value={agencyName} onChange={e => setAgencyName(e.target.value)} className="bg-black/60 border-white/10" placeholder="Sua agência" />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">Serviço que você oferece</Label>
+              <Input value={agencyService} onChange={e => setAgencyService(e.target.value)} className="bg-black/60 border-white/10" placeholder="Ex: gestão de redes sociais" />
+            </div>
           </div>
-          <div className="space-y-1">
-            <Label className="text-xs">Serviço que você oferece</Label>
-            <Input value={agencyService} onChange={e => setAgencyService(e.target.value)} className="bg-black/60 border-white/10" placeholder="Ex: gestão de redes sociais" />
+          <div className="space-y-2">
+            <Label className="text-xs flex items-center gap-2">
+              <MessageCircle className="w-3 h-3 text-primary" /> Mensagem Padrão de Prospecção
+            </Label>
+            <Textarea 
+              value={messageTemplate} 
+              onChange={e => setMessageTemplate(e.target.value)} 
+              className="bg-black/60 border-white/10 min-h-[100px] text-sm leading-relaxed" 
+              placeholder="Escreva sua mensagem aqui..."
+            />
+            <p className="text-xs text-zinc-500">Use <code className="text-primary bg-primary/10 px-1 rounded">{'{empresa}'}</code> para o nome do negócio e <code className="text-primary bg-primary/10 px-1 rounded">{'{agencia}'}</code> para o nome da sua agência. Eles serão substituídos automaticamente.</p>
           </div>
         </CardContent>
       </Card>
