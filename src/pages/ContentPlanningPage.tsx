@@ -63,22 +63,22 @@ export default function ContentPlanningPage() {
         </div>
       ) : (
         <Tabs defaultValue="linha-editorial" className="w-full space-y-4">
-          <TabsList className="w-full grid grid-cols-4 lg:w-auto lg:inline-flex bg-black/40 border border-white/5 p-1">
-            <TabsTrigger value="linha-editorial" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+          <TabsList className="w-full flex h-auto overflow-x-auto justify-start lg:w-auto bg-black/40 border border-white/5 p-1 scrollbar-hide">
+            <TabsTrigger value="linha-editorial" className="flex-shrink-0 flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               <LayoutList className="w-4 h-4 hidden sm:block" />
-              <span className="truncate">Linha Editorial</span>
+              <span className="whitespace-nowrap">Linha Editorial</span>
             </TabsTrigger>
-            <TabsTrigger value="ideias" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+            <TabsTrigger value="ideias" className="flex-shrink-0 flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               <Lightbulb className="w-4 h-4 hidden sm:block" />
-              <span className="truncate">Ideias</span>
+              <span className="whitespace-nowrap">Ideias</span>
             </TabsTrigger>
-            <TabsTrigger value="roteiros" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+            <TabsTrigger value="roteiros" className="flex-shrink-0 flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               <PenTool className="w-4 h-4 hidden sm:block" />
-              <span className="truncate">Roteiros</span>
+              <span className="whitespace-nowrap">Roteiros</span>
             </TabsTrigger>
-            <TabsTrigger value="calendario" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+            <TabsTrigger value="calendario" className="flex-shrink-0 flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               <CalendarIcon className="w-4 h-4 hidden sm:block" />
-              <span className="truncate">Calendário</span>
+              <span className="whitespace-nowrap">Calendário</span>
             </TabsTrigger>
           </TabsList>
 
