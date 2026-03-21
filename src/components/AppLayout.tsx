@@ -18,6 +18,7 @@ import {
   Clapperboard,
   Palette,
   LayoutList,
+  Bot,
 } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
@@ -40,6 +41,7 @@ const allNavItems: NavItem[] = [
   { title: 'Equipamentos', url: '/equipamentos', icon: Camera, module: 'operacional' },
   { title: 'Gravações', url: '/gravacoes', icon: Clapperboard, module: 'operacional' },
   { title: 'Whiteboard', url: '/whiteboard', icon: Palette },
+  { title: 'Prospecção IA', url: '/prospeccao', icon: Bot, module: 'comercial' },
 ];
 
 export function AppLayout({ children }: { children: React.ReactNode }) {

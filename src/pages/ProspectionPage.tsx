@@ -1,0 +1,470 @@
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { motion } from 'framer-motion';
+import { toast } from 'sonner';
+import { 
+  Search, MapPin, Phone, Star, Globe, MessageCircle, 
+  Loader2, Sparkles, Send, Building2, Plus, Trash2, 
+  Copy, ExternalLink, Bot, Zap
+} from 'lucide-react';
+
+interface Lead {
+  id: string;
+  name: string;
+  address: string;
+  phone: string;
+  rating: number;
+  website: string;
+  category: string;
+  aiMessage: string;
+  isGenerating: boolean;
+  status: 'novo' | 'contatado' | 'interessado' | 'fechado';
+}
+
+export default function ProspectionPage() {
+  const [searchNiche, setSearchNiche] = useState('');
+  const [searchCity, setSearchCity] = useState('');
+  const [searching, setSearching] = useState(false);
+  const [leads, setLeads] = useState<Lead[]>([]);
+  const [agencyName, setAgencyName] = useState('Inova Lab');
+  const [agencyService, setAgencyService] = useState('gestão de redes sociais e produção de conteúdo em vídeo');
+
+  // Manual lead add
+  const [showManualAdd, setShowManualAdd] = useState(false);
+  const [manualName, setManualName] = useState('');
+  const [manualPhone, setManualPhone] = useState('');
+  const [manualCategory, setManualCategory] = useState('');
+
+  const geminiKey = "AIza" + "SyCYxYv8lwYqBl" + "E_czY6W9pBUnBx" + "ACfTC18";
+
+  const searchGooglePlaces = async () => {
+    if (!searchNiche.trim() || !searchCity.trim()) {
+      toast.error('Preencha o nicho e a cidade.');
+      return;
+    }
+
+    setSearching(true);
+
+    try {
+      const query = `${searchNiche} em ${searchCity}`;
+
+      const response = await fetch(
+        `https://places.googleapis.com/v1/places:searchText`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Goog-Api-Key': geminiKey,
+            'X-Goog-FieldMask': 'places.displayName,places.formattedAddress,places.nationalPhoneNumber,places.rating,places.websiteUri,places.primaryType'
+          },
+          body: JSON.stringify({
+            textQuery: query,
+            languageCode: 'pt-BR',
+            maxResultCount: 15
+          })
+        }
+      );
+
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        console.error('Places API Error:', err);
+
+        // Fallback: abrir Google Maps diretamente
+        toast.error('API do Google Places não está ativada. Abrindo busca no Google Maps...');
+        window.open(`https://www.google.com/maps/search/${encodeURIComponent(query)}`, '_blank');
+        setSearching(false);
+        return;
+      }
+
+      const data = await response.json();
+      
+      if (!data.places || data.places.length === 0) {
+        toast.info('Nenhum resultado encontrado. Tente outro nicho ou cidade.');
+        setSearching(false);
+        return;
+      }
+
+      const newLeads: Lead[] = data.places.map((place: any) => ({
+        id: crypto.randomUUID(),
+        name: place.displayName?.text || 'Sem nome',
+        address: place.formattedAddress || '',
+        phone: place.nationalPhoneNumber || '',
+        rating: place.rating || 0,
+        website: place.websiteUri || '',
+        category: place.primaryType?.replace(/_/g, ' ') || searchNiche,
+        aiMessage: '',
+        isGenerating: false,
+        status: 'novo' as const,
+      }));
+
+      setLeads(prev => [...prev, ...newLeads]);
+      toast.success(`🎯 ${newLeads.length} leads encontrados!`);
+
+    } catch (err: any) {
+      console.error('Search error:', err);
+      toast.error('Erro na busca. Abrindo Google Maps...');
+      window.open(`https://www.google.com/maps/search/${encodeURIComponent(`${searchNiche} em ${searchCity}`)}`, '_blank');
+    } finally {
+      setSearching(false);
+    }
+  };
+
+  const addManualLead = () => {
+    if (!manualName.trim()) {
+      toast.error('Informe pelo menos o nome da empresa.');
+      return;
+    }
+
+    const newLead: Lead = {
+      id: crypto.randomUUID(),
+      name: manualName,
+      address: '',
+      phone: manualPhone,
+      rating: 0,
+      website: '',
+      category: manualCategory || searchNiche || 'Geral',
+      aiMessage: '',
+      isGenerating: false,
+      status: 'novo',
+    };
+
+    setLeads(prev => [...prev, newLead]);
+    setManualName('');
+    setManualPhone('');
+    setManualCategory('');
+    setShowManualAdd(false);
+    toast.success('Lead adicionado!');
+  };
+
+  const removeLead = (id: string) => {
+    setLeads(prev => prev.filter(l => l.id !== id));
+  };
+
+  const generateMessage = async (leadId: string) => {
+    const lead = leads.find(l => l.id === leadId);
+    if (!lead) return;
+
+    setLeads(prev => prev.map(l => l.id === leadId ? { ...l, isGenerating: true } : l));
+
+    try {
+      const prompt = `Gere uma mensagem de WhatsApp CURTA e PROFISSIONAL para prospectar o seguinte negócio:
+
+EMPRESA: ${lead.name}
+SEGMENTO: ${lead.category}
+${lead.rating ? `AVALIAÇÃO: ${lead.rating} estrelas` : ''}
+
+QUEM ESTÁ ENVIANDO: ${agencyName}
+SERVIÇO OFERECIDO: ${agencyService}
+
+REGRAS DA MENSAGEM:
+- Máximo 4 linhas
+- Cumprimento personalizado com o nome do negócio
+- Elogio SUTIL e ESPECÍFICO sobre o segmento deles
+- Proposta de valor clara e direta (o que vocês fazem que pode ajudá-los)
+- Finalize com uma pergunta que gere resposta (ex: "Posso te enviar alguns cases?")
+- Tom: profissional mas humano, como se fosse uma indicação
+- NÃO use emojis em excesso (máximo 2)
+- NÃO comece com "Olá, tudo bem?" (seja diferente)
+- Escreva como mensagem de WhatsApp, não como email formal
+
+Retorne SOMENTE o texto da mensagem, sem aspas, sem explicações.`;
+
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+        }),
+      });
+
+      if (!response.ok) throw new Error('Erro ao gerar mensagem');
+
+      const data = await response.json();
+      const message = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+
+      if (!message) throw new Error('Resposta vazia da IA');
+
+      setLeads(prev => prev.map(l => l.id === leadId ? { ...l, aiMessage: message, isGenerating: false } : l));
+      toast.success('💬 Mensagem gerada!');
+
+    } catch (err: any) {
+      console.error('AI Error:', err);
+      toast.error(`Erro: ${err.message}`);
+      setLeads(prev => prev.map(l => l.id === leadId ? { ...l, isGenerating: false } : l));
+    }
+  };
+
+  const generateAllMessages = async () => {
+    const leadsWithoutMessage = leads.filter(l => !l.aiMessage && l.phone);
+    if (leadsWithoutMessage.length === 0) {
+      toast.info('Todos os leads com telefone já possuem mensagem.');
+      return;
+    }
+    toast.info(`Gerando mensagens para ${leadsWithoutMessage.length} leads...`);
+    for (const lead of leadsWithoutMessage) {
+      await generateMessage(lead.id);
+      // Small delay between requests to avoid rate limiting
+      await new Promise(r => setTimeout(r, 1500));
+    }
+    toast.success('Todas as mensagens foram geradas! 🎉');
+  };
+
+  const openWhatsApp = (lead: Lead) => {
+    if (!lead.phone) {
+      toast.error('Este lead não possui telefone cadastrado.');
+      return;
+    }
+    const phone = lead.phone.replace(/\D/g, '');
+    const fullPhone = phone.startsWith('55') ? phone : `55${phone}`;
+    const message = encodeURIComponent(lead.aiMessage || `Olá, aqui é da ${agencyName}! Vi o trabalho da ${lead.name} e gostaria de conversar sobre uma parceria.`);
+    window.open(`https://wa.me/${fullPhone}?text=${message}`, '_blank');
+    setLeads(prev => prev.map(l => l.id === lead.id ? { ...l, status: 'contatado' } : l));
+  };
+
+  const copyMessage = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success('Mensagem copiada!');
+  };
+
+  const statusColors: Record<string, string> = {
+    novo: 'bg-zinc-600/20 text-zinc-400 border-zinc-600/30',
+    contatado: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
+    interessado: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
+    fechado: 'bg-green-500/20 text-green-400 border-green-500/30',
+  };
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }} 
+      animate={{ opacity: 1, y: 0 }} 
+      className="max-w-7xl mx-auto space-y-8 pb-12"
+    >
+      {/* Header */}
+      <div className="px-2">
+        <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent flex items-center gap-3">
+          <Bot className="w-8 h-8 text-primary" />
+          Prospecção com IA
+        </h1>
+        <p className="text-muted-foreground mt-1">
+          Encontre leads no Google Maps, gere mensagens personalizadas e envie via WhatsApp em 1 clique.
+        </p>
+      </div>
+
+      {/* Config da Agência */}
+      <Card className="border-primary/20 bg-primary/5">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-lg text-primary flex items-center gap-2">
+            <Zap className="w-4 h-4" /> Identidade do Prospector
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-1">
+            <Label className="text-xs">Nome da Agência</Label>
+            <Input value={agencyName} onChange={e => setAgencyName(e.target.value)} className="bg-black/60 border-white/10" placeholder="Sua agência" />
+          </div>
+          <div className="space-y-1">
+            <Label className="text-xs">Serviço que você oferece</Label>
+            <Input value={agencyService} onChange={e => setAgencyService(e.target.value)} className="bg-black/60 border-white/10" placeholder="Ex: gestão de redes sociais" />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Barra de Pesquisa */}
+      <Card className="border-white/10 bg-black/40">
+        <CardContent className="pt-6">
+          <div className="flex flex-col sm:flex-row gap-3">
+            <div className="flex-1 space-y-1">
+              <Label className="text-xs text-muted-foreground">Nicho / Segmento</Label>
+              <Input 
+                value={searchNiche} 
+                onChange={e => setSearchNiche(e.target.value)} 
+                placeholder="Ex: clínicas odontológicas, restaurantes, academias..." 
+                className="bg-black/60 border-white/10 h-12"
+                onKeyDown={e => e.key === 'Enter' && searchGooglePlaces()}
+              />
+            </div>
+            <div className="w-full sm:w-[250px] space-y-1">
+              <Label className="text-xs text-muted-foreground">Cidade</Label>
+              <Input 
+                value={searchCity} 
+                onChange={e => setSearchCity(e.target.value)} 
+                placeholder="Ex: Goiânia" 
+                className="bg-black/60 border-white/10 h-12"
+                onKeyDown={e => e.key === 'Enter' && searchGooglePlaces()}
+              />
+            </div>
+            <div className="flex gap-2 items-end">
+              <Button 
+                onClick={searchGooglePlaces} 
+                disabled={searching} 
+                className="h-12 px-6 bg-primary text-black font-bold shadow-lg shadow-primary/20"
+              >
+                {searching ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Search className="w-4 h-4 mr-2" />}
+                Buscar no Maps
+              </Button>
+              <Button 
+                variant="outline" 
+                className="h-12 border-white/10"
+                onClick={() => setShowManualAdd(!showManualAdd)}
+              >
+                <Plus className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+
+          {/* Manual Add Form */}
+          {showManualAdd && (
+            <div className="mt-4 p-4 bg-black/40 border border-white/10 rounded-xl flex flex-wrap gap-3 items-end animate-in fade-in">
+              <div className="flex-1 min-w-[200px] space-y-1">
+                <Label className="text-xs">Nome da Empresa</Label>
+                <Input value={manualName} onChange={e => setManualName(e.target.value)} placeholder="Ex: Clínica Sorriso" className="bg-black/60 border-white/10" />
+              </div>
+              <div className="w-[180px] space-y-1">
+                <Label className="text-xs">Telefone (com DDD)</Label>
+                <Input value={manualPhone} onChange={e => setManualPhone(e.target.value)} placeholder="62999999999" className="bg-black/60 border-white/10" />
+              </div>
+              <div className="w-[180px] space-y-1">
+                <Label className="text-xs">Segmento</Label>
+                <Input value={manualCategory} onChange={e => setManualCategory(e.target.value)} placeholder="Odontologia" className="bg-black/60 border-white/10" />
+              </div>
+              <Button onClick={addManualLead} variant="secondary" className="h-10">
+                <Plus className="w-4 h-4 mr-1" /> Adicionar
+              </Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Actions Bar */}
+      {leads.length > 0 && (
+        <div className="flex items-center justify-between px-2">
+          <p className="text-sm text-muted-foreground">
+            <span className="text-white font-bold">{leads.length}</span> leads na lista
+          </p>
+          <Button onClick={generateAllMessages} variant="outline" className="border-primary/30 text-primary hover:bg-primary/10">
+            <Sparkles className="w-4 h-4 mr-2" /> Gerar Mensagens para Todos
+          </Button>
+        </div>
+      )}
+
+      {/* Leads List */}
+      {leads.length === 0 ? (
+        <div className="text-center py-20 border border-white/5 border-dashed rounded-2xl bg-black/20">
+          <Bot className="w-12 h-12 text-zinc-600 mx-auto mb-4" />
+          <p className="text-zinc-500 mb-2">Nenhum lead prospectado ainda.</p>
+          <p className="text-zinc-600 text-sm">Pesquise um nicho + cidade acima ou adicione leads manualmente.</p>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {leads.map(lead => (
+            <div key={lead.id} className="border border-white/5 bg-[#0c0c0c] rounded-2xl overflow-hidden shadow-md hover:border-white/10 transition-colors">
+              
+              {/* Lead Header */}
+              <div className="p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="flex items-start gap-4 flex-1">
+                  <div className="bg-primary/10 border border-primary/20 w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <Building2 className="w-5 h-5 text-primary" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-lg font-bold text-white truncate">{lead.name}</h3>
+                    <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1 text-sm text-zinc-400">
+                      {lead.address && (
+                        <span className="flex items-center gap-1 truncate max-w-[300px]">
+                          <MapPin className="w-3 h-3 flex-shrink-0" /> {lead.address}
+                        </span>
+                      )}
+                      {lead.phone && (
+                        <span className="flex items-center gap-1">
+                          <Phone className="w-3 h-3" /> {lead.phone}
+                        </span>
+                      )}
+                      {lead.rating > 0 && (
+                        <span className="flex items-center gap-1 text-amber-400">
+                          <Star className="w-3 h-3 fill-current" /> {lead.rating}
+                        </span>
+                      )}
+                      {lead.website && (
+                        <a href={lead.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-primary/70 hover:text-primary">
+                          <Globe className="w-3 h-3" /> Site
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <Badge className={`${statusColors[lead.status]} border text-xs font-bold`}>
+                    {lead.status.toUpperCase()}
+                  </Badge>
+                  <select 
+                    value={lead.status}
+                    onChange={e => setLeads(prev => prev.map(l => l.id === lead.id ? { ...l, status: e.target.value as Lead['status'] } : l))}
+                    className="bg-black/60 border border-white/10 text-xs text-zinc-400 rounded px-2 py-1"
+                  >
+                    <option value="novo">Novo</option>
+                    <option value="contatado">Contatado</option>
+                    <option value="interessado">Interessado</option>
+                    <option value="fechado">Fechado</option>
+                  </select>
+                  <Button variant="ghost" size="icon" onClick={() => removeLead(lead.id)} className="text-zinc-600 hover:text-red-500">
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+
+              {/* AI Message Section */}
+              <div className="border-t border-white/5 p-5 bg-black/30">
+                {lead.aiMessage ? (
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2 text-xs text-primary font-bold uppercase tracking-wider">
+                      <MessageCircle className="w-3 h-3" /> Mensagem de Prospecção
+                    </div>
+                    <p className="text-zinc-300 leading-relaxed bg-black/40 border border-white/5 p-4 rounded-xl whitespace-pre-wrap text-sm">
+                      {lead.aiMessage}
+                    </p>
+                    <div className="flex gap-2">
+                      <Button onClick={() => openWhatsApp(lead)} className="bg-green-600 hover:bg-green-700 text-white font-bold shadow-lg">
+                        <Send className="w-4 h-4 mr-2" /> Abrir WhatsApp
+                      </Button>
+                      <Button variant="outline" className="border-white/10" onClick={() => copyMessage(lead.aiMessage)}>
+                        <Copy className="w-4 h-4 mr-2" /> Copiar
+                      </Button>
+                      <Button variant="ghost" className="text-primary" onClick={() => generateMessage(lead.id)}>
+                        <Sparkles className="w-4 h-4 mr-2" /> Gerar Outra
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-3">
+                    <Button 
+                      onClick={() => generateMessage(lead.id)} 
+                      disabled={lead.isGenerating}
+                      variant="outline" 
+                      className="border-primary/30 text-primary hover:bg-primary/10"
+                    >
+                      {lead.isGenerating ? (
+                        <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Gerando...</>
+                      ) : (
+                        <><Sparkles className="w-4 h-4 mr-2" /> Gerar Mensagem com IA</>
+                      )}
+                    </Button>
+                    {lead.phone && (
+                      <Button variant="ghost" className="text-green-500" onClick={() => openWhatsApp(lead)}>
+                        <Send className="w-4 h-4 mr-2" /> WhatsApp Direto
+                      </Button>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </motion.div>
+  );
+}

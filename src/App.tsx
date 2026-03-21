@@ -25,6 +25,7 @@ import EquipmentPage from "./pages/EquipmentPage";
 import ShootingSchedulePage from "./pages/ShootingSchedulePage";
 import WhiteboardPage from "./pages/WhiteboardPage";
 import ContentPlanningPage from "@/pages/ContentPlanningPage";
+import ProspectionPage from "@/pages/ProspectionPage";
 
 import PublicPortfolioPage from "./pages/PublicPortfolioPage";
 import ClientPortalPage from "./pages/ClientPortalPage";
@@ -74,6 +75,7 @@ function AppRoutes() {
                 <Route path="/equipamentos" element={<EquipmentPage />} />
                 <Route path="/gravacoes" element={<ShootingSchedulePage />} />
                 <Route path="/whiteboard" element={<WhiteboardPage />} />
+                <Route path="/prospeccao" element={<ProspectionPage />} />
                 
                 <Route path="*" element={<NotFound />} />
               </Routes>
