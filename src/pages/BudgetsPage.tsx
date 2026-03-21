@@ -98,7 +98,7 @@ export default function BudgetsPage() {
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild><Button><Plus className="mr-2 h-4 w-4" />Novo Orçamento</Button></DialogTrigger>
-          <DialogContent className="max-w-lg">
+          <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
             <DialogHeader><DialogTitle>Novo Orçamento</DialogTitle></DialogHeader>
             <div className="space-y-3">
               <div><Label>Cliente *</Label>

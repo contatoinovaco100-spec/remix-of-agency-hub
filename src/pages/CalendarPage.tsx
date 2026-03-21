@@ -152,7 +152,7 @@ export default function CalendarPage() {
                 Novo Evento
               </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>Criar Evento</DialogTitle>
               </DialogHeader>

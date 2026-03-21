@@ -76,7 +76,7 @@ export default function TeamPage() {
       </div>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{editing ? 'Editar Membro' : 'Novo Membro'}</DialogTitle>
           </DialogHeader>

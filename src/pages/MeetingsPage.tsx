@@ -206,7 +206,7 @@ export default function MeetingsPage() {
                 <Plus className="h-4 w-4 mr-1" /> Agendar
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-lg">
+            <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>Agendar Reunião</DialogTitle>
               </DialogHeader>
