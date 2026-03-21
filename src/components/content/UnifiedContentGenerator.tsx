@@ -70,7 +70,7 @@ export function UnifiedContentGenerator({ clientId }: { clientId: string }) {
   };
 
   const updateItem = (id: string, field: keyof ContentItem, value: any) => {
-    setItems(items.map(i => i.id === id ? { ...i, [field]: value } : i));
+    setItems(prev => prev.map(i => i.id === id ? { ...i, [field]: value } : i));
   };
 
   const handleGenerateAI = async (itemId: string) => {
