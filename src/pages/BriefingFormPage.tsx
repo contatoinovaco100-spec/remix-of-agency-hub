@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import logoInova from '@/assets/logo-inova.png';
 import { CheckCircle2, ChevronRight, Loader2, Send, Sparkles, Trophy, Target as TargetIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { WEBHOOK_CONFIG } from '@/config/webhooks';
 
 const GIFS = {
   WELCOME: "https://media2.giphy.com/media/XD9o33QG9BoMis7iM4/giphy.gif?cid=fe3852a3ihg8rvipzzky5lybmdyq38fhke2tkrnshwk52c7d&rid=giphy.gif&ct=g",
@@ -399,24 +400,24 @@ export default function BriefingFormPage() {
         // We don't throw yet, let's try the webhook too
       }
 
-      // 2. Save to Google Sheets via Webhook (if URL is provided)
-      const webhookUrl = import.meta.env.VITE_GOOGLE_SHEETS_WEBHOOK_URL;
+      // 2. Save to Google Sheets via Webhook
+      const webhookUrl = WEBHOOK_CONFIG.GOOGLE_SHEETS_URL || import.meta.env.VITE_GOOGLE_SHEETS_WEBHOOK_URL;
       
+      console.log('📡 [DEBUG] Disparando Webhook para:', webhookUrl);
+
       if (webhookUrl) {
-        console.log('Disparando Webhook para:', webhookUrl);
         try {
-          // Simplificamos ao máximo para o Google Apps Script aceitar sem preflight/CORS
           await fetch(webhookUrl, {
             method: 'POST',
             mode: 'no-cors',
             body: JSON.stringify({
               ...briefingData,
-              origem: 'Plataforma Inova'
+              origem: 'Plataforma Inova (Auto-Sync)'
             }),
           });
-          console.log('✅ Webhook executado.');
+          console.log('🚀 [DEBUG] Webhook enviado com sucesso!');
         } catch (webhookError) {
-          console.error('❌ Erro no Webhook:', webhookError);
+          console.error('❌ [DEBUG] Erro ao enviar Webhook:', webhookError);
         }
       }
 
