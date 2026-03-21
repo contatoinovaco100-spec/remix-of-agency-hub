@@ -26,8 +26,8 @@ import ShootingSchedulePage from "./pages/ShootingSchedulePage";
 
 import PublicPortfolioPage from "./pages/PublicPortfolioPage";
 import NotFound from "./pages/NotFound";
-import ClientPortalPage from "./pages/ClientPortalPage";
 import BriefingFormPage from "./pages/BriefingFormPage";
+import BriefingsPage from "./pages/BriefingsPage";
 
 const queryClient = new QueryClient();
 
@@ -50,14 +50,6 @@ function AppRoutes() {
     <Routes>
       <Route path="/login" element={<LoginPage />} />
       <Route
-        path="/portal"
-        element={
-          <ProtectedRoute>
-            <ClientPortalPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
         path="/*"
         element={
           <ProtectedRoute>
@@ -71,6 +63,7 @@ function AppRoutes() {
                 <Route path="/calendario" element={<CalendarPage />} />
                 <Route path="/permissoes" element={<PermissionsPage />} />
                 <Route path="/contratos" element={<ContractsPage />} />
+            <Route path="/briefings" element={<BriefingsPage />} />
                 <Route path="/relatorios" element={<ReportsPage />} />
                 <Route path="/reunioes" element={<MeetingsPage />} />
                 <Route path="/portfolio" element={<PortfolioPage />} />

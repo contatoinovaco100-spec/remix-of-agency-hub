@@ -1,7 +1,22 @@
 import { useState, useRef, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import logoInova from '@/assets/logo-inova.png';
-import { CheckCircle2, ChevronRight, Loader2, Send, Sparkles } from 'lucide-react';
+import { CheckCircle2, ChevronRight, Loader2, Send, Sparkles, Trophy, Target as TargetIcon } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+
+const GIFS = {
+  WELCOME: "https://media2.giphy.com/media/XD9o33QG9BoMis7iM4/giphy.gif?cid=fe3852a3ihg8rvipzzky5lybmdyq38fhke2tkrnshwk52c7d&rid=giphy.gif&ct=g",
+  HAPPY: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOTN2Njg1dHhsNGZrZTN5Nmg3NXJoMXBsOHkwMHkzY2M0aGt1Z2NxdSZlcD12MV9naWZzX3RyZW5kaW5nJmN0PWc/MDJ9IbxxvDUQM/giphy.gif",
+};
+
+const COLORS = {
+  PRIMARY: '#bff720', // Verde Limão
+  SECONDARY: '#015f57', // Verde Escuro
+  BG_WINE: '#370616', // Vinho Escuro
+  BG_BLACK: '#000000',
+  TEXT_LIGHT: '#f8f8f8',
+  TEXT_BEIGE: '#fff7e8',
+};
 
 /* ── Types ──────────────────────────────────────────── */
 interface BriefingData {
@@ -52,7 +67,8 @@ const INITIAL: BriefingData = {
 interface Step {
   id: string;
   section: string;
-  botMessage: string;
+  botMessage: string | ((data: BriefingData) => string);
+  gif?: string;
   type: 'welcome' | 'text' | 'textarea' | 'choice';
   field?: keyof BriefingData;
   options?: string[];
@@ -63,7 +79,8 @@ const STEPS: Step[] = [
   {
     id: 'welcome',
     section: 'Boas-vindas',
-    botMessage: 'Olá! 👋 Que bom te ver por aqui. Vamos juntos construir a base estratégica da sua marca.\n\nEsse briefing é o primeiro passo pra eu entender quem é você, o que sua empresa representa e como podemos posicionar ela com força no digital.\n\nVamos nessa?',
+    botMessage: 'Olá! 👋 Que bom te ver por aqui. Vamos juntos construir a base estratégica da sua marca.\n\nEsse briefing é o primeiro passo pra eu entender quem é você, o que sua empresa representa e como podemos posicionar ela com força no digital.\n\nBora construir algo FODA juntos?',
+    gif: GIFS.WELCOME,
     type: 'welcome',
   },
   {
@@ -109,7 +126,8 @@ const STEPS: Step[] = [
   {
     id: 'goals_3_months',
     section: 'Objetivos Estratégicos',
-    botMessage: 'Agora vamos para a parte estratégica! 🎯\n\nO que você gostaria de conquistar nos próximos 3 meses?',
+    botMessage: (d) => `Fala ${d.responsible_name.split(' ')[0]}, tudo na paz?\n\nShow ter você aqui. Agora vamos para a parte estratégica! 🎯\n\nO que você gostaria de conquistar nos próximos 3 meses?`,
+    gif: GIFS.HAPPY,
     type: 'textarea',
     field: 'goals_3_months',
     placeholder: 'Descreva seus principais objetivos...',
@@ -225,38 +243,58 @@ const TOTAL_STEPS = STEPS.length;
 /* ── Helpers ────────────────────────────────────────── */
 function getSectionColor(section: string) {
   const map: Record<string, string> = {
-    'Boas-vindas': 'from-purple-500 to-violet-600',
-    'Informações Básicas': 'from-blue-500 to-cyan-500',
-    'Objetivos Estratégicos': 'from-amber-500 to-orange-500',
-    'Público-Alvo': 'from-emerald-500 to-teal-500',
-    'Posicionamento de Marca': 'from-pink-500 to-rose-500',
-    'Referências e Estilo': 'from-indigo-500 to-purple-500',
-    'Finalização': 'from-green-500 to-emerald-500',
+    'Boas-vindas': 'bg-[#bff720] text-black',
+    'Informações Básicas': 'bg-violet-600 text-white',
+    'Objetivos Estratégicos': 'bg-pink-600 text-white',
+    'Público-Alvo': 'bg-blue-600 text-white',
+    'Posicionamento de Marca': 'bg-emerald-600 text-white',
+    'Referências e Estilo': 'bg-amber-600 text-white',
+    'Finalização': 'bg-red-600 text-white',
   };
-  return map[section] || 'from-primary to-primary/80';
+  return map[section] || 'bg-primary text-black';
 }
 
 /* ── Chat Bubble Components ─────────────────────────── */
-function BotBubble({ text, animate }: { text: string; animate: boolean }) {
+function BotBubble({ text, gif, animate }: { text: string; gif?: string; animate: boolean }) {
   return (
-    <div className={`flex gap-3 items-start transition-all duration-500 ${animate ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-      <div className="flex-shrink-0 w-9 h-9 rounded-full bg-gradient-to-br from-violet-600 to-purple-700 flex items-center justify-center shadow-lg shadow-violet-500/20">
-        <Sparkles className="w-4 h-4 text-white" />
+    <motion.div 
+      initial={{ opacity: 0, x: -20, y: 10 }}
+      animate={{ opacity: 1, x: 0, y: 0 }}
+      exit={{ opacity: 0, x: -10 }}
+      className={`flex gap-3 items-start mb-6`}
+    >
+      <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-[#015f57] flex items-center justify-center shadow-lg border border-white/10 ring-2 ring-[#bff720]/20">
+        <Sparkles className="w-5 h-5 text-[#bff720]" />
       </div>
-      <div className="bg-white/[0.07] backdrop-blur-sm border border-white/10 rounded-2xl rounded-tl-md px-5 py-4 max-w-lg shadow-xl">
-        <p className="text-sm text-white/90 whitespace-pre-line leading-relaxed">{text}</p>
+      <div className="space-y-3 max-w-[85%] sm:max-w-lg">
+        {gif && (
+          <motion.div 
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="rounded-2xl overflow-hidden border-2 border-[#bff720]/30 shadow-2xl shadow-[#bff720]/10 w-full max-w-sm aspect-video bg-black/40"
+          >
+            <img src={gif} alt="Bot expression" className="w-full h-full object-cover" />
+          </motion.div>
+        )}
+        <div className="bg-[#015f57]/40 backdrop-blur-md border border-white/10 rounded-2xl rounded-tl-md px-6 py-4 shadow-2xl">
+          <p className="text-[15px] text-[#f8f8f8] whitespace-pre-line leading-relaxed font-medium">{text}</p>
+        </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
-function UserBubble({ text, animate }: { text: string; animate: boolean }) {
+function UserBubble({ text }: { text: string }) {
   return (
-    <div className={`flex justify-end transition-all duration-500 ${animate ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-      <div className="bg-gradient-to-br from-violet-600 to-purple-700 rounded-2xl rounded-tr-md px-5 py-3 max-w-md shadow-lg shadow-violet-600/20">
-        <p className="text-sm text-white leading-relaxed">{text}</p>
+    <motion.div 
+      initial={{ opacity: 0, x: 20, y: 10 }}
+      animate={{ opacity: 1, x: 0, y: 0 }}
+      className="flex justify-end mb-6"
+    >
+      <div className="bg-[#bff720] rounded-2xl rounded-tr-md px-6 py-3.5 max-w-[80%] shadow-xl shadow-[#bff720]/10 border border-black/10">
+        <p className="text-[15px] text-black font-bold leading-relaxed">{text}</p>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -267,25 +305,24 @@ export default function BriefingFormPage() {
   const [inputValue, setInputValue] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [animateBot, setAnimateBot] = useState(false);
-  const [history, setHistory] = useState<{ type: 'bot' | 'user'; text: string }[]>([]);
+  const [history, setHistory] = useState<{ type: 'bot' | 'user'; text: string; gif?: string }[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const step = STEPS[currentStep];
   const progress = ((currentStep) / TOTAL_STEPS) * 100;
+  const isLastStep = currentStep === TOTAL_STEPS - 1;
 
-  // Animate bot message on step change
-  useEffect(() => {
-    setAnimateBot(false);
-    const t = setTimeout(() => setAnimateBot(true), 100);
-    return () => clearTimeout(t);
-  }, [currentStep]);
+  // Resolve bot message (can be string or function)
+  const currentBotMessage = typeof step.botMessage === 'function' ? step.botMessage(data) : step.botMessage;
 
   // Scroll to bottom
   useEffect(() => {
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
+    if (scrollRef.current) {
+      const scrollHeight = scrollRef.current.scrollHeight;
+      scrollRef.current.scrollTo({ top: scrollHeight, behavior: 'smooth' });
+    }
   }, [history, currentStep]);
 
   // Focus input
@@ -298,13 +335,15 @@ export default function BriefingFormPage() {
     // Save the bot message and user answer to history
     setHistory(prev => [
       ...prev,
-      { type: 'bot', text: step.botMessage },
+      { type: 'bot', text: currentBotMessage, gif: step.gif },
       { type: 'user', text: answer },
     ]);
 
     // Update data
+    const newData = { ...data };
     if (step.field) {
-      setData(prev => ({ ...prev, [step.field!]: answer }));
+      newData[step.field!] = answer;
+      setData(newData);
     }
 
     setInputValue('');
@@ -313,7 +352,7 @@ export default function BriefingFormPage() {
     if (currentStep < TOTAL_STEPS - 1) {
       setCurrentStep(prev => prev + 1);
     } else {
-      handleSubmit({ ...data, [step.field!]: answer });
+      handleSubmit(newData);
     }
   };
 
@@ -330,7 +369,7 @@ export default function BriefingFormPage() {
   const handleWelcome = () => {
     setHistory(prev => [
       ...prev,
-      { type: 'bot', text: step.botMessage },
+      { type: 'bot', text: currentBotMessage, gif: step.gif },
       { type: 'user', text: 'Bora! 🚀' },
     ]);
     setCurrentStep(1);
@@ -340,7 +379,7 @@ export default function BriefingFormPage() {
     setSubmitting(true);
     setHistory(prev => [
       ...prev,
-      { type: 'bot', text: 'Perfeito! Salvando suas respostas...' },
+      { type: 'bot', text: 'Excelente trabalho! 🏆 Suas respostas estão sendo enviadas para análise estratégica...' },
     ]);
 
     const { error } = await supabase.from('client_briefings').insert({
@@ -371,7 +410,7 @@ export default function BriefingFormPage() {
       console.error('Error submitting briefing:', error);
       setHistory(prev => [
         ...prev,
-        { type: 'bot', text: 'Ops! Houve um erro ao salvar. Tente novamente.' },
+        { type: 'bot', text: 'Ops! Ocorreu um erro no servidor. Vamos tentar novamente?' },
       ]);
     } else {
       setSubmitted(true);
@@ -381,128 +420,153 @@ export default function BriefingFormPage() {
   /* ── Success State ────────────────────────────────── */
   if (submitted) {
     return (
-      <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center px-4">
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-violet-600/10 rounded-full blur-3xl" />
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl" />
-        </div>
-        <div className="relative text-center space-y-6 max-w-md animate-in fade-in slide-in-from-bottom-4 duration-700">
-          <div className="mx-auto w-20 h-20 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center shadow-2xl shadow-green-500/30">
-            <CheckCircle2 className="w-10 h-10 text-white" />
+      <div className="min-h-screen bg-black flex items-center justify-center px-4 overflow-hidden relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-[#370616]/40 via-black to-black" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#bff720]/5 rounded-full blur-[120px]" />
+        
+        <motion.div 
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="relative text-center space-y-8 max-w-lg p-8 rounded-3xl border border-white/5 bg-white/[0.02] backdrop-blur-3xl"
+        >
+          <div className="mx-auto w-24 h-24 rounded-2xl bg-[#bff720] flex items-center justify-center shadow-2xl shadow-[#bff720]/30 rotate-3">
+            <Trophy className="w-12 h-12 text-black" />
           </div>
-          <h1 className="text-3xl font-bold text-white">Briefing Enviado! 🎉</h1>
-          <p className="text-white/60 text-base leading-relaxed">
-            Obrigado, <span className="text-white font-medium">{data.responsible_name}</span>!<br />
-            Recebemos todas as informações sobre a <span className="text-violet-400 font-medium">{data.company_name}</span>.<br />
-            Nossa equipe vai analisar e entrar em contato em breve.
-          </p>
-          <div className="pt-4">
-            <img src={logoInova} alt="Inova" className="h-8 mx-auto opacity-40" />
+          <div className="space-y-4">
+            <h1 className="text-4xl font-black text-white tracking-tight">MISSION COMPLETE! 🎖️</h1>
+            <p className="text-[#fff7e8]/60 text-lg leading-relaxed">
+              Obrigado, <span className="text-[#bff720] font-bold">{data.responsible_name}</span>!<br />
+              O briefing da <span className="text-white font-bold">{data.company_name}</span> está nas mãos dos nossos estrategistas.
+            </p>
           </div>
-        </div>
+          <div className="pt-8 border-t border-white/5">
+            <img src={logoInova} alt="Inova" className="h-10 mx-auto opacity-50 grayscale brightness-200" />
+          </div>
+        </motion.div>
       </div>
     );
   }
 
   /* ── Form UI ──────────────────────────────────────── */
   return (
-    <div className="min-h-screen bg-[#0a0a0f] flex flex-col relative overflow-hidden">
-      {/* Background effects */}
+    <div className="min-h-screen bg-black flex flex-col relative overflow-hidden text-[#f8f8f8]">
+      {/* Background elements */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-violet-600/8 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-0 w-[600px] h-[300px] bg-purple-600/5 rounded-full blur-3xl" />
+        <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-[#370616] to-transparent opacity-60" />
+        <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-[#015f57]/20 rounded-full blur-[100px]" />
       </div>
 
-      {/* Header */}
-      <header className="relative z-10 border-b border-white/5 bg-black/40 backdrop-blur-xl">
-        <div className="mx-auto max-w-2xl px-4 py-3 flex items-center justify-between">
-          <img src={logoInova} alt="Inova" className="h-8" />
-          <div className="flex items-center gap-3">
-            <span className={`text-[10px] font-semibold uppercase tracking-widest px-2.5 py-1 rounded-full bg-gradient-to-r ${getSectionColor(step.section)} text-white`}>
-              {step.section}
+      {/* Header / Nav */}
+      <header className="relative z-20 border-b border-white/5 bg-black/60 backdrop-blur-2xl">
+        <div className="mx-auto max-w-3xl px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <img src={logoInova} alt="Inova" className="h-8 brightness-0 invert" />
+            <div className="h-6 w-px bg-white/10 hidden sm:block" />
+            <span className="text-[11px] font-black uppercase tracking-[0.2em] text-[#bff720] hidden sm:block">
+              Briefing Strategy v1.0
             </span>
           </div>
+          <div className="flex items-center gap-3">
+            <div className={`text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg ${getSectionColor(step.section)} shadow-lg`}>
+              {step.section}
+            </div>
+            <div className="bg-white/5 px-3 py-1.5 rounded-lg border border-white/5 flex items-center gap-1.5">
+              <span className="text-[10px] font-bold text-white/40">LVL</span>
+              <span className="text-[13px] font-black text-[#bff720] tabular-nums">
+                {currentStep + 1}/{TOTAL_STEPS}
+              </span>
+            </div>
+          </div>
         </div>
-        {/* Progress bar */}
-        <div className="h-0.5 bg-white/5">
-          <div
-            className="h-full bg-gradient-to-r from-violet-500 to-purple-500 transition-all duration-700 ease-out"
-            style={{ width: `${progress}%` }}
+        {/* Gamified progress bar */}
+        <div className="h-1.5 bg-white/5 overflow-hidden">
+          <motion.div
+            initial={{ width: 0 }}
+            animate={{ width: `${progress}%` }}
+            className="h-full bg-gradient-to-r from-[#bff720] to-[#015f57] border-r-2 border-[#bff720] shadow-[0_0_15px_rgba(191,247,32,0.4)]"
+            transition={{ type: 'spring', bounce: 0, duration: 0.8 }}
           />
         </div>
       </header>
 
-      {/* Chat history + current step */}
-      <div ref={scrollRef} className="relative z-10 flex-1 overflow-y-auto">
-        <div className="mx-auto max-w-2xl px-4 py-6 space-y-4">
-          {/* Previous messages */}
-          {history.map((msg, i) => (
-            msg.type === 'bot'
-              ? <BotBubble key={i} text={msg.text} animate={true} />
-              : <UserBubble key={i} text={msg.text} animate={true} />
-          ))}
+      {/* Chat canvas */}
+      <div ref={scrollRef} className="relative z-10 flex-1 overflow-y-auto pt-8 pb-12">
+        <div className="mx-auto max-w-3xl px-6">
+          <AnimatePresence mode="popLayout">
+            {/* History */}
+            {history.map((msg, i) => (
+              msg.type === 'bot'
+                ? <BotBubble key={`bot-${i}`} text={msg.text} gif={msg.gif} animate={true} />
+                : <UserBubble key={`user-${i}`} text={msg.text} />
+            ))}
 
-          {/* Current bot message */}
-          {!submitting && (
-            <BotBubble text={step.botMessage} animate={animateBot} />
-          )}
+            {/* Current Bot Step */}
+            {!submitting && (
+              <BotBubble key={`current-${currentStep}`} text={currentBotMessage} gif={step.gif} animate={true} />
+            )}
 
-          {submitting && (
-            <div className="flex gap-3 items-start">
-              <div className="flex-shrink-0 w-9 h-9 rounded-full bg-gradient-to-br from-violet-600 to-purple-700 flex items-center justify-center shadow-lg">
-                <Loader2 className="w-4 h-4 text-white animate-spin" />
-              </div>
-              <div className="bg-white/[0.07] backdrop-blur-sm border border-white/10 rounded-2xl rounded-tl-md px-5 py-4">
-                <p className="text-sm text-white/60">Salvando seu briefing...</p>
-              </div>
-            </div>
-          )}
+            {/* Submitting indicator */}
+            {submitting && (
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="flex gap-3 items-center py-4"
+              >
+                <div className="w-10 h-10 rounded-xl bg-[#015f57] flex items-center justify-center animate-pulse">
+                  <Loader2 className="w-5 h-5 text-[#bff720] animate-spin" />
+                </div>
+                <p className="text-sm font-bold text-[#bff720] uppercase tracking-widest animate-pulse">Processing Intel...</p>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
 
-      {/* Input area */}
-      {!submitting && (
-        <div className="relative z-10 border-t border-white/5 bg-black/60 backdrop-blur-xl">
-          <div className="mx-auto max-w-2xl px-4 py-4">
+      {/* Interaction panel */}
+      <div className="relative z-20 border-t border-white/5 bg-black/80 backdrop-blur-3xl">
+        <div className="mx-auto max-w-3xl px-6 py-6 sm:py-8">
+          <div className="relative">
             {step.type === 'welcome' && (
-              <button
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={handleWelcome}
-                className={`w-full py-3.5 rounded-xl font-semibold text-white bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 transition-all duration-300 shadow-lg shadow-violet-600/25 hover:shadow-violet-500/40 transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 ${animateBot ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'} transition-all duration-500 delay-300`}
+                className="w-full py-5 rounded-2xl font-black text-lg text-black bg-[#bff720] hover:bg-[#aee610] transition-all duration-300 shadow-[0_0_30px_rgba(191,247,32,0.2)] flex items-center justify-center gap-3 uppercase tracking-widest"
               >
-                Bora! 🚀
-                <ChevronRight className="w-4 h-4" />
-              </button>
+                Start Mission 🚀
+                <ChevronRight className="w-6 h-6" />
+              </motion.button>
             )}
 
             {step.type === 'text' && (
-              <form onSubmit={handleTextSubmit} className="flex gap-2">
+              <form onSubmit={handleTextSubmit} className="flex gap-3 group">
                 <input
                   ref={inputRef}
                   type="text"
                   value={inputValue}
                   onChange={e => setInputValue(e.target.value)}
                   placeholder={step.placeholder}
-                  className="flex-1 bg-white/[0.07] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/25 transition-all"
+                  className="flex-1 bg-white/[0.03] hover:bg-white/[0.06] focus:bg-white/[0.08] border border-white/10 focus:border-[#bff720]/50 rounded-2xl px-6 py-4 text-base text-white placeholder:text-white/20 focus:outline-none ring-[#bff720]/0 focus:ring-4 focus:ring-[#bff720]/10 transition-all"
                 />
                 <button
                   type="submit"
                   disabled={!inputValue.trim()}
-                  className="bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 disabled:opacity-30 disabled:hover:from-violet-600 disabled:hover:to-purple-600 text-white rounded-xl px-4 py-3 transition-all duration-300 shadow-lg shadow-violet-600/20"
+                  className="bg-[#bff720] hover:bg-[#aee610] disabled:opacity-20 disabled:grayscale text-black rounded-2xl px-6 py-4 transition-all duration-300 shadow-xl shadow-[#bff720]/10 shrink-0"
                 >
-                  <Send className="w-4 h-4" />
+                  <Send className="w-6 h-6" />
                 </button>
               </form>
             )}
 
             {step.type === 'textarea' && (
-              <form onSubmit={handleTextSubmit} className="space-y-2">
+              <form onSubmit={handleTextSubmit} className="space-y-3">
                 <textarea
                   ref={textareaRef}
                   value={inputValue}
                   onChange={e => setInputValue(e.target.value)}
                   placeholder={step.placeholder}
-                  rows={3}
-                  className="w-full bg-white/[0.07] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/25 transition-all resize-none"
+                  rows={4}
+                  className="w-full bg-white/[0.03] hover:bg-white/[0.06] focus:bg-white/[0.08] border border-white/10 focus:border-[#bff720]/50 rounded-2xl px-6 py-4 text-base text-white placeholder:text-white/20 focus:outline-none ring-[#bff720]/0 focus:ring-4 focus:ring-[#bff720]/10 transition-all resize-none"
                   onKeyDown={e => {
                     if (e.key === 'Enter' && !e.shiftKey) {
                       e.preventDefault();
@@ -510,36 +574,46 @@ export default function BriefingFormPage() {
                     }
                   }}
                 />
-                <div className="flex justify-between items-center">
-                  <span className="text-[11px] text-white/20">Shift+Enter para nova linha</span>
+                <div className="flex justify-between items-center px-2">
+                  <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-white/30">
+                    <span className="px-1.5 py-0.5 rounded border border-white/10">SHIFT</span>
+                    <span>+</span>
+                    <span className="px-1.5 py-0.5 rounded border border-white/10">ENTER</span>
+                    <span className="ml-2">para quebrar linha</span>
+                  </div>
                   <button
                     type="submit"
                     disabled={!inputValue.trim()}
-                    className="bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 disabled:opacity-30 text-white rounded-xl px-5 py-2.5 text-sm font-medium transition-all duration-300 shadow-lg shadow-violet-600/20 flex items-center gap-2"
+                    className="bg-[#bff720] hover:bg-[#aee610] disabled:opacity-20 text-black rounded-2xl px-8 py-3.5 text-sm font-black uppercase tracking-widest transition-all duration-300 shadow-xl shadow-[#bff720]/10 flex items-center gap-3"
                   >
-                    Enviar
-                    <Send className="w-3.5 h-3.5" />
+                    Confirm
+                    <Send className="w-4 h-4" />
                   </button>
                 </div>
               </form>
             )}
 
             {step.type === 'choice' && (
-              <div className={`grid gap-2 ${step.options!.length <= 3 ? 'grid-cols-' + step.options!.length : 'grid-cols-2'}`}>
-                {step.options!.map(option => (
-                  <button
+              <div className={`grid gap-3 ${step.options!.length <= 3 ? 'grid-cols-' + step.options!.length : 'grid-cols-2 sm:grid-cols-4'}`}>
+                {step.options!.map((option, idx) => (
+                  <motion.button
                     key={option}
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    whileTap={{ scale: 0.95 }}
                     onClick={() => handleChoiceClick(option)}
-                    className="bg-white/[0.07] hover:bg-violet-600/30 border border-white/10 hover:border-violet-500/50 rounded-xl px-4 py-3 text-sm text-white/80 hover:text-white transition-all duration-300 hover:shadow-lg hover:shadow-violet-600/10 transform hover:scale-[1.02] active:scale-[0.98]"
+                    className="bg-white/[0.03] hover:bg-[#bff720] border border-white/10 hover:border-transparent rounded-2xl px-4 py-5 text-sm font-bold text-white/70 hover:text-black transition-all duration-300 shadow-lg relative overflow-hidden group"
                   >
-                    {option}
-                  </button>
+                    <span className="relative z-10">{option}</span>
+                    <div className="absolute top-2 right-2 opacity-10 group-hover:opacity-100 transition-opacity">
+                      <TargetIcon className="w-3 h-3" />
+                    </div>
+                  </motion.button>
                 ))}
               </div>
             )}
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }

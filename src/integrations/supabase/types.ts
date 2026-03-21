@@ -89,79 +89,76 @@ export type Database = {
       }
       client_briefings: {
         Row: {
-          id: string
-          company_name: string
-          responsible_name: string
-          phone: string
-          segment: string
-          instagram: string
-          goals_3_months: string
-          target_age_range: string
-          target_gender: string
-          audience_pain_points: string
           audience_desires: string
-          purchase_triggers: string
-          purchase_blockers: string
+          audience_pain_points: string
+          communication_style: string
+          company_name: string
+          competitors: string
+          created_at: string
           current_perception: string
           desired_perception: string
           differentials: string
-          competitors: string
-          communication_style: string
-          things_to_avoid: string
+          goals_3_months: string
+          id: string
+          instagram: string
           monthly_revenue: string
+          phone: string
+          purchase_blockers: string
+          purchase_triggers: string
+          responsible_name: string
+          segment: string
           status: string
-          created_at: string
-          updated_at: string
+          target_age_range: string
+          target_gender: string
+          things_to_avoid: string
         }
         Insert: {
-          id?: string
-          company_name?: string
-          responsible_name?: string
-          phone?: string
-          segment?: string
-          instagram?: string
-          goals_3_months?: string
-          target_age_range?: string
-          target_gender?: string
-          audience_pain_points?: string
           audience_desires?: string
-          purchase_triggers?: string
-          purchase_blockers?: string
+          audience_pain_points?: string
+          communication_style?: string
+          company_name?: string
+          competitors?: string
+          created_at?: string
           current_perception?: string
           desired_perception?: string
           differentials?: string
-          competitors?: string
-          communication_style?: string
-          things_to_avoid?: string
+          goals_3_months?: string
+          id?: string
+          instagram?: string
           monthly_revenue?: string
+          phone?: string
+          purchase_blockers?: string
+          purchase_triggers?: string
+          responsible_name?: string
+          segment?: string
           status?: string
-          created_at?: string
-          updated_at?: string
+          target_age_range?: string
+          target_gender?: string
+          things_to_avoid?: string
         }
         Update: {
-          id?: string
-          company_name?: string
-          responsible_name?: string
-          phone?: string
-          segment?: string
-          instagram?: string
-          goals_3_months?: string
-          target_age_range?: string
-          target_gender?: string
-          audience_pain_points?: string
           audience_desires?: string
-          purchase_triggers?: string
-          purchase_blockers?: string
+          audience_pain_points?: string
+          communication_style?: string
+          company_name?: string
+          competitors?: string
+          created_at?: string
           current_perception?: string
           desired_perception?: string
           differentials?: string
-          competitors?: string
-          communication_style?: string
-          things_to_avoid?: string
+          goals_3_months?: string
+          id?: string
+          instagram?: string
           monthly_revenue?: string
+          phone?: string
+          purchase_blockers?: string
+          purchase_triggers?: string
+          responsible_name?: string
+          segment?: string
           status?: string
-          created_at?: string
-          updated_at?: string
+          target_age_range?: string
+          target_gender?: string
+          things_to_avoid?: string
         }
         Relationships: []
       }

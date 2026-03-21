@@ -5,32 +5,22 @@ import { useAuth } from '@/contexts/AuthContext';
 export function useUserRole() {
   const { user } = useAuth();
   const [isAdmin, setIsAdmin] = useState(false);
-  const [isClient, setIsClient] = useState(false);
-  const [clientId, setClientId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!user) {
-      setIsAdmin(false);
-      setIsClient(false);
-      setClientId(null);
-      setLoading(false);
-      return;
-    }
-    
-    const role = user.user_metadata?.role;
-    if (role === 'client') {
-      setIsClient(true);
-      setIsAdmin(false);
-      setClientId(user.user_metadata?.client_id || null);
-    } else {
-      setIsAdmin(true);
-      setIsClient(false);
-    }
-    setLoading(false);
+    if (!user) { setIsAdmin(false); setLoading(false); return; }
+    supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', user.id)
+      .eq('role', 'admin')
+      .then(({ data }) => {
+        setIsAdmin(!!data && data.length > 0);
+        setLoading(false);
+      });
   }, [user]);
 
-  return { isAdmin, isClient, clientId, loading };
+  return { isAdmin, loading };
 }
 
 export type AppModule = 'comercial' | 'operacional';
