@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect } from 'react';
 import { useAgency } from '@/contexts/AgencyContext';
-import { ChevronLeft, ChevronRight, Plus, Unplug, Loader2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, Unplug, Loader2, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useGoogleCalendar } from '@/hooks/useGoogleCalendar';
@@ -120,27 +120,34 @@ export default function CalendarPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-heading font-semibold text-foreground">Calendário</h1>
-          <p className="text-body text-muted-foreground">Prazos, entregas e reuniões</p>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+            <Calendar className="h-6 w-6 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-xl sm:text-2xl font-bold text-foreground">Calendário</h1>
+            <p className="text-xs sm:text-sm text-muted-foreground">Prazos e entregas</p>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {connected ? (
-            <Button variant="outline" size="sm" onClick={disconnect} className="gap-1.5 text-destructive border-destructive/30 hover:bg-destructive/10">
+            <Button variant="outline" size="sm" onClick={disconnect} className="flex-1 sm:flex-none gap-1.5 text-destructive border-destructive/30 hover:bg-destructive/10 h-9">
               <Unplug className="h-3.5 w-3.5" />
-              Desconectar Google
+              <span className="hidden sm:inline">Desconectar Google</span>
+              <span className="sm:hidden">Desconectar</span>
             </Button>
           ) : (
-            <Button variant="outline" size="sm" onClick={connect} className="gap-1.5">
+            <Button variant="outline" size="sm" onClick={connect} className="flex-1 sm:flex-none gap-1.5 h-9">
               <GoogleIcon className="h-4 w-4" />
-              Conectar Google Calendar
+              <span className="hidden sm:inline">Conectar Google Calendar</span>
+              <span className="sm:hidden">Google</span>
               {gLoading && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
             </Button>
           )}
           <Dialog open={newEventOpen} onOpenChange={setNewEventOpen}>
             <DialogTrigger asChild>
-              <Button size="sm" className="gap-1.5">
+              <Button size="sm" className="flex-1 sm:flex-none gap-1.5 h-9 shadow-lg shadow-primary/10">
                 <Plus className="h-4 w-4" />
                 Novo Evento
               </Button>
@@ -198,10 +205,13 @@ export default function CalendarPage() {
       </div>
 
       {/* Grid */}
-      <div className="card-shadow rounded-lg bg-card overflow-hidden">
-        <div className="grid grid-cols-7 border-b border-border">
+      <div className="card-shadow rounded-lg bg-card overflow-hidden border border-border/50">
+        <div className="grid grid-cols-7 border-b border-border bg-muted/30">
           {DAYS.map(d => (
-            <div key={d} className="px-2 py-2 text-center text-caption font-medium text-muted-foreground">{d}</div>
+            <div key={d} className="px-1 py-2 text-center text-[10px] sm:text-xs font-bold uppercase tracking-wider text-muted-foreground">
+              <span className="hidden sm:inline">{d}</span>
+              <span className="sm:hidden">{d.charAt(0)}</span>
+            </div>
           ))}
         </div>
         <div className="grid grid-cols-7">
@@ -209,7 +219,7 @@ export default function CalendarPage() {
             const isToday = day && today.getDate() === day && today.getMonth() === month && today.getFullYear() === year;
             const dayEvents = day ? getEventsForDay(day) : [];
             return (
-              <div key={i} className={cn('min-h-[100px] border-b border-r border-border/50 p-1.5', !day && 'bg-secondary/20')}>
+              <div key={i} className={cn('min-h-[70px] sm:min-h-[100px] border-b border-r border-border/50 p-1 sm:p-1.5', !day && 'bg-secondary/10')}>
                 {day && (
                   <>
                     <span className={cn(

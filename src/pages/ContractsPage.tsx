@@ -213,17 +213,21 @@ export default function ContractsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
-          <FileText className="h-6 w-6 text-primary" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+            <FileText className="h-6 w-6 text-primary" />
+          </div>
           <div>
-            <h1 className="text-2xl font-bold text-foreground">Contratos</h1>
-            <p className="text-sm text-muted-foreground">Crie, envie e gerencie contratos de prestação de serviço</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-foreground">Contratos</h1>
+            <p className="text-xs sm:text-sm text-muted-foreground">Crie e gerencie contratos digitais</p>
           </div>
         </div>
         <Dialog open={dialogOpen} onOpenChange={(o) => { setDialogOpen(o); if (!o) { setEditingId(null); setForm(emptyContract); } }}>
           <DialogTrigger asChild>
-            <Button><Plus className="h-4 w-4 mr-1" /> Novo Contrato</Button>
+            <Button className="w-full sm:w-auto shadow-lg shadow-primary/10">
+              <Plus className="h-4 w-4 mr-1" /> Novo Contrato
+            </Button>
           </DialogTrigger>
           <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
             <DialogHeader>
@@ -232,29 +236,29 @@ export default function ContractsPage() {
             <div className="space-y-4">
               <div><Label>Título do contrato</Label><Input value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} /></div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-4">
                 <div className="space-y-3">
-                  <p className="text-sm font-semibold text-foreground">Contratante (Prestador)</p>
-                  <div><Label>Nome / Razão Social</Label><Input value={form.contractor_name} onChange={e => setForm(p => ({ ...p, contractor_name: e.target.value }))} /></div>
-                  <div><Label>CPF / CNPJ</Label><Input value={form.contractor_cpf_cnpj} onChange={e => setForm(p => ({ ...p, contractor_cpf_cnpj: e.target.value }))} /></div>
-                  <div><Label>Endereço</Label><Input value={form.contractor_address} onChange={e => setForm(p => ({ ...p, contractor_address: e.target.value }))} /></div>
+                  <p className="text-xs font-bold uppercase tracking-wider text-primary">Contratante (Prestador)</p>
+                  <div><Label className="text-xs text-muted-foreground">Nome / Razão Social</Label><Input value={form.contractor_name} onChange={e => setForm(p => ({ ...p, contractor_name: e.target.value }))} className="mt-1" /></div>
+                  <div><Label className="text-xs text-muted-foreground">CPF / CNPJ</Label><Input value={form.contractor_cpf_cnpj} onChange={e => setForm(p => ({ ...p, contractor_cpf_cnpj: e.target.value }))} className="mt-1" /></div>
+                  <div><Label className="text-xs text-muted-foreground">Endereço</Label><Input value={form.contractor_address} onChange={e => setForm(p => ({ ...p, contractor_address: e.target.value }))} className="mt-1" /></div>
                 </div>
                 <div className="space-y-3">
-                  <p className="text-sm font-semibold text-foreground">Contratado (Cliente)</p>
-                  <div><Label>Nome / Razão Social</Label><Input value={form.client_name} onChange={e => setForm(p => ({ ...p, client_name: e.target.value }))} /></div>
-                  <div><Label>CPF / CNPJ</Label><Input value={form.client_cpf_cnpj} onChange={e => setForm(p => ({ ...p, client_cpf_cnpj: e.target.value }))} /></div>
-                  <div><Label>Email</Label><Input type="email" value={form.client_email} onChange={e => setForm(p => ({ ...p, client_email: e.target.value }))} /></div>
-                  <div><Label>Endereço</Label><Input value={form.client_address} onChange={e => setForm(p => ({ ...p, client_address: e.target.value }))} /></div>
+                  <p className="text-xs font-bold uppercase tracking-wider text-primary">Contratado (Cliente)</p>
+                  <div><Label className="text-xs text-muted-foreground">Nome / Razão Social</Label><Input value={form.client_name} onChange={e => setForm(p => ({ ...p, client_name: e.target.value }))} className="mt-1" /></div>
+                  <div><Label className="text-xs text-muted-foreground">CPF / CNPJ</Label><Input value={form.client_cpf_cnpj} onChange={e => setForm(p => ({ ...p, client_cpf_cnpj: e.target.value }))} className="mt-1" /></div>
+                  <div><Label className="text-xs text-muted-foreground">Email</Label><Input type="email" value={form.client_email} onChange={e => setForm(p => ({ ...p, client_email: e.target.value }))} className="mt-1" /></div>
+                  <div><Label className="text-xs text-muted-foreground">Endereço</Label><Input value={form.client_address} onChange={e => setForm(p => ({ ...p, client_address: e.target.value }))} className="mt-1" /></div>
                 </div>
               </div>
 
               <div><Label>Serviços contratados</Label><Input value={form.services} onChange={e => setForm(p => ({ ...p, services: e.target.value }))} placeholder="Ex: Social Media, Tráfego Pago, Design" /></div>
               <div><Label>Descrição do escopo</Label><Textarea value={form.scope_description} onChange={e => setForm(p => ({ ...p, scope_description: e.target.value }))} rows={3} /></div>
 
-              <div className="grid grid-cols-3 gap-4">
-                <div><Label>Valor mensal (R$)</Label><Input type="number" value={form.monthly_value} onChange={e => setForm(p => ({ ...p, monthly_value: Number(e.target.value) }))} /></div>
-                <div><Label>Duração (meses)</Label><Input type="number" value={form.duration_months} onChange={e => setForm(p => ({ ...p, duration_months: Number(e.target.value) }))} /></div>
-                <div><Label>Dia de vencimento</Label><Input type="number" min={1} max={31} value={form.payment_due_day} onChange={e => setForm(p => ({ ...p, payment_due_day: Number(e.target.value) }))} /></div>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                <div><Label className="text-xs text-muted-foreground">Valor mensal (R$)</Label><Input type="number" value={form.monthly_value} onChange={e => setForm(p => ({ ...p, monthly_value: Number(e.target.value) }))} className="mt-1" /></div>
+                <div><Label className="text-xs text-muted-foreground">Duração (meses)</Label><Input type="number" value={form.duration_months} onChange={e => setForm(p => ({ ...p, duration_months: Number(e.target.value) }))} className="mt-1" /></div>
+                <div><Label className="text-xs text-muted-foreground">Dia de vencimento</Label><Input type="number" min={1} max={31} value={form.payment_due_day} onChange={e => setForm(p => ({ ...p, payment_due_day: Number(e.target.value) }))} className="mt-1" /></div>
               </div>
 
               {/* Plan Deliverables */}
@@ -353,25 +357,30 @@ export default function ContractsPage() {
                         </div>
                       )}
                     </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      <Button size="sm" variant="outline" onClick={() => openEdit(c)}><Edit2 className="h-3.5 w-3.5" /></Button>
-                      {c.status === 'rascunho' && (
-                        <Button size="sm" onClick={() => handleSend(c)}><Send className="h-3.5 w-3.5 mr-1" /> Enviar</Button>
-                      )}
-                      {(c.status === 'enviado' || c.status === 'assinado') && (
-                        <>
-                          <Button size="sm" variant="outline" onClick={() => copyLink(c.id)}><Copy className="h-3.5 w-3.5 mr-1" /> Link</Button>
-                          <Button size="sm" variant="outline" className="text-green-600 hover:text-green-700 hover:bg-green-50" onClick={() => shareWhatsApp(c)}>
-                            <MessageCircle className="h-3.5 w-3.5 mr-1" /> WhatsApp
-                          </Button>
-                          <Button size="sm" variant="outline" asChild>
-                            <a href={`/contrato/${c.id}`} target="_blank" rel="noopener noreferrer"><ExternalLink className="h-3.5 w-3.5 mr-1" /> Ver</a>
-                          </Button>
-                        </>
-                      )}
-                      <Button size="sm" variant="outline" className="text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => handleDelete(c.id)}>
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </Button>
+                    <div className="flex flex-col gap-2 shrink-0 sm:flex-row sm:items-center">
+                      <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center">
+                        <Button size="sm" variant="outline" className="h-8 w-full sm:w-auto" onClick={() => openEdit(c)} title="Editar"><Edit2 className="h-3.5 w-3.5" /></Button>
+                        <Button size="sm" variant="outline" className="h-8 w-full sm:w-auto text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => handleDelete(c.id)} title="Excluir">
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
+                      
+                      <div className="grid grid-cols-1 gap-2 sm:flex sm:items-center">
+                        {c.status === 'rascunho' && (
+                          <Button size="sm" className="h-8 w-full sm:w-auto" onClick={() => handleSend(c)}><Send className="h-3.5 w-3.5 mr-1" /> Enviar</Button>
+                        )}
+                        {(c.status === 'enviado' || c.status === 'assinado') && (
+                          <div className="grid grid-cols-2 gap-2 w-full sm:flex sm:items-center sm:gap-2">
+                            <Button size="sm" variant="outline" className="h-8 px-2" onClick={() => copyLink(c.id)} title="Copiar Link"><Copy className="h-3.5 w-3.5" /></Button>
+                            <Button size="sm" variant="outline" className="h-8 px-2 text-green-600 hover:text-green-700 hover:bg-green-50" onClick={() => shareWhatsApp(c)} title="WhatsApp">
+                              <MessageCircle className="h-3.5 w-3.5" />
+                            </Button>
+                            <Button size="sm" variant="default" className="h-8 col-span-2 sm:col-auto" asChild>
+                              <a href={`/contrato/${c.id}`} target="_blank" rel="noopener noreferrer"><ExternalLink className="h-3.5 w-3.5 mr-1" /> Ver</a>
+                            </Button>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </CardContent>
