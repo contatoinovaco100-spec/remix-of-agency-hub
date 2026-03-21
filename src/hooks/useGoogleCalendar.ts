@@ -79,30 +79,6 @@ export function useGoogleCalendar() {
     }
   }, []);
 
-  const handleOAuthCallback = useCallback(async (code: string) => {
-    try {
-      setLoading(true);
-      const { data, error } = await supabase.functions.invoke('google-calendar', {
-        body: { action: 'exchange-code', code, redirectUri: REDIRECT_URI },
-      });
-      if (error) throw error;
-      const tokens: GoogleTokens = {
-        access_token: data.access_token,
-        refresh_token: data.refresh_token,
-        expires_at: Date.now() + (data.expires_in * 1000),
-      };
-      saveTokens(tokens);
-      toast.success('Google Calendar conectado!');
-      // Clean URL
-      window.history.replaceState({}, '', '/calendario');
-    } catch (e) {
-      toast.error('Erro ao conectar Google Calendar');
-      console.error(e);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
   const fetchEvents = useCallback(async (year: number, month: number) => {
     const accessToken = await getValidAccessToken();
     if (!accessToken) return;
@@ -123,6 +99,35 @@ export function useGoogleCalendar() {
       setLoading(false);
     }
   }, [getValidAccessToken]);
+
+  const handleOAuthCallback = useCallback(async (code: string) => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase.functions.invoke('google-calendar', {
+        body: { action: 'exchange-code', code, redirectUri: REDIRECT_URI },
+      });
+      if (error) throw error;
+      const tokens: GoogleTokens = {
+        access_token: data.access_token,
+        refresh_token: data.refresh_token,
+        expires_at: Date.now() + (data.expires_in * 1000),
+      };
+      saveTokens(tokens);
+      toast.success('Google Calendar conectado!');
+      // Clean URL
+      window.history.replaceState({}, '', '/calendario');
+      
+      // Força a atualização imediatamente após salvar os tokens
+      const now = new Date();
+      fetchEvents(now.getFullYear(), now.getMonth());
+    } catch (e) {
+      toast.error('Erro ao conectar Google Calendar');
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  }, [fetchEvents]);
+
 
   const createEvent = useCallback(async (summary: string, date: string) => {
     const accessToken = await getValidAccessToken();
