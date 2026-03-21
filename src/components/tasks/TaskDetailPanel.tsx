@@ -171,7 +171,7 @@ export default function TaskDetailPanel({ task, isNew, clients, team, defaultCli
   const renderMentions = (text: string) => text.replace(/@(\w+)/g, '<span class="text-primary font-semibold">@$1</span>');
 
   return (
-    <div className="flex flex-col h-full lg:h-[85vh] lg:max-h-[85vh]">
+    <div className="flex flex-col h-full w-full">
       {/* Header */}
       <div className="flex items-center justify-between border-b border-border px-4 py-3 sm:px-6 sm:py-4 shrink-0">
         <h2 className="text-base sm:text-lg font-semibold text-foreground">{isNew ? 'Nova Tarefa' : 'Detalhes da Tarefa'}</h2>
