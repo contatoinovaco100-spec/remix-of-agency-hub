@@ -171,63 +171,63 @@ export default function TaskDetailPanel({ task, isNew, clients, team, defaultCli
   const renderMentions = (text: string) => text.replace(/@(\w+)/g, '<span class="text-primary font-semibold">@$1</span>');
 
   return (
-    <div className="flex flex-col" style={{ height: '85vh', maxHeight: '85vh' }}>
+    <div className="flex flex-col h-full lg:h-[85vh] lg:max-h-[85vh]">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-border px-6 py-4 shrink-0">
-        <h2 className="text-lg font-semibold text-foreground">{isNew ? 'Nova Tarefa' : 'Detalhes da Tarefa'}</h2>
+      <div className="flex items-center justify-between border-b border-border px-4 py-3 sm:px-6 sm:py-4 shrink-0">
+        <h2 className="text-base sm:text-lg font-semibold text-foreground">{isNew ? 'Nova Tarefa' : 'Detalhes da Tarefa'}</h2>
         <div className="flex items-center gap-1">
           {!isNew && task && (
-            <Button variant="ghost" size="icon" title="Compartilhar todos os vídeos deste cliente" onClick={() => {
+            <Button variant="ghost" size="icon" className="h-8 w-8" title="Compartilhar" onClick={() => {
               const shareId = task.clientId || task.id;
               const url = `${window.location.origin}/conteudo/${shareId}`;
               navigator.clipboard.writeText(url);
-              toast.success('Link copiado! O cliente verá todos os vídeos dele.');
+              toast.success('Link copiado!');
             }}>
               <Share2 className="h-4 w-4" />
             </Button>
           )}
-          <Button variant="ghost" size="icon" onClick={onClose}><X className="h-4 w-4" /></Button>
+          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onClose}><X className="h-4 w-4" /></Button>
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto min-h-0">
-        <div className="grid gap-5 p-6">
+      <div className="flex-1 overflow-y-auto min-h-0 scroller-hide">
+        <div className="grid gap-5 p-4 sm:p-6">
           {/* ── Core fields ── */}
           <div className="grid gap-4">
             <div>
-              <Label className="text-xs text-muted-foreground">Nome da tarefa / vídeo</Label>
+              <Label className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider">Nome da tarefa / vídeo</Label>
               <Input value={form.videoName || form.title || ''} onChange={e => setForm({ ...form, videoName: e.target.value, title: e.target.value })} placeholder="Ex: Reels de lançamento" className="mt-1" />
             </div>
             <div>
-              <Label className="text-xs text-muted-foreground">Descrição</Label>
+              <Label className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider">Descrição</Label>
               <Textarea rows={2} value={form.description || ''} onChange={e => setForm({ ...form, description: e.target.value })} placeholder="Descreva a tarefa..." className="mt-1" />
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-3">
               <div>
-                <Label className="text-xs text-muted-foreground">Cliente</Label>
+                <Label className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider">Cliente</Label>
                 <Select value={form.clientId || ''} onValueChange={v => setForm({ ...form, clientId: v })}>
                   <SelectTrigger className="mt-1"><SelectValue placeholder="Selecione" /></SelectTrigger>
                   <SelectContent>{clients.map(c => <SelectItem key={c.id} value={c.id}>{c.companyName}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
               <div>
-                <Label className="text-xs text-muted-foreground">Responsável</Label>
+                <Label className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider">Responsável</Label>
                 <Select value={form.assignee || ''} onValueChange={v => setForm({ ...form, assignee: v })}>
                   <SelectTrigger className="mt-1"><SelectValue placeholder="Selecione" /></SelectTrigger>
                   <SelectContent>{team.map(m => <SelectItem key={m.id} value={m.name}>{m.name}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-3">
               <div>
-                <Label className="text-xs text-muted-foreground">Prioridade</Label>
+                <Label className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider">Prioridade</Label>
                 <Select value={form.priority || 'Média'} onValueChange={v => setForm({ ...form, priority: v as any })}>
                   <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
                   <SelectContent>{priorities.map(p => <SelectItem key={p} value={p}>{p}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
               <div>
-                <Label className="text-xs text-muted-foreground">Data de entrega</Label>
+                <Label className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider">Data de entrega</Label>
                 <Input type="date" value={form.dueDate || ''} onChange={e => setForm({ ...form, dueDate: e.target.value })} className="mt-1" />
               </div>
             </div>
@@ -237,10 +237,13 @@ export default function TaskDetailPanel({ task, isNew, clients, team, defaultCli
 
           {/* ── Video-specific fields ── */}
           <div className="space-y-4">
-            <h3 className="text-sm font-semibold text-foreground">📹 Produção de Vídeo</h3>
-            <div className="grid grid-cols-3 gap-3">
+            <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+              <span className="flex h-6 w-6 items-center justify-center rounded bg-primary/20 text-xs">📹</span> 
+              Produção de Vídeo
+            </h3>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-3">
               <div>
-                <Label className="text-xs text-muted-foreground">Plataforma</Label>
+                <Label className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider">Plataforma</Label>
                 <Select value={form.platform || ''} onValueChange={v => setForm({ ...form, platform: v })}>
                   <SelectTrigger className="mt-1"><SelectValue placeholder="Selecione" /></SelectTrigger>
                   <SelectContent>
@@ -249,7 +252,7 @@ export default function TaskDetailPanel({ task, isNew, clients, team, defaultCli
                 </Select>
               </div>
               <div>
-                <Label className="text-xs text-muted-foreground">Formato</Label>
+                <Label className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider">Formato</Label>
                 <Select value={form.format || ''} onValueChange={v => setForm({ ...form, format: v })}>
                   <SelectTrigger className="mt-1"><SelectValue placeholder="Selecione" /></SelectTrigger>
                   <SelectContent>
@@ -258,7 +261,7 @@ export default function TaskDetailPanel({ task, isNew, clients, team, defaultCli
                 </Select>
               </div>
               <div>
-                <Label className="text-xs text-muted-foreground">Objetivo</Label>
+                <Label className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider">Objetivo</Label>
                 <Select value={form.videoObjective || ''} onValueChange={v => setForm({ ...form, videoObjective: v })}>
                   <SelectTrigger className="mt-1"><SelectValue placeholder="Selecione" /></SelectTrigger>
                   <SelectContent>
@@ -267,32 +270,32 @@ export default function TaskDetailPanel({ task, isNew, clients, team, defaultCli
                 </Select>
               </div>
             </div>
-            <div className="grid grid-cols-4 gap-2">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-2">
               <div>
-                <Label className="text-[10px] text-muted-foreground">✍️ Copywriter</Label>
+                <Label className="text-[10px] text-muted-foreground uppercase">✍️ Copywriter</Label>
                 <Select value={form.copywriter || ''} onValueChange={v => setForm({ ...form, copywriter: v })}>
-                  <SelectTrigger className="mt-1 h-8 text-xs"><SelectValue placeholder="—" /></SelectTrigger>
+                  <SelectTrigger className="mt-1 h-9 text-xs"><SelectValue placeholder="—" /></SelectTrigger>
                   <SelectContent>{team.map(m => <SelectItem key={m.id} value={m.name}>{m.name}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
               <div>
-                <Label className="text-[10px] text-muted-foreground">🎬 Diretor</Label>
+                <Label className="text-[10px] text-muted-foreground uppercase">🎬 Diretor</Label>
                 <Select value={form.director || ''} onValueChange={v => setForm({ ...form, director: v })}>
-                  <SelectTrigger className="mt-1 h-8 text-xs"><SelectValue placeholder="—" /></SelectTrigger>
+                  <SelectTrigger className="mt-1 h-9 text-xs"><SelectValue placeholder="—" /></SelectTrigger>
                   <SelectContent>{team.map(m => <SelectItem key={m.id} value={m.name}>{m.name}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
               <div>
-                <Label className="text-[10px] text-muted-foreground">📹 Videomaker</Label>
+                <Label className="text-[10px] text-muted-foreground uppercase">📹 Videomaker</Label>
                 <Select value={form.videomaker || ''} onValueChange={v => setForm({ ...form, videomaker: v })}>
-                  <SelectTrigger className="mt-1 h-8 text-xs"><SelectValue placeholder="—" /></SelectTrigger>
+                  <SelectTrigger className="mt-1 h-9 text-xs"><SelectValue placeholder="—" /></SelectTrigger>
                   <SelectContent>{team.map(m => <SelectItem key={m.id} value={m.name}>{m.name}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
               <div>
-                <Label className="text-[10px] text-muted-foreground">🎞️ Editor</Label>
+                <Label className="text-[10px] text-muted-foreground uppercase">🎞️ Editor</Label>
                 <Select value={form.editor || ''} onValueChange={v => setForm({ ...form, editor: v })}>
-                  <SelectTrigger className="mt-1 h-8 text-xs"><SelectValue placeholder="—" /></SelectTrigger>
+                  <SelectTrigger className="mt-1 h-9 text-xs"><SelectValue placeholder="—" /></SelectTrigger>
                   <SelectContent>{team.map(m => <SelectItem key={m.id} value={m.name}>{m.name}</SelectItem>)}</SelectContent>
                 </Select>
               </div>

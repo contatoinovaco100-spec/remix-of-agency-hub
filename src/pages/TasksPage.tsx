@@ -315,7 +315,7 @@ function FinalizadoDropZone({
       </div>
 
       {tasks.length > 0 && (
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
           {Object.entries(byClient).map(([clientId, clientTasks]) => {
             const name = clientId === '_no_client' ? 'Sem cliente' : getClientName(clientId);
             const isOpen = expandedClients[clientId];
@@ -463,22 +463,24 @@ export default function TasksPage() {
               {selectedClientName && <span className="text-primary font-medium"> · {selectedClientName}</span>}
             </p>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="relative">
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="relative flex-1 sm:flex-none">
               <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
               <Input
                 placeholder="Buscar..."
                 value={search}
                 onChange={e => setSearch(e.target.value)}
-                className="h-9 w-[160px] pl-8 text-sm"
+                className="h-9 w-full sm:w-[160px] pl-8 text-sm"
               />
             </div>
-            <Button variant="outline" size="sm" className="gap-1" onClick={() => setShowFilters(!showFilters)}>
-              <Filter className="h-3.5 w-3.5" /> Filtros
-            </Button>
-            <Button size="sm" className="gap-1" onClick={openNew}>
-              <Plus className="h-4 w-4" /> Nova Tarefa
-            </Button>
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <Button variant="outline" size="sm" className="gap-1 flex-1 sm:flex-none" onClick={() => setShowFilters(!showFilters)}>
+                <Filter className="h-3.5 w-3.5" /> Filtros
+              </Button>
+              <Button size="sm" className="gap-1 flex-1 sm:flex-none" onClick={openNew}>
+                <Plus className="h-4 w-4" /> Nova Tarefa
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -533,9 +535,11 @@ export default function TasksPage() {
 
       {/* Kanban board (without Finalizado) */}
       <DndContext sensors={sensors} collisionDetection={closestCorners} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-        <div className="grid flex-1 grid-cols-6 gap-2 pb-2">
+        <div className="flex gap-4 overflow-x-auto pb-4 lg:grid lg:grid-cols-6 lg:gap-2 min-h-0 flex-1 scroller-hide">
           {KANBAN_COLUMNS.map(col => (
-            <KanbanColumn key={col} column={col} tasks={tasksByColumn[col]} onCardClick={openCard} onAdd={openNew} getClientName={getClientName} onAdvanceTask={(task, nextStage) => updateTask({ ...task, status: nextStage as any })} />
+            <div key={col} className="min-w-[280px] lg:min-w-0 flex flex-col h-full">
+              <KanbanColumn column={col} tasks={tasksByColumn[col]} onCardClick={openCard} onAdd={openNew} getClientName={getClientName} onAdvanceTask={(task, nextStage) => updateTask({ ...task, status: nextStage as any })} />
+            </div>
           ))}
         </div>
         {/* Finalizado drop zone (invisible but droppable) */}
