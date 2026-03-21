@@ -9,6 +9,36 @@ import { Badge } from '@/components/ui/badge';
 import { useAgency } from '@/contexts/AgencyContext';
 import { toast } from 'sonner';
 
+// Formata texto com quebras de linha e destaca [INSTRUÇÕES] de gravação
+function FormattedText({ text, className }: { text: string; className?: string }) {
+  if (!text || text === '-') return <span className={className}>-</span>;
+  
+  const lines = text.split('\n').filter(l => l.trim() !== '');
+  
+  return (
+    <div className={className}>
+      {lines.map((line, i) => {
+        // Detecta e estiliza [INSTRUÇÕES DE GRAVAÇÃO]
+        const parts = line.split(/(\[.*?\])/);
+        return (
+          <p key={i} className={`mb-2 last:mb-0 ${line.match(/^\d+\./) ? 'mt-3 first:mt-0' : ''}`}>
+            {parts.map((part, j) => {
+              if (part.match(/^\[.*\]$/)) {
+                return (
+                  <span key={j} className="inline-block bg-primary/20 text-primary border border-primary/30 rounded px-2 py-0.5 text-xs font-black tracking-wider my-1">
+                    {part}
+                  </span>
+                );
+              }
+              return <span key={j}>{part}</span>;
+            })}
+          </p>
+        );
+      })}
+    </div>
+  );
+}
+
 interface ContentItem {
   id: string;
   title: string;
@@ -100,12 +130,18 @@ export function UnifiedContentGenerator({ clientId }: { clientId: string }) {
 
       ESTRUTURA OBRIGATÓRIA:
       1) "hook" — GANCHO (primeiros 3 segundos): Uma frase ou ação de impacto que prende a atenção. Inclua uma INDICAÇÃO DE CENA (ex: "Olhe direto pra câmera e diga...", "Comece mostrando o produto e fale...", "Apareça andando e diga com energia...").
-      2) "development" — DESENVOLVIMENTO (storytelling): O corpo do vídeo com narrativa envolvente. Use frases curtas. Inclua dicas de gravação entre parênteses (ex: "(corte rápido)", "(mude o ângulo)", "(mostre na tela)", "(faça gesto com a mão)"). Crie uma história com começo-meio-fim que mantenha o espectador grudado.
+      2) "development" — DESENVOLVIMENTO (storytelling): O corpo do vídeo. FORMATE O TEXTO USANDO QUEBRAS DE LINHA (\\n) para separar cada fala ou instrução. Numere os passos ou falas. Inclua dicas de gravação em CAIXA ALTA entre colchetes (ex: "[CORTE RÁPIDO]", "[MUDE O ÂNGULO]", "[MOSTRE NA TELA]", "[GESTO COM A MÃO]"). Exemplo de formatação ideal:
+      "1. Fale olhando pra câmera: 'Texto aqui'\\n\\n[CORTE RÁPIDO]\\n\\n2. Mude o ângulo e continue: 'Texto aqui'\\n\\n3. Finalize com: 'Texto aqui'"
       3) "cta" — CHAMADA PARA AÇÃO: Comando final direto e claro. Inclua indicação de como falar (ex: "Aponte para baixo e diga: clica no link da bio").
       
-      REGRAS:
+      REGRAS DE DIAGRAMAÇÃO:
+      - Use \\n para quebrar linhas e criar parágrafos curtos
+      - Numere as falas/passos no desenvolvimento (1. 2. 3.)
+      - Coloque instruções de gravação entre [COLCHETES EM CAIXA ALTA]
+      - Separe cada bloco visual com uma linha em branco (\\n\\n)
+      - Máximo de 3 a 5 passos no desenvolvimento
       - Seja criativo e original, nada genérico
-      - Pense como um roteiro cinematográfico curto, não um texto de blog
+      - Pense como um roteiro cinematográfico curto
       - O criador precisa saber EXATAMENTE o que fazer ao ler o roteiro
       - Retorne EXCLUSIVAMENTE um JSON válido no formato:
       {"hook": "texto", "development": "texto", "cta": "texto"}
@@ -282,7 +318,7 @@ export function UnifiedContentGenerator({ clientId }: { clientId: string }) {
                            <div className="w-2 h-2 rounded-full bg-green-500"></div>
                            <p className="text-xs font-black uppercase text-green-400 tracking-widest">Atenção (3s)</p>
                         </div>
-                        <p className="text-zinc-300 font-medium leading-relaxed">{item.hook || '-'}</p>
+                        <FormattedText text={item.hook || '-'} className="text-zinc-300 font-medium leading-relaxed" />
                       </div>
 
                       <div className="bg-[#141414] p-5 rounded-2xl border border-white/10 shadow-inner">
@@ -290,7 +326,7 @@ export function UnifiedContentGenerator({ clientId }: { clientId: string }) {
                            <div className="w-2 h-2 rounded-full bg-zinc-500"></div>
                            <p className="text-xs font-black uppercase text-zinc-400 tracking-widest">Desenvolvimento</p>
                         </div>
-                        <p className="text-zinc-300 leading-relaxed whitespace-pre-wrap">{item.development || '-'}</p>
+                        <FormattedText text={item.development || '-'} className="text-zinc-300 leading-relaxed" />
                       </div>
 
                       <div className="bg-[#1a130f] p-5 rounded-2xl border border-orange-500/20 shadow-inner">
@@ -298,7 +334,7 @@ export function UnifiedContentGenerator({ clientId }: { clientId: string }) {
                            <div className="w-2 h-2 rounded-full bg-orange-500"></div>
                            <p className="text-xs font-black uppercase text-orange-400 tracking-widest">Chamada (CTA)</p>
                         </div>
-                        <p className="text-zinc-300 font-medium leading-relaxed">{item.cta || '-'}</p>
+                        <FormattedText text={item.cta || '-'} className="text-zinc-300 font-medium leading-relaxed" />
                       </div>
 
                     </div>
