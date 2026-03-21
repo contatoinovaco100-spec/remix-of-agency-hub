@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { FileText, Search, Filter, Link as LinkIcon, Copy, ExternalLink } from 'lucide-react';
+import { FileText, Search, Filter, Link as LinkIcon, Copy, ExternalLink, Download } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -60,6 +60,44 @@ export default function BriefingsPage() {
     });
   };
 
+  const downloadCSV = () => {
+    if (briefings.length === 0) {
+      toast.error('Não há briefings para exportar.');
+      return;
+    }
+
+    // Define columns to export
+    const cols = [
+      'company_name', 'responsible_name', 'phone', 'segment', 'instagram', 
+      'goals_3_months', 'target_age_range', 'target_gender', 'audience_pain_points', 
+      'audience_desires', 'purchase_triggers', 'purchase_blockers', 'current_perception', 
+      'desired_perception', 'differentials', 'competitors', 'communication_style', 
+      'things_to_avoid', 'monthly_revenue', 'status', 'created_at'
+    ];
+
+    const headers = cols.join(';');
+    const rows = briefings.map(b => 
+      cols.map(col => {
+        const val = (b as any)[col] || '';
+        return typeof val === 'string' ? `"${val.replace(/"/g, '""')}"` : val;
+      }).join(';')
+    ).join('\n');
+
+    const csvContent = `\uFEFF${headers}\n${rows}`; // Add BOM for Excel UTF-8
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    
+    link.setAttribute('href', url);
+    link.setAttribute('download', `briefings_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    toast.success('Arquivo CSV gerado com sucesso!');
+  };
+
   const filteredBriefings = briefings.filter(b => 
     b.company_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     b.responsible_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -70,8 +108,8 @@ export default function BriefingsPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Briefings</h1>
-          <p className="text-sm text-muted-foreground">
+          <h1 className="text-2xl font-bold text-foreground tracking-tight">Briefings</h1>
+          <p className="text-sm text-muted-foreground/80">
             Gerencie e visualize as respostas de briefings dos seus clientes
           </p>
         </div>
@@ -79,19 +117,28 @@ export default function BriefingsPage() {
           <Button 
             variant="outline" 
             size="sm" 
-            className="gap-2 border-primary/20 hover:border-primary/50 text-xs"
+            className="h-9 gap-2 border-primary/20 hover:border-primary/50 text-xs bg-background/50 backdrop-blur-sm transition-all"
             onClick={copyBriefingLink}
           >
-            <Copy className="h-3.5 w-3.5" />
-            Copiar Link
+            <Copy className="h-4 w-4 text-primary" />
+            Link do Briefing
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="h-9 gap-2 border-primary/20 hover:border-primary/50 text-xs bg-background/50 backdrop-blur-sm transition-all"
+            onClick={downloadCSV}
+          >
+            <Download className="h-4 w-4 text-primary" />
+            Baixar CSV
           </Button>
           <Button 
             variant="default" 
             size="sm" 
-            className="gap-2 text-xs"
+            className="h-9 gap-2 text-xs shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all font-bold"
             onClick={() => window.open('/briefing', '_blank')}
           >
-            <ExternalLink className="h-3.5 w-3.5" />
+            <ExternalLink className="h-4 w-4" />
             Ver Formulário
           </Button>
           <div className="relative w-full sm:w-64">

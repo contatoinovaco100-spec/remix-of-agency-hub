@@ -382,38 +382,57 @@ export default function BriefingFormPage() {
       { type: 'bot', text: 'Excelente trabalho! 🏆 Suas respostas estão sendo enviadas para análise estratégica...' },
     ]);
 
-    const { error } = await supabase.from('client_briefings').insert({
-      company_name: finalData.company_name,
-      responsible_name: finalData.responsible_name,
-      phone: finalData.phone,
-      segment: finalData.segment,
-      instagram: finalData.instagram,
-      goals_3_months: finalData.goals_3_months,
-      target_age_range: finalData.target_age_range,
-      target_gender: finalData.target_gender,
-      audience_pain_points: finalData.audience_pain_points,
-      audience_desires: finalData.audience_desires,
-      purchase_triggers: finalData.purchase_triggers,
-      purchase_blockers: finalData.purchase_blockers,
-      current_perception: finalData.current_perception,
-      desired_perception: finalData.desired_perception,
-      differentials: finalData.differentials,
-      competitors: finalData.competitors,
-      communication_style: finalData.communication_style,
-      things_to_avoid: finalData.things_to_avoid,
-      monthly_revenue: finalData.monthly_revenue,
-    });
+    const briefingData = {
+      ...finalData,
+      status: 'novo',
+      created_at: new Date().toISOString(),
+    };
 
-    setSubmitting(false);
+    try {
+      // 1. Save to Supabase
+      const { error: supabaseError } = await supabase
+        .from('client_briefings')
+        .insert([briefingData]);
 
-    if (error) {
-      console.error('SUBMISSION_ERROR:', error);
+      if (supabaseError) {
+        console.error('SUPABASE_ERROR:', supabaseError);
+        // We don't throw yet, let's try the webhook too
+      }
+
+      // 2. Save to Google Sheets via Webhook (if URL is provided)
+      const webhookUrl = import.meta.env.VITE_GOOGLE_SHEETS_WEBHOOK_URL;
+      if (webhookUrl) {
+        try {
+          await fetch(webhookUrl, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              ...briefingData,
+              sheet_name: 'Briefings'
+            }),
+          });
+        } catch (webhookError) {
+          console.error('WEBHOOK_ERROR:', webhookError);
+        }
+      }
+
+      // If both failed, then we show an error
+      if (supabaseError && !webhookUrl) {
+        throw supabaseError;
+      }
+
+      setSubmitted(true);
+    } catch (err: any) {
+      console.error('SUBMISSION_ERROR:', err);
       setHistory(prev => [
         ...prev,
-        { type: 'bot', text: `Ops! Ocorreu um erro ao salvar: ${error.message}. Você pode tentar mais uma vez?` },
+        { type: 'bot', text: `Ops! Ocorreu um erro ao salvar: ${err.message || 'Erro desconhecido'}. Você pode tentar mais uma vez?` },
       ]);
-    } else {
-      setSubmitted(true);
+    } finally {
+      setSubmitting(false);
     }
   };
 
