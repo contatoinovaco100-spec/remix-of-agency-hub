@@ -184,6 +184,22 @@ export function ScriptsTab({ clientId }: { clientId: string }) {
       toast.error('Digite sobre o que será o vídeo.');
       return;
     }
+    
+    // Check for API key
+    let apiKey = localStorage.getItem('OPENAI_API_KEY');
+    if (!apiKey) {
+      // In a real app we'd have a Settings page, but for now we prompt:
+      const userKey = window.prompt("Para usar a Inteligência Artificial, por favor cole sua chave da API da OpenAI (sk-...):");
+      if (userKey && userKey.startsWith('sk-')) {
+        localStorage.setItem('OPENAI_API_KEY', userKey.trim());
+        apiKey = userKey.trim();
+        toast.success("Chave da API salva com sucesso no seu navegador!");
+      } else {
+        toast.error("Chave inválida ou cancelada. A IA não pode funcionar sem a chave.");
+        return;
+      }
+    }
+
     setGeneratingAi(true);
     try {
       // Get the client's editorial line for context
@@ -210,20 +226,46 @@ export function ScriptsTab({ clientId }: { clientId: string }) {
       
       Não inclua marcações de markdown e nem explique nada. Apenas responda com o JSON puro.`;
 
-      const { data, error } = await supabase.functions.invoke('ai-copywriter', {
-        body: { systemPrompt, userMessage: aiPrompt }
+      const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model: "gpt-4o-mini",
+          response_format: { type: "json_object" },
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: aiPrompt }
+          ],
+          temperature: 0.7,
+        }),
       });
 
-      if (error) throw error;
-      if (data?.error) throw new Error(data.error);
+      if (!response.ok) {
+        if (response.status === 401) {
+           localStorage.removeItem('OPENAI_API_KEY');
+           throw new Error("Chave da OpenAI inválida ou expirada. Tente novamente.");
+        }
+        const errorData = await response.json();
+        throw new Error(errorData.error?.message || "Erro de comunicação com a OpenAI");
+      }
 
-      if (data?.result) {
+      const data = await response.json();
+      const content = data.choices[0]?.message?.content;
+      
+      if (!content) throw new Error("A resposta da IA veio vazia.");
+      
+      const result = JSON.parse(content);
+
+      if (result) {
         setEditingScript(prev => ({
           ...prev,
           title: prev?.title || aiPrompt.substring(0, 30) + '...',
-          hook: data.result.hook || prev?.hook,
-          development: data.result.development || prev?.development,
-          cta: data.result.cta || prev?.cta
+          hook: result.hook || prev?.hook,
+          development: result.development || prev?.development,
+          cta: result.cta || prev?.cta
         }));
         toast.success('Roteiro gerado com sucesso!');
         setIsAiOpen(false);
