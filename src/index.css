@@ -86,3 +86,66 @@
     transition: all 200ms cubic-bezier(0.2, 0, 0, 1);
   }
 }
+
+/* ============ PRINT / PDF STYLES ============ */
+@media print {
+  /* Esconde TUDO que não é conteúdo */
+  body > * {
+    visibility: hidden !important;
+  }
+
+  /* Sidebar, navegação, toasts, header */
+  nav,
+  aside,
+  header,
+  footer,
+  [data-sidebar],
+  [role="navigation"],
+  .sonner-toaster,
+  .fixed {
+    display: none !important;
+  }
+
+  /* Mostra APENAS o container do documento */
+  body,
+  body > *,
+  body > * > *,
+  body > * > * > *,
+  body > * > * > * > *,
+  body > * > * > * > * > * {
+    visibility: visible !important;
+  }
+
+  /* Reset de layout para impressão limpa */
+  body {
+    background: white !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Remove margens e paddings de containers pai */
+  main, 
+  [class*="max-w-"],
+  [class*="mx-auto"],
+  [class*="px-"],
+  [class*="py-"],
+  [class*="pl-"],
+  [class*="ml-"] {
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+  }
+
+  /* Garante cores de fundo no PDF */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Evita quebra de página no meio de um roteiro */
+  [class*="break-inside-avoid"] {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+}
