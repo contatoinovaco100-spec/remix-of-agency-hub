@@ -407,10 +407,10 @@ export default function BriefingFormPage() {
     setSubmitting(false);
 
     if (error) {
-      console.error('Error submitting briefing:', error);
+      console.error('SUBMISSION_ERROR:', error);
       setHistory(prev => [
         ...prev,
-        { type: 'bot', text: 'Ops! Ocorreu um erro no servidor. Vamos tentar novamente?' },
+        { type: 'bot', text: `Ops! Ocorreu um erro ao salvar: ${error.message}. Você pode tentar mais uma vez?` },
       ]);
     } else {
       setSubmitted(true);
