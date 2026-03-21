@@ -79,7 +79,7 @@ const STEPS: Step[] = [
   {
     id: 'welcome',
     section: 'Boas-vindas',
-    botMessage: 'Olá! 👋 Que bom te ver por aqui. Vamos juntos construir a base estratégica da sua marca.\n\nEsse briefing é o primeiro passo pra eu entender quem é você, o que sua empresa representa e como podemos posicionar ela com força no digital.\n\nBora construir algo FODA juntos?',
+    botMessage: 'Seja bem-vindo ao portal estratégico da Inova.\n\nEste briefing é o passo fundamental para compreendermos a fundo a identidade da sua marca e os objetivos do seu negócio.\n\nAs informações fornecidas servirão de base para todo o nosso planejamento de posicionamento digital.\n\nPodemos iniciar?',
     gif: GIFS.WELCOME,
     type: 'welcome',
   },
@@ -370,7 +370,7 @@ export default function BriefingFormPage() {
     setHistory(prev => [
       ...prev,
       { type: 'bot', text: currentBotMessage, gif: step.gif },
-      { type: 'user', text: 'Bora! 🚀' },
+      { type: 'user', text: 'Iniciar Briefing' },
     ]);
     setCurrentStep(1);
   };
@@ -444,22 +444,24 @@ export default function BriefingFormPage() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#bff720]/5 rounded-full blur-[120px]" />
         
         <motion.div 
-          initial={{ scale: 0.8, opacity: 0 }}
+          initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="relative text-center space-y-8 max-w-lg p-8 rounded-3xl border border-white/5 bg-white/[0.02] backdrop-blur-3xl"
+          className="relative text-center space-y-12 max-w-lg p-12"
         >
-          <div className="mx-auto w-24 h-24 rounded-2xl bg-[#bff720] flex items-center justify-center shadow-2xl shadow-[#bff720]/30 rotate-3">
-            <Trophy className="w-12 h-12 text-black" />
+          <div className="flex justify-center mb-4">
+            <img src={logoInova} alt="Inova Co." className="h-16 brightness-200" />
           </div>
-          <div className="space-y-4">
-            <h1 className="text-4xl font-black text-white tracking-tight">MISSION COMPLETE! 🎖️</h1>
-            <p className="text-[#fff7e8]/60 text-lg leading-relaxed">
-              Obrigado, <span className="text-[#bff720] font-bold">{data.responsible_name}</span>!<br />
-              O briefing da <span className="text-white font-bold">{data.company_name}</span> está nas mãos dos nossos estrategistas.
+          
+          <div className="space-y-6">
+            <div className="w-16 h-1 bg-[#bff720] mx-auto rounded-full" />
+            <h1 className="text-4xl font-black text-white tracking-tight uppercase">Briefing Recebido</h1>
+            <div className="space-y-2">
+              <p className="text-[#fff7e8]/60 text-lg uppercase tracking-widest font-bold">Cliente Identificado:</p>
+              <p className="text-[#bff720] text-3xl font-black uppercase">{data.company_name}</p>
+            </div>
+            <p className="text-[#fff7e8]/40 text-sm">
+              Suas informações foram salvas com sucesso em nossa base estratégica.
             </p>
-          </div>
-          <div className="pt-8 border-t border-white/5">
-            <img src={logoInova} alt="Inova" className="h-10 mx-auto opacity-50 grayscale brightness-200" />
           </div>
         </motion.div>
       </div>
