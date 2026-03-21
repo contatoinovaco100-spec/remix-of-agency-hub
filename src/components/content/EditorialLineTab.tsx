@@ -109,9 +109,9 @@ export function EditorialLineTab({ clientId }: { clientId: string }) {
       }
       
       toast.success('Linha Editorial salva com sucesso!');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving editorial line:', error);
-      toast.error('Erro ao salvar a linha editorial');
+      toast.error(`Erro Supabase: ${error?.message || error?.details || 'Erro desconhecido'}`);
     } finally {
       setSaving(false);
     }
