@@ -63,9 +63,9 @@ export function EditorialLineTab({ clientId }: { clientId: string }) {
             pillars: [],
           });
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error loading editorial line:', error);
-        toast.error('Erro ao carregar a linha editorial');
+        toast.error(`Erro ao carregar: ${error.message || 'Erro no banco de dados'}`);
       } finally {
         setLoading(false);
       }
