@@ -188,7 +188,7 @@ export default function SalesEditorPage() {
         <TabsContent value="plans">
           <div className="space-y-8">
             {config.plans.map((p, i) => (
-              <Card key={i} className={p.popular ? 'border-[#f43f5e]/50 shadow-md' : ''}>
+              <Card key={i} className={p.popular ? 'border-[#bff720]/50 shadow-md' : ''}>
                 <CardHeader>
                   <div className="flex justify-between items-start">
                     <div>
