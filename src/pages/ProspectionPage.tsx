@@ -8,9 +8,18 @@ import { Badge } from '@/components/ui/badge';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { 
+  Dialog, 
+  DialogContent, 
+  DialogDescription, 
+  DialogHeader, 
+  DialogTitle, 
+  DialogTrigger,
+  DialogFooter
+} from '@/components/ui/dialog';
+import { 
   Search, MapPin, Phone, Star, Globe, MessageCircle, 
   Loader2, Sparkles, Send, Building2, Plus, Trash2, 
-  Copy, ExternalLink, Bot, Zap
+  Copy, ExternalLink, Bot, Zap, ArrowRight, CheckCircle, Wand2
 } from 'lucide-react';
 
 interface Lead {
@@ -54,6 +63,11 @@ export default function ProspectionPage() {
   const [manualName, setManualName] = useState('');
   const [manualPhone, setManualPhone] = useState('');
   const [manualCategory, setManualCategory] = useState('');
+
+  // Magic Import
+  const [showMagicModal, setShowMagicModal] = useState(false);
+  const [magicText, setMagicText] = useState('');
+  const [isExtracting, setIsExtracting] = useState(false);
 
   const geminiKey = "AIza" + "SyBlG_IrXKW78D" + "8euoF3O747PtSn" + "G_7GHSo";
 
@@ -131,6 +145,83 @@ export default function ProspectionPage() {
       setShowManualAdd(true);
     } finally {
       setSearching(false);
+    }
+  };
+
+  const handleMagicImport = async () => {
+    if (!magicText.trim()) {
+      toast.error('Cole o texto do Google Maps primeiro.');
+      return;
+    }
+
+    setIsExtracting(true);
+    try {
+      const prompt = `Você é um extrator de dados de leads do Google Maps. 
+      Sua tarefa é extrair o Nome da Empresa e o Telefone de cada lead contido no texto abaixo.
+      Retorne APENAS um array JSON puro, no formato: [{"name": "Nome da Empresa", "phone": "Telefone"}].
+      Se não houver telefone no lead, ignore-o.
+      Texto: ${magicText}`;
+
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          contents: [
+            { parts: [{ text: prompt }] }
+          ],
+          generationConfig: {
+            responseMimeType: "application/json"
+          }
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erro na API do Gemini: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const content = data.candidates?.[0]?.content?.parts?.[0]?.text;
+      
+      if (!content) throw new Error("A IA não retornou nenhum dado.");
+      
+      // Limpar possível markdown
+      const jsonStr = content.replace(/```json/g, '').replace(/```/g, '').trim();
+      const extractedLeads = JSON.parse(jsonStr);
+
+      if (!Array.isArray(extractedLeads) || extractedLeads.length === 0) {
+        toast.error('Não foi possível encontrar leads válidos no texto.');
+        return;
+      }
+
+      const newLeads: Lead[] = extractedLeads.map(item => {
+        const filledMessage = messageTemplate
+          .replace(/{empresa}/gi, item.name)
+          .replace(/{agencia}/gi, agencyName);
+        return {
+          id: crypto.randomUUID(),
+          name: item.name,
+          address: '',
+          phone: item.phone,
+          rating: 0,
+          website: '',
+          category: searchNiche || 'Geral',
+          aiMessage: filledMessage,
+          isGenerating: false,
+          status: 'novo' as const,
+        };
+      });
+
+      setLeads(prev => [...prev, ...newLeads]);
+      toast.success(`✨ ${newLeads.length} leads extraídos com sucesso!`);
+      setMagicText('');
+      setShowMagicModal(false);
+    } catch (err: any) {
+      console.error('Magic Import Error:', err);
+      toast.error(`Falha na extração: ${err.message}`);
+    } finally {
+      setIsExtracting(false);
     }
   };
 
@@ -346,10 +437,68 @@ Retorne SOMENTE o texto da mensagem, sem aspas, sem explicações.`;
                 {searching ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Search className="w-4 h-4 mr-2" />}
                 Buscar Leads
               </Button>
+
+              <Dialog open={showMagicModal} onOpenChange={setShowMagicModal}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" className="h-12 border-primary/20 text-primary hover:bg-primary/10">
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    Importador Mágico
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[600px] bg-[#121212] border-white/10 text-white">
+                  <DialogHeader>
+                    <DialogTitle className="flex items-center gap-2 text-primary">
+                      <Wand2 className="w-5 h-5" /> Importador Mágico ✨
+                    </DialogTitle>
+                    <DialogDescription className="text-zinc-400">
+                      Vá no Google Maps, faça sua pesquisa, selecione e copie (Ctrl+A / Ctrl+C) todos os resultados da barra lateral e cole abaixo. A IA vai extrair nomes e telefones automaticamente.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="py-4 space-y-4">
+                    <Textarea 
+                      placeholder="Cole aqui o texto copiado do Google Maps..." 
+                      className="min-h-[250px] bg-black/40 border-white/10 text-xs font-mono leading-relaxed"
+                      value={magicText}
+                      onChange={(e) => setMagicText(e.target.value)}
+                    />
+                    <div className="flex items-center justify-between text-[10px] text-zinc-500">
+                      <span>Total de caracteres: {magicText.length}</span>
+                      <span>Dica: Não se preocupe com a bagunça do texto, a IA entende tudo.</span>
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button 
+                      variant="ghost" 
+                      onClick={() => setShowMagicModal(false)}
+                      disabled={isExtracting}
+                    >
+                      Cancelar
+                    </Button>
+                    <Button 
+                      onClick={handleMagicImport} 
+                      disabled={isExtracting || !magicText.trim()}
+                      className="bg-primary text-black font-bold"
+                    >
+                      {isExtracting ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Extraindo Leads...
+                        </>
+                      ) : (
+                        <>
+                          <Wand2 className="w-4 h-4 mr-2" />
+                          Extrair Leads Agora
+                        </>
+                      )}
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+
               <Button 
                 variant="outline" 
-                className="h-12 border-white/10"
                 onClick={() => setShowManualAdd(!showManualAdd)}
+                className="h-12 border-white/10"
               >
                 <Plus className="w-4 h-4" />
               </Button>
