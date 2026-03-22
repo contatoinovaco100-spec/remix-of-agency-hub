@@ -38,7 +38,7 @@ const THEMES: Record<string, any> = {
 const THEME_DEFAULTS = {
   hero: { title: "ALÉM DA LENTE. CONSTRUÍMOS NARRATIVAS.", tagline: "Ser visto é fácil. Ser lembrado é estratégia.", badge: "O ESTRATEGISTA • 2026", cta: "INICIAR POSICIONAMENTO" },
   strategy: { problem: "Sua marca é invisível no digital.", solution: "A Inova reconstrói sua autoridade com narrativa cinematográfica.", results: "Autoridade, Escala, Faturamento", steps: "Diagnóstico, Planejamento, Captação, Elite" },
-  styles: { heroTitleSize: "90", accentColor: "#bff720", fontFamily: "Inter", isItalic: true }
+  styles: { heroTitleSize: "72", accentColor: "#bff720", fontFamily: "Inter", isItalic: true }
 };
 
 export default function SalesLP() {
@@ -55,13 +55,11 @@ export default function SalesLP() {
   if (!config) return null;
   const theme = THEMES[config.theme] || THEMES.openclaw;
   
-  // Custom Styles
-  const cStyles = {
-    heroSize: `${config.styles?.heroTitleSize || THEME_DEFAULTS.styles.heroTitleSize}px`,
-    accent: config.styles?.accentColor || theme.accent.replace('text-[', '').replace(']', '') || THEME_DEFAULTS.styles.accentColor,
-    font: config.styles?.fontFamily || THEME_DEFAULTS.styles.fontFamily,
-    italic: (config.styles?.isItalic !== undefined ? config.styles.isItalic : THEME_DEFAULTS.styles.isItalic) ? 'italic' : 'not-italic'
-  };
+  // Font Size standardized to max 72px for Desktop
+  const heroSize = config.styles?.heroTitleSize || THEME_DEFAULTS.styles.heroTitleSize;
+  const accent = config.styles?.accentColor || THEME_DEFAULTS.styles.accentColor;
+  const fontFam = config.styles?.fontFamily || THEME_DEFAULTS.styles.fontFamily;
+  const italicClass = (config.styles?.isItalic !== false) ? 'italic' : 'not-italic';
 
   const heroT = config.hero?.title || THEME_DEFAULTS.hero.title;
   const heroTag = config.hero?.tagline || THEME_DEFAULTS.hero.tagline;
@@ -72,85 +70,98 @@ export default function SalesLP() {
   const results = (config.strategy?.results || THEME_DEFAULTS.strategy.results).split(',').map((s:string)=>s.trim());
   const steps = (config.strategy?.steps || THEME_DEFAULTS.strategy.steps).split(',').map((s:string)=>s.trim());
   const services = (config.services && config.services.length > 0) ? config.services : [{title: "Expertise Inova", desc: "Consultoria Premium"}];
-  const plans = (config.plans && config.plans.length > 0) ? config.plans : [{name: "Plano Start", price: "2300", features: ["Solicitar Orçamento"]}];
+  const plans = (config.plans && config.plans.length > 0) ? config.plans : [{name: "Plano Start", price: "2300", features: ["Aceleração Digital"]}];
 
   return (
-    <div className={`min-h-screen ${theme.bg} ${theme.text} selection:bg-[#bff720]/20 overflow-x-hidden transition-colors duration-1000`} style={{ fontFamily: cStyles.font }}>
-      <Nav theme={theme} accent={cStyles.accent} />
+    <div className={`min-h-screen ${theme.bg} ${theme.text} selection:bg-[#bff720]/20 overflow-x-hidden transition-colors duration-1000`} style={{ fontFamily: fontFam }}>
+      <Nav theme={theme} accent={accent} />
 
-      {/* Hero Dinâmico */}
-      <section className="relative min-h-[95vh] flex items-center justify-center pt-20 px-6 overflow-hidden">
+      {/* Hero Refinado & Proporcional */}
+      <section className="relative min-h-[95vh] flex items-center justify-center pt-24 px-6 overflow-hidden">
         {theme.image && (
           <div className="absolute inset-0 z-0">
-             <img src={theme.image} alt="Nicho" className="w-full h-full object-cover opacity-20 blur-[1px] transition-transform duration-[15s] hover:scale-110" />
+             <img src={theme.image} alt="Nicho" className="w-full h-full object-cover opacity-20 blur-[1px] transition-transform duration-[15s]" />
              <div className={`absolute inset-0 bg-gradient-to-b ${theme.isDark ? 'from-transparent via-black to-black' : 'from-transparent via-white to-white'}`} />
           </div>
         )}
-        <div className="relative z-10 max-w-7xl mx-auto text-center">
-          <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: "easeOut" }}>
-            <Badge className={`${theme.isDark ? 'bg-white/5 text-white/40' : 'bg-black/5 text-zinc-400'} border-none mb-8 px-8 py-2 uppercase font-black tracking-[0.5em] text-[8px] rounded-full`}>{heroB}</Badge>
-            <h1 className={`font-black tracking-tighter mb-8 leading-[0.85] uppercase ${cStyles.italic} drop-shadow-2xl`} style={{ fontSize: cStyles.heroSize }}>{heroT}</h1>
-            <p className={`text-xl md:text-2xl ${theme.secondary} max-w-3xl mx-auto mb-14 font-medium ${cStyles.italic} leading-relaxed uppercase tracking-tight`}>{heroTag}</p>
-            <Button className={`${theme.button} rounded-full h-16 md:h-20 px-12 md:px-16 text-xl font-black uppercase ${cStyles.italic} shadow-2xl transition-all hover:scale-105 active:scale-95 group`} style={{ backgroundColor: cStyles.accent, color: theme.isDark ? '#000' : '#fff' }}>
-              {heroC} <ArrowRight className="ml-4 w-6 h-6 group-hover:translate-x-3 transition-transform" />
+        <div className="relative z-10 max-w-7xl mx-auto text-center px-4">
+          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
+            <Badge className={`${theme.isDark ? 'bg-white/5 text-white/40' : 'bg-black/5 text-zinc-400'} border-none mb-10 px-8 py-2 uppercase font-black tracking-[0.4em] text-[8px] rounded-full`}>{heroB}</Badge>
+            <h1 className={`text-4xl md:text-[${heroSize}px] font-black tracking-tighter mb-8 leading-[1] uppercase ${italicClass} drop-shadow-2xl`} style={{ fontSize: `${heroSize}px` }}>{heroT}</h1>
+            <p className={`text-lg md:text-2xl ${theme.secondary} max-w-2xl mx-auto mb-16 font-medium leading-relaxed uppercase tracking-tight`}>{heroTag}</p>
+            <Button className="rounded-full h-20 px-16 text-xl font-black uppercase italic shadow-2xl transition-all hover:scale-105 active:scale-95 group" style={{ backgroundColor: accent, color: theme.isDark ? '#000' : '#fff' }}>
+              {heroC} <ArrowRight className="ml-4 w-6 h-6 group-hover:translate-x-2 transition-transform" />
             </Button>
           </motion.div>
         </div>
       </section>
 
-      {/* Grid Proativa */}
+      {/* Marquee Suave */}
+      <section className="py-10 border-y border-current/10 grayscale opacity-20 overflow-hidden bg-current/5">
+        <div className="flex animate-marquee gap-24 font-black text-xl italic tracking-[0.2em] uppercase">
+          {[...Array(10)].map((_, i) => <span key={i}>DESIGN • ESTRATÉGIA • VÍDEO • FUNIL • PERFORMANCE • NARRATIVA</span>)}
+        </div>
+      </section>
+
+      {/* Estrutura de Vendas Clean */}
       <section className="py-24 max-w-7xl mx-auto px-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-          <motion.div whileInView={{ opacity: 1, x: 0 }} initial={{ opacity: 0, x: -50 }} className="space-y-6">
-             <h3 className="text-[10px] font-black uppercase tracking-[0.8em] mb-4 opacity-30" style={{ color: cStyles.accent }}>Context // 01</h3>
-             <p className={`text-4xl md:text-[80px] font-black tracking-tighter leading-[0.9] uppercase ${cStyles.italic}`}>{prob}</p>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          <motion.div whileInView={{ opacity: 1, x: 0 }} initial={{ opacity: 0, x: -30 }} className="space-y-6">
+             <h3 className="text-[10px] font-black uppercase tracking-[0.6em] mb-4 opacity-30" style={{ color: accent }}>The Challenge</h3>
+             <p className={`text-3xl md:text-5xl font-black tracking-tighter leading-[1] uppercase ${italicClass}`}>{prob}</p>
           </motion.div>
-          <motion.div whileInView={{ opacity: 1, x: 0 }} initial={{ opacity: 0, x: 50 }} className="pt-4 md:pt-20">
-             <div className={`${theme.card} p-10 md:p-14 rounded-[3.5rem] border border-current/10 relative shadow-2xl overflow-hidden`}>
-                <div className="absolute -top-10 -right-10 opacity-5" style={{ color: cStyles.accent }}><Target size={150}/></div>
-                <h3 className="text-[10px] font-black uppercase tracking-[0.5em] opacity-30 mb-8">The Strategy</h3>
-                <p className={`text-xl md:text-2xl opacity-70 font-medium ${cStyles.italic} leading-relaxed uppercase tracking-tight`}>{sol}</p>
+          <motion.div whileInView={{ opacity: 1, x: 0 }} initial={{ opacity: 0, x: 30 }} className="pt-8 md:pt-0">
+             <div className={`${theme.card} p-10 md:p-14 rounded-[3rem] border border-current/10 relative shadow-2xl`}>
+                <div className="absolute -top-10 -right-10 opacity-5" style={{ color: accent }}><Target size={150}/></div>
+                <h3 className="text-[10px] font-black uppercase tracking-[0.5em] opacity-30 mb-8 italic">A Solução Inova</h3>
+                <p className="text-xl opacity-70 font-medium leading-relaxed uppercase tracking-tight italic">{sol}</p>
              </div>
           </motion.div>
         </div>
       </section>
 
-      {/* Arsenal Customizável */}
-      <section className="py-24 max-w-[1600px] mx-auto px-6">
+      {/* Grid de Serviços */}
+      <section className="py-24 max-w-[1600px] mx-auto px-10">
         <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
-           <h2 className={`text-5xl md:text-[100px] font-black ${cStyles.italic} uppercase tracking-tighter leading-[0.8]`}>ARSENAL DE <br /> <span style={{ color: cStyles.accent }}>ENTREGAS.</span></h2>
+           <h2 className={`text-4xl md:text-7xl font-black italic uppercase tracking-tighter leading-[0.9]`}>ARSENAL DE <br /> <span style={{ color: accent }}>ENTREGAS.</span></h2>
+           <p className={`max-w-xs text-[10px] font-extrabold uppercase tracking-widest leading-relaxed italic ${theme.secondary} opacity-30`}>Cada elemento é um pilar na construção da sua autoridade digital.</p>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
           {services.map((d: any, i: number) => (
-            <motion.div whileHover={{ y: -8 }} key={i} className={`${theme.card} p-8 rounded-[3rem] flex flex-col justify-between group transition-all border border-current/5 h-[320px] shadow-2xl relative overflow-hidden text-center md:text-left`}>
-               <div className="mb-8 w-12 h-12 rounded-full flex items-center justify-center" style={{ backgroundColor: `${cStyles.accent}20`, color: cStyles.accent }}><Sparkles size={24} /></div>
+            <motion.div whileHover={{ y: -8 }} key={i} className={`${theme.card} p-8 rounded-[2.5rem] flex flex-col justify-between group transition-all border border-current/5 h-[320px] shadow-2xl relative overflow-hidden`}>
+               <div className="mb-8 w-12 h-12 rounded-full flex items-center justify-center" style={{ backgroundColor: `${accent}20`, color: accent }}><Sparkles size={24} /></div>
                <div>
-                  <h3 className={`text-2xl font-black ${cStyles.italic} uppercase leading-none mb-4`}>{d.title}</h3>
-                  <p className="text-[10px] opacity-40 uppercase tracking-widest leading-[1.3] font-bold">{d.desc}</p>
+                  <h3 className={`text-xl font-black italic uppercase leading-tight mb-4`}>{d.title}</h3>
+                  <p className="text-[10px] opacity-40 uppercase tracking-widest leading-[1.3] font-bold italic">{d.desc}</p>
                </div>
-               <div className="absolute bottom-0 left-0 h-[4px] transition-all duration-700 w-0 group-hover:w-full opacity-20" style={{ backgroundColor: cStyles.accent }} />
+               <div className="absolute bottom-0 left-0 h-[4px] transition-all duration-700 w-0 group-hover:w-full opacity-20" style={{ backgroundColor: accent }} />
             </motion.div>
           ))}
         </div>
       </section>
 
-      {/* Capital Standardized */}
-      <section id="pricing" className="py-32 max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-8">
+      {/* Planos Standard */}
+      <section id="pricing" className="py-32 max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-8">
         {plans.map((p: any, i: number) => (
-          <div key={i} className={`${theme.card} p-14 rounded-[4rem] border-2 flex flex-col justify-between h-[650px] transition-all`} style={{ borderColor: p.popular ? cStyles.accent : 'currentColor', opacity: p.popular ? 1 : 0.8 }}>
-            <div className="space-y-10">
+          <div key={i} className={`${theme.card} p-12 rounded-[3.5rem] border-2 flex flex-col justify-between h-[600px] transition-all`} style={{ borderColor: p.popular ? accent : 'transparent', opacity: p.popular ? 1 : 0.8 }}>
+            <div className="space-y-12">
                <div className="flex justify-between items-start">
-                  <h4 className="text-[9px] font-black uppercase tracking-[0.4em] opacity-30 italic">{p.name} allocation</h4>
-                  {p.popular && <Badge className="text-black text-[8px] font-black px-4 py-1.5 uppercase tracking-widest rounded-full" style={{ backgroundColor: cStyles.accent }}>Selected</Badge>}
+                  <h4 className="text-[10px] font-black uppercase tracking-[0.4em] opacity-30 italic">{p.name}</h4>
+                  {p.popular && <Badge className="text-black text-[8px] font-black px-4 py-1.5 uppercase tracking-widest rounded-full" style={{ backgroundColor: accent }}>Prêmio</Badge>}
                </div>
-               <div className="text-7xl md:text-[110px] font-black italic tracking-tighter leading-none px-2 underline decoration-current/10 decoration-[8px] underline-offset-8">R${p.price}</div>
+               <div className="text-6xl md:text-[80px] font-black italic tracking-tighter leading-none underline decoration-current/10 decoration-[6px] underline-offset-8">R${p.price}</div>
+               <div className="space-y-4">
+                  {(p.features || []).map((f: string, j: number) => (
+                    <div key={j} className="flex items-center gap-4 text-xs font-bold uppercase tracking-widest opacity-40 italic border-b border-current/5 pb-3"> <Plus className="w-3.5 h-3.5" style={{color: accent}}/> {f}</div>
+                  ))}
+               </div>
             </div>
-            <Button className="w-full h-20 rounded-full font-black uppercase text-lg italic tracking-tighter transition-all" style={{ backgroundColor: cStyles.accent, color: theme.isDark ? '#000' : '#fff' }}>EXECUTE PROTOCOL</Button>
+            <Button className="w-full h-16 rounded-full font-black uppercase italic tracking-tighter transition-all shadow-xl" style={{ backgroundColor: accent, color: theme.isDark ? '#000' : '#fff' }}>ASSINAR AGORA</Button>
           </div>
         ))}
       </section>
 
-      <Footer whatsapp={config.whatsapp || "5562999999999"} theme={theme} cta={heroC} accent={cStyles.accent} />
+      <Footer whatsapp={config.whatsapp || "5562999999999"} theme={theme} cta={heroC} accent={accent} />
     </div>
   );
 }
@@ -158,9 +169,9 @@ export default function SalesLP() {
 function Nav({ theme, accent }: any) {
   return (
     <nav className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[95%] md:w-auto">
-      <div className={`${theme.card} h-14 border rounded-full px-10 flex items-center justify-between gap-12 shadow-2xl backdrop-blur-3xl bg-opacity-90`}>
+      <div className={`${theme.card} h-14 border rounded-full px-12 flex items-center justify-between gap-12 shadow-2xl backdrop-blur-3xl bg-opacity-95`}>
         <img src={LogoInova} alt="Inova" className={`h-5 w-auto ${theme.isDark ? 'brightness-200' : ''}`} />
-        <Button className="rounded-full px-8 h-9 text-[8px] font-black uppercase tracking-widest shadow-xl active:scale-95 transition-all" style={{ backgroundColor: accent, color: theme.isDark ? '#000' : '#fff' }}>BOOKING</Button>
+        <Button className="rounded-full px-8 h-9 text-[8px] font-black uppercase tracking-widest shadow-xl active:scale-95 transition-all" style={{ backgroundColor: accent, color: theme.isDark ? '#000' : '#fff' }}>REUNIÃO</Button>
       </div>
     </nav>
   );
@@ -169,12 +180,12 @@ function Nav({ theme, accent }: any) {
 function Footer({ whatsapp, theme, cta, accent }: any) {
   return (
     <section className="py-40 text-center relative overflow-hidden">
-      <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[250px] rounded-full blur-[120px] -z-10 opacity-10`} style={{ backgroundColor: accent }} />
-      <div className="space-y-14">
-        <h2 className="text-7xl md:text-[140px] font-black tracking-tighter uppercase italic leading-[0.7] mb-4">LETS <br /> <span style={{ color: accent }}>SCALE?</span></h2>
+      <div className="space-y-14 relative z-10">
+        <h2 className="text-6xl md:text-[90px] font-black tracking-tighter uppercase italic leading-[0.7] mb-4">VAMOS <br /> <span style={{ color: accent }}>ESCALAR?</span></h2>
         <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noopener noreferrer">
           <Button className="h-24 px-20 text-3xl font-black uppercase italic shadow-2xl transition-all hover:scale-105" style={{ backgroundColor: accent, color: theme.isDark ? '#000' : '#fff' }}>{cta}</Button>
         </a>
+        <p className="text-[10px] font-black uppercase tracking-[0.8em] opacity-20 pt-20">© 2026 INOVA PRODUÇÕES.</p>
       </div>
     </section>
   );
