@@ -69,111 +69,105 @@ export default function SalesLP() {
     <div className={`min-h-screen ${theme.bg} ${theme.text} font-sans selection:bg-[#bff720]/20 overflow-x-hidden transition-colors duration-1000`}>
       <Nav theme={theme} />
 
-      {/* Hero OpenClaw Layout - 140px Typography */}
-      <section className="relative min-h-screen flex items-center justify-center pt-20 px-6 overflow-hidden">
+      {/* Hero OpenClaw Layout - Standardized 90px Typography */}
+      <section className="relative min-h-[95vh] flex items-center justify-center pt-20 px-6 overflow-hidden">
         {theme.image && (
           <div className="absolute inset-0 z-0">
-             <img src={theme.image} alt="Nicho" className="w-full h-full object-cover opacity-20 blur-[1px] transition-transform duration-[20s] hover:scale-110" />
+             <img src={theme.image} alt="Nicho" className="w-full h-full object-cover opacity-20 blur-[1px] transition-transform duration-[15s] hover:scale-110" />
              <div className={`absolute inset-0 bg-gradient-to-b ${theme.isDark ? 'from-transparent via-black to-black' : 'from-transparent via-white to-white'}`} />
           </div>
         )}
-        <div className="relative z-10 max-w-[1400px] mx-auto text-center">
-          <motion.div initial={{ opacity: 0, y: 100 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}>
-            <Badge className={`${theme.isDark ? 'bg-white/5 text-white/40' : 'bg-black/5 text-zinc-400'} border-none mb-10 px-10 py-3 uppercase font-black tracking-[0.6em] text-[9px] rounded-full`}>{heroB}</Badge>
-            <h1 className="text-[12vw] md:text-[140px] font-black tracking-tighter mb-10 leading-[0.8] uppercase italic drop-shadow-2xl">{heroT}</h1>
-            <p className={`text-2xl md:text-3xl ${theme.secondary} max-w-4xl mx-auto mb-16 font-medium italic leading-[1.1] uppercase tracking-tight`}>{heroTag}</p>
-            <Button className={`${theme.button} rounded-full h-20 md:h-24 px-16 md:px-24 text-2xl font-black uppercase italic shadow-2xl transition-all hover:scale-105 active:scale-95 group`}>
-              {heroC} <ArrowRight className="ml-6 w-8 h-8 group-hover:translate-x-4 transition-transform" />
+        <div className="relative z-10 max-w-7xl mx-auto text-center">
+          <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: "easeOut" }}>
+            <Badge className={`${theme.isDark ? 'bg-white/5 text-white/40' : 'bg-black/5 text-zinc-400'} border-none mb-8 px-8 py-2 uppercase font-black tracking-[0.5em] text-[8px] rounded-full`}>{heroB}</Badge>
+            <h1 className="text-5xl md:text-[90px] font-black tracking-tighter mb-8 leading-[0.85] uppercase italic drop-shadow-2xl">{heroT}</h1>
+            <p className={`text-xl md:text-2xl ${theme.secondary} max-w-3xl mx-auto mb-14 font-medium italic leading-relaxed uppercase tracking-tight`}>{heroTag}</p>
+            <Button className={`${theme.button} rounded-full h-16 md:h-20 px-12 md:px-16 text-xl font-black uppercase italic shadow-2xl transition-all hover:scale-105 active:scale-95 group`}>
+              {heroC} <ArrowRight className="ml-4 w-6 h-6 group-hover:translate-x-3 transition-transform" />
             </Button>
           </motion.div>
-        </div>
-        <div className="absolute bottom-10 left-10 hidden md:block opacity-20">
-           <p className="text-[10px] font-black uppercase tracking-[1em] vertical-rl">INNOVATION // NARRATIVE</p>
         </div>
       </section>
 
       {/* Marquee de Impacto */}
-      <section className="py-12 border-y border-current/10 grayscale opacity-40 overflow-hidden bg-current/5">
-        <div className="flex animate-marquee gap-32 font-black text-2xl italic tracking-[0.3em] uppercase">
-          {[...Array(10)].map((_, i) => <span key={i}>DESIGN • ESTRATÉGIA • VÍDEO • FUNIL • PERFORMANCE • NARRATIVA • SCALE • GROWTH</span>)}
+      <section className="py-10 border-y border-current/10 grayscale opacity-30 overflow-hidden bg-current/5">
+        <div className="flex animate-marquee gap-24 font-black text-xl italic tracking-[0.2em] uppercase">
+          {[...Array(10)].map((_, i) => <span key={i}>DESIGN • ESTRATÉGIA • VÍDEO • FUNIL • PERFORMANCE • NARRATIVA</span>)}
         </div>
       </section>
 
-      {/* Grid OpenClaw - Problema vs Solução */}
-      <section className="py-32 max-w-[1600px] mx-auto px-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-          <motion.div whileInView={{ opacity: 1, y: 0 }} initial={{ opacity: 0, y: 50 }} className="lg:col-span-7">
-             <h3 className={`text-[12px] font-black uppercase tracking-[0.8em] mb-12 ${theme.accent}`}>Diagnosis // Context</h3>
-             <p className="text-[8vw] md:text-[100px] font-black italic tracking-tighter leading-[0.85] uppercase mb-12">{prob}</p>
+      {/* Grid OpenClaw Standardized - Problema vs Solução */}
+      <section className="py-24 max-w-7xl mx-auto px-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+          <motion.div whileInView={{ opacity: 1, x: 0 }} initial={{ opacity: 0, x: -50 }} className="space-y-6">
+             <h3 className={`text-[10px] font-black uppercase tracking-[0.8em] mb-4 ${theme.accent}`}>Diagnosis // 01</h3>
+             <p className="text-4xl md:text-[80px] font-black italic tracking-tighter leading-[0.9] uppercase">{prob}</p>
           </motion.div>
-          <motion.div whileInView={{ opacity: 1, y: 0 }} initial={{ opacity: 0, y: 50 }} className="lg:col-span-5 pt-20">
-             <div className={`${theme.card} p-12 rounded-[4rem] border border-current/10 relative shadow-2xl overflow-hidden`}>
-                <div className="absolute -top-10 -right-10 opacity-5"><Target size={200}/></div>
-                <h3 className={`text-[10px] font-black uppercase tracking-[0.5em] opacity-40 mb-8`}>The Inova Strategy</h3>
-                <p className={`text-2xl opacity-80 font-medium italic leading-relaxed uppercase tracking-tight`}>{sol}</p>
+          <motion.div whileInView={{ opacity: 1, x: 0 }} initial={{ opacity: 0, x: 50 }} className="pt-4 md:pt-20">
+             <div className={`${theme.card} p-10 md:p-14 rounded-[3.5rem] border border-current/10 relative shadow-2xl overflow-hidden`}>
+                <div className="absolute -top-10 -right-10 opacity-5"><Target size={150}/></div>
+                <h3 className={`text-[10px] font-black uppercase tracking-[0.5em] opacity-30 mb-8`}>The Strategy</h3>
+                <p className={`text-xl md:text-2xl opacity-70 font-medium italic leading-relaxed uppercase tracking-tight`}>{sol}</p>
              </div>
           </motion.div>
         </div>
       </section>
 
-      {/* Arsenal de Entregas - Cards Grandes */}
-      <section id="services" className="py-32 max-w-[1700px] mx-auto px-10">
-        <div className="flex flex-col md:flex-row justify-between items-end mb-24 gap-12">
-           <h2 className="text-[10vw] md:text-[130px] font-black italic uppercase tracking-tighter leading-[0.8] mb-4">ARSENAL DE <br /> <span className={theme.accent}>ENTREGAS.</span></h2>
-           <p className={`max-w-sm text-[11px] font-black uppercase tracking-widest leading-relaxed italic ${theme.secondary} opacity-40 border-l-2 border-current pl-6`}>Cada elemento é uma peça na construção da sua autoridade digital absoluta.</p>
+      {/* Arsenal de Entregas - Standardized Grid */}
+      <section id="services" className="py-24 max-w-[1600px] mx-auto px-6">
+        <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
+           <h2 className="text-5xl md:text-[100px] font-black italic uppercase tracking-tighter leading-[0.8]">ARSENAL DE <br /> <span className={theme.accent}>ENTREGAS.</span></h2>
+           <p className={`max-w-xs text-[10px] font-black uppercase tracking-widest leading-relaxed italic ${theme.secondary} opacity-40`}>Cada elemento é uma peça na construção da sua autoridade digital absoluta.</p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
           {services.map((d: any, i: number) => (
-            <motion.div whileHover={{ scale: 1.02 }} key={i} className={`${theme.card} p-12 rounded-[3.5rem] flex flex-col justify-between group transition-all border border-current/10 h-[450px] shadow-2xl relative overflow-hidden`}>
-               <div className="absolute top-10 right-10 text-[60px] font-black italic opacity-5 group-hover:opacity-10 transition-opacity">0{i+1}</div>
-               <div className={`${theme.accent} mb-8 w-16 h-16 bg-current/10 rounded-full flex items-center justify-center`}><Sparkles size={32} /></div>
+            <motion.div whileHover={{ y: -8 }} key={i} className={`${theme.card} p-8 rounded-[3rem] flex flex-col justify-between group transition-all border border-current/5 h-[320px] shadow-2xl relative overflow-hidden text-center md:text-left`}>
+               <div className={`${theme.accent} mb-8 w-12 h-12 bg-current/10 rounded-full flex items-center justify-center`}><Sparkles size={24} /></div>
                <div>
-                  <h3 className="text-3xl font-black italic uppercase leading-none mb-6">{d.title}</h3>
-                  <p className="text-[11px] opacity-40 uppercase tracking-widest leading-[1.4] font-bold">{d.desc}</p>
+                  <h3 className="text-2xl font-black italic uppercase leading-none mb-4">{d.title}</h3>
+                  <p className="text-[10px] opacity-40 uppercase tracking-widest leading-[1.3] font-bold">{d.desc}</p>
                </div>
-               <div className="absolute bottom-0 left-0 h-[6px] bg-current transition-all duration-700 w-0 group-hover:w-full opacity-20" />
+               <div className="absolute bottom-0 left-0 h-[4px] bg-current transition-all duration-700 w-0 group-hover:w-full opacity-10" />
             </motion.div>
           ))}
         </div>
       </section>
 
-      {/* Processo OpenClaw - Timeline Horizontal */}
-      <section className="py-32 bg-current/[0.02] border-y border-current/5">
-         <div className="max-w-[1600px] mx-auto px-10">
-            <h3 className="text-[10px] font-black uppercase tracking-[1em] mb-20 opacity-20">Operational Flow // 01-05</h3>
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-12">
+      {/* Processo OpenClaw Standardized */}
+      <section className="py-24 bg-current/[0.01] border-y border-current/5">
+         <div className="max-w-7xl mx-auto px-6">
+            <h3 className="text-[10px] font-black uppercase tracking-[0.6em] mb-16 opacity-20 italic">Operational Flow // 01-05</h3>
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-10">
                {steps.map((step: string, i: number) => (
                   <div key={i} className="group relative">
-                     <span className="text-[80px] font-black italic opacity-5 group-hover:opacity-100 transition-opacity text-[#bff720] absolute -top-12 -left-4">0{i+1}</span>
-                     <p className="text-xl font-black uppercase tracking-tighter leading-none italic relative z-10 group-hover:translate-x-4 transition-transform">{step}</p>
-                     <div className="w-full h-[1px] bg-current/10 mt-6 group-hover:bg-primary transition-colors" />
+                     <span className="text-[50px] font-black italic opacity-5 group-hover:opacity-100 transition-opacity text-[#bff720] absolute -top-10 -left-2">0{i+1}</span>
+                     <p className="text-lg font-black uppercase tracking-tighter leading-none italic relative z-10 group-hover:translate-x-2 transition-transform">{step}</p>
+                     <div className="w-full h-[1px] bg-current/10 mt-6 group-hover:bg-[#bff720] transition-colors" />
                   </div>
                ))}
             </div>
          </div>
       </section>
 
-      {/* Capital Allocation - Planos Estilo OpenClaw */}
-      <section id="pricing" className="py-40 max-w-[1400px] mx-auto px-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-          {plans.map((p: any, i: number) => (
-            <div key={i} className={`${theme.card} p-16 rounded-[4.5rem] border-2 ${p.popular ? 'border-[#bff720] shadow-[0_0_60px_rgba(191,247,32,0.1)] scale-[1.03]' : 'border-current/10 opacity-80'} flex flex-col justify-between h-[800px]`}>
-              <div className="space-y-12">
-                 <div className="flex justify-between items-start">
-                    <h4 className="text-[10px] font-black uppercase tracking-[0.5em] opacity-30 italic">{p.name} allocation</h4>
-                    {p.popular && <Badge className="bg-[#bff720] text-black text-[9px] font-black px-6 py-2 uppercase tracking-widest rounded-full">Most Desired</Badge>}
-                 </div>
-                 <div className="text-[100px] md:text-[140px] font-black italic tracking-tighter leading-none">R${p.price}<span className="text-xl opacity-20 ml-4 font-black">/M</span></div>
-                 <div className="space-y-6">
-                    {(p.features || []).map((f: string, j: number) => (
-                      <div key={j} className="flex items-center gap-6 text-xs font-black uppercase tracking-[0.2em] opacity-40 italic border-b border-current/10 pb-4"><Plus className={`w-4 h-4 ${theme.accent}`} /> {f}</div>
-                    ))}
-                 </div>
-              </div>
-              <Button className={`${theme.button} w-full h-24 rounded-full font-black uppercase text-xl italic tracking-tighter`}>EXECUTE PROTOCOL</Button>
+      {/* Capital Allocation Standardized */}
+      <section id="pricing" className="py-32 max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {plans.map((p: any, i: number) => (
+          <div key={i} className={`${theme.card} p-14 rounded-[4rem] border-2 ${p.popular ? 'border-[#bff720] shadow-[0_0_40px_rgba(191,247,32,0.1)] scale-[1.02]' : 'border-current/5 opacity-80'} flex flex-col justify-between h-[650px]`}>
+            <div className="space-y-10">
+               <div className="flex justify-between items-start">
+                  <h4 className="text-[9px] font-black uppercase tracking-[0.4em] opacity-30 italic">{p.name} allocation</h4>
+                  {p.popular && <Badge className="bg-[#bff720] text-black text-[8px] font-black px-4 py-1.5 uppercase tracking-widest rounded-full">Top Target</Badge>}
+               </div>
+               <div className="text-7xl md:text-[110px] font-black italic tracking-tighter leading-none px-2 underline decoration-current/10 decoration-[8px] underline-offset-8">R${p.price}</div>
+               <div className="space-y-4">
+                  {(p.features || []).map((f: string, j: number) => (
+                    <div key={j} className="flex items-center gap-4 text-[10px] font-bold uppercase tracking-[0.2em] opacity-40 italic border-b border-current/5 pb-3"><Plus className={`w-3.5 h-3.5 ${theme.accent}`} /> {f}</div>
+                  ))}
+               </div>
             </div>
-          ))}
-        </div>
+            <Button className={`${theme.button} w-full h-20 rounded-full font-black uppercase text-lg italic tracking-tighter`}>EXECUTE PROTOCOL</Button>
+          </div>
+        ))}
       </section>
 
       <Footer whatsapp={config.whatsapp || "5562999999999"} theme={theme} cta={heroC} />
@@ -183,10 +177,10 @@ export default function SalesLP() {
 
 function Nav({ theme }: any) {
   return (
-    <nav className="fixed top-8 left-1/2 -translate-x-1/2 z-50 w-[95%] md:w-auto">
-      <div className={`${theme.card} h-16 border rounded-full px-12 flex items-center justify-between gap-16 shadow-2xl backdrop-blur-3xl bg-opacity-80`}>
-        <img src={LogoInova} alt="Inova" className={`h-6 w-auto ${theme.isDark ? 'brightness-200' : ''}`} />
-        <Button className={`${theme.button} rounded-full px-10 h-10 text-[9px] font-black uppercase tracking-widest shadow-xl active:scale-95 transition-all`}>BOOKING</Button>
+    <nav className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[95%] md:w-auto">
+      <div className={`${theme.card} h-14 border rounded-full px-10 flex items-center justify-between gap-12 shadow-2xl backdrop-blur-3xl bg-opacity-90`}>
+        <img src={LogoInova} alt="Inova" className={`h-5 w-auto ${theme.isDark ? 'brightness-200' : ''}`} />
+        <Button className={`${theme.button} rounded-full px-8 h-9 text-[8px] font-black uppercase tracking-widest shadow-xl active:scale-95 transition-all`}>BOOKING</Button>
       </div>
     </nav>
   );
@@ -194,14 +188,14 @@ function Nav({ theme }: any) {
 
 function Footer({ whatsapp, theme, cta }: any) {
   return (
-    <section className="py-48 text-center relative overflow-hidden">
-      <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] rounded-full blur-[150px] -z-10 ${theme.isDark ? 'bg-[#bff720]/10' : 'bg-black/10'}`} />
-      <div className="space-y-16">
-        <h2 className="text-[12vw] md:text-[180px] font-black tracking-tighter uppercase italic leading-[0.7] mb-4">LETS <br /> <span className={theme.accent}>SCALE?</span></h2>
+    <section className="py-40 text-center relative overflow-hidden">
+      <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[250px] rounded-full blur-[120px] -z-10 ${theme.isDark ? 'bg-[#bff720]/10' : 'bg-black/5'}`} />
+      <div className="space-y-14">
+        <h2 className="text-7xl md:text-[140px] font-black tracking-tighter uppercase italic leading-[0.7] mb-4">LETS <br /> <span className={theme.accent}>SCALE?</span></h2>
         <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noopener noreferrer">
-          <Button className={`${theme.button} h-28 px-24 text-4xl font-black uppercase italic shadow-[0_0_60px_rgba(191,247,32,0.3)] transition-all hover:scale-110`}>{cta}</Button>
+          <Button className={`${theme.button} h-24 px-20 text-3xl font-black uppercase italic shadow-[0_0_50px_rgba(191,247,32,0.2)] transition-all hover:scale-105`}>{cta}</Button>
         </a>
-        <p className="text-[10px] font-black uppercase tracking-[1em] opacity-20 pt-20 italic">© 2026 INOVA PRODUÇÕES SHAPE THE FUTURE.</p>
+        <p className="text-[9px] font-black uppercase tracking-[0.8em] opacity-20 pt-16 italic">© 2026 INOVA PRODUÇÕES SHAPE THE FUTURE.</p>
       </div>
     </section>
   );
