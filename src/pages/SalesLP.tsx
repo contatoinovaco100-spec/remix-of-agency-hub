@@ -14,10 +14,11 @@ import {
   Sparkles,
   Bot,
   Star,
-  Settings
+  Settings,
+  Search,
+  ChevronRight
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
 // Helper to map icon names to components
@@ -33,33 +34,33 @@ const DEFAULT_CONFIG = {
   },
   whatsapp: "5562999999999",
   services: [
-    { title: "Produção Audiovisual", desc: "Equipamentos de cinema e edições que prendem a atenção nos primeiros segundos.", icon: "Video" },
-    { title: "Inteligência Artificial", desc: "Processos de prospecção e planejamento tunados por IAs de última geração.", icon: "Bot" },
-    { title: "Growth Marketing", desc: "Estratégias baseadas em dados para escalar faturamento e reconhecimento.", icon: "PieChart" },
-    { title: "Digital Solutions", desc: "De Landing Pages a CRM, construímos a infraestrutura que sua empresa precisa.", icon: "Monitor" }
+    { title: "Produção Audiovisual", desc: "Equipamentos de cinema e edições de alto impacto.", icon: "Video" },
+    { title: "Inteligência Artificial", desc: "Processos tunados por IAs de última geração.", icon: "Bot" },
+    { title: "Growth Marketing", desc: "Estratégias baseadas em dados para escalar faturamento.", icon: "PieChart" },
+    { title: "Digital Solutions", desc: "De Landing Pages a CRM, construímos o seu ecossistema.", icon: "Monitor" }
   ],
   plans: [
     {
       name: "Essential",
       price: "2.900",
-      description: "Ideal para marcas que querem consistência e posicionamento nas redes sociais.",
-      features: ["Gestão de Instagram & TikTok", "3 Postagens semanais (Reels/Feed)", "Design de alta performance", "Estratégia de Linhas Editoriais", "Relatório mensal de métricas"],
+      description: "Ideal para marcas que querem consistência nas redes sociais.",
+      features: ["Gestão de Instagram & TikTok", "3 Postagens semanais", "Design de alta performance", "Relatórios mensais"],
       accent: "text-[#bff720]",
       popular: false
     },
     {
       name: "Growth",
       price: "5.500",
-      description: "Foco em escala, tráfego e produção de material visual de cinema.",
-      features: ["Tudo do plano Essential", "Gestão de Tráfego Pago (Meta/Google)", "2 Visitas mensais para Filmagens", "Edição Premium com Storytelling", "Configuração de Funil de Vendas", "Suporte Prioritário via WhatsApp"],
+      description: "Foco em escala e produção de material visual de cinema.",
+      features: ["Tudo do plano Essential", "Tráfego Pago (Meta/Google)", "2 Visitas para Filmagens", "Funil de Vendas"],
       accent: "text-[#bff720]",
       popular: true
     },
     {
       name: "Elite",
       price: "12.000",
-      description: "O braço direito completo para dominar o mercado com IA e Audiovisual.",
-      features: ["Tudo do plano Growth", "Production Day: 4 Filmagens mensais", "Automação Inteligente (SDR & IA)", "Criação de Website / Landing Page", "Brand Consulting & Branding", "Diretoria de Criação Dedicada"],
+      description: "O braço direito completo para dominar o mercado.",
+      features: ["Tudo do plano Growth", "Production Day (4x)", "Automação IA (SDR)", "Branding Consulting"],
       accent: "text-[#bff720]",
       popular: false
     }
@@ -82,199 +83,214 @@ export default function SalesLP() {
 
   const getIcon = (name: string) => {
     const Icon = IconMap[name] || Star;
-    return <Icon className="w-6 h-6" />;
+    return <Icon className="w-5 h-5" />;
   };
 
   return (
-    <div className="min-h-screen bg-[#000000] text-[#f8f8f8] selection:bg-[#bff720]/30 font-sans selection:text-white overflow-x-hidden">
+    <div className="min-h-screen bg-[#F9FAFB] text-black font-sans selection:bg-[#bff720]/30 selection:text-black overflow-x-hidden pb-20">
       
-      {/* Glow Effects */}
-      <div className="fixed top-0 left-1/4 w-[500px] h-[500px] bg-[#015f57]/20 rounded-full blur-[120px] -z-10 pointer-events-none" />
-      <div className="fixed bottom-0 right-1/4 w-[500px] h-[500px] bg-[#370616]/20 rounded-full blur-[120px] -z-10 pointer-events-none" />
-
-      {/* Admin Button (Visible only in dev or for logged in users) */}
-      <div className="fixed bottom-6 left-6 z-50">
-         <Button variant="ghost" size="sm" className="rounded-full bg-white/5 border border-white/10 text-zinc-500 hover:text-white" asChild>
-           <a href="/proposta/editar"><Settings className="w-4 h-4 mr-2" /> Editar Proposta</a>
-         </Button>
+      {/* Floating Pill Nav - Mobbin Style */}
+      <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[95%] md:w-auto">
+        <nav className="bg-white/70 backdrop-blur-xl border border-gray-200/50 rounded-full py-2.5 px-3 md:px-8 flex items-center justify-between gap-8 md:gap-16 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+          <div className="flex items-center gap-2.5 pl-2">
+            <div className="bg-black p-1.5 rounded-xl">
+              <ShieldCheck className="w-4 h-4 text-[#bff720]" />
+            </div>
+            <span className="text-sm font-black tracking-tighter italic">INOVA CO.</span>
+          </div>
+          <div className="hidden lg:flex items-center gap-10 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">
+            <a href="#servicos" className="hover:text-black transition-colors">Produtos</a>
+            <a href="#precos" className="hover:text-black transition-colors">Preços</a>
+            <a href="#cta" className="hover:text-black transition-colors">Agência</a>
+          </div>
+          <div className="flex items-center gap-2">
+             <Button size="sm" variant="ghost" className="rounded-full text-[10px] font-black uppercase tracking-widest hidden md:flex">
+               Login
+             </Button>
+             <Button size="sm" className="bg-black text-white rounded-full px-6 text-[10px] font-black uppercase tracking-widest hover:bg-gray-800 transition-all shadow-lg shadow-black/10">
+               Começar
+             </Button>
+          </div>
+        </nav>
       </div>
 
-      {/* Nav */}
-      <nav className="max-w-7xl mx-auto px-6 py-8 flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <div className="bg-[#bff720] p-1.5 rounded-lg">
-            <ShieldCheck className="w-6 h-6 text-black" />
-          </div>
-          <span className="text-xl font-black tracking-tighter italic text-[#f8f8f8]">INOVA CO.</span>
-        </div>
-        <div className="hidden md:flex items-center gap-8 text-sm font-bold uppercase tracking-widest text-zinc-400">
-          <a href="#servicos" className="hover:text-white transition-colors">Serviços</a>
-          <a href="#precos" className="hover:text-white transition-colors">Preços</a>
-          <a href="#cta" className="bg-white/5 px-4 py-2 rounded-full border border-white/10 hover:bg-white/10 transition-colors">Agendar Reunião</a>
-        </div>
-      </nav>
-
       {/* Hero Section */}
-      <section className="max-w-5xl mx-auto px-6 pt-20 pb-32 text-center">
+      <section className="max-w-4xl mx-auto px-6 pt-48 pb-32 text-center">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         >
-          <Badge className="mb-6 bg-[#f43f5e]/10 text-[#f43f5e] border-[#f43f5e]/20 px-4 py-1 text-xs uppercase tracking-[0.2em] font-black">
-            {config.hero.badge}
-          </Badge>
-          <h1 className="text-5xl md:text-8xl font-black tracking-tighter mb-8 leading-[0.9]">
+          <div className="inline-flex items-center gap-2 bg-white border border-gray-100 px-4 py-1.5 rounded-full shadow-sm mb-10">
+             <span className="w-2 h-2 bg-[#bff720] rounded-full animate-pulse" />
+             <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">Upgrade Your Brand 2026</span>
+          </div>
+          <h1 className="text-6xl md:text-[110px] font-black tracking-tighter mb-10 leading-[0.85] text-zinc-900">
             {config.hero.title}
           </h1>
-          <p className="text-lg md:text-xl text-zinc-400 max-w-2xl mx-auto mb-10 font-medium italic">
+          <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-12 font-medium leading-relaxed italic">
             {config.hero.tagline}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href={`https://wa.me/${config.whatsapp}`}>
-              <Button className="bg-[#bff720] hover:bg-[#bff720]/90 text-black rounded-full h-14 px-10 text-lg font-bold shadow-2xl shadow-[#bff720]/30 group w-full">
-                Aceitar Proposta <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </Button>
-            </a>
-            <Button variant="outline" className="rounded-full h-14 px-10 border-white/10 bg-white/5 hover:bg-white/10 text-lg font-bold text-[#f8f8f8]">
-              Falar com Strategist
-            </Button>
+             <a href={`https://wa.me/${config.whatsapp}`}>
+                <Button className="bg-black text-white hover:bg-gray-800 rounded-full h-14 px-12 text-sm font-black uppercase tracking-widest shadow-2xl shadow-black/20 group">
+                  Solicitar Proposta <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </Button>
+             </a>
+             <Button variant="outline" className="rounded-full h-14 px-12 border-gray-200 bg-white hover:bg-gray-50 text-sm font-black uppercase tracking-widest text-gray-600">
+               Ver Case Studies
+             </Button>
           </div>
         </motion.div>
       </section>
 
-      {/* Services Grid */}
-      <section id="servicos" className="max-w-7xl mx-auto px-6 py-32 border-t border-white/5">
-        <div className="mb-16">
-          <h2 className="text-xs font-black text-[#f43f5e] tracking-[0.3em] uppercase mb-4">Core Capabilities</h2>
-          <p className="text-3xl font-bold tracking-tight">O que fazemos por você.</p>
+      {/* Logo Wall */}
+      <section className="max-w-7xl mx-auto px-8 mb-32">
+         <div className="grid grid-cols-2 md:grid-cols-6 gap-16 opacity-[0.08] grayscale items-center justify-items-center">
+            <div className="font-black text-2xl italic tracking-tighter">APPLE</div>
+            <div className="font-black text-2xl italic tracking-tighter">NIKE</div>
+            <div className="font-black text-2xl italic tracking-tighter">TESLA</div>
+            <div className="font-black text-2xl italic tracking-tighter">DISNEY</div>
+            <div className="font-black text-2xl italic tracking-tighter">UBER</div>
+            <div className="font-black text-2xl italic tracking-tighter">AIRBNB</div>
+         </div>
+      </section>
+
+      {/* Discovery Grid - Mobbin Style */}
+      <section id="servicos" className="max-w-[1500px] mx-auto px-6 py-20 bg-white rounded-[4rem] shadow-[0_-20px_80px_rgba(0,0,0,0.02)]">
+        <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
+          <div className="space-y-4">
+            <h2 className="text-5xl font-black tracking-tighter leading-none">Browse our services</h2>
+            <p className="text-gray-400 font-medium text-lg">Curated marketing solutions for modern companies.</p>
+          </div>
+          <div className="flex items-center gap-3 bg-gray-50 border border-gray-100 rounded-full px-6 py-3.5 w-full md:w-[450px] shadow-inner">
+            <Search className="w-5 h-5 text-gray-300" />
+            <input type="text" placeholder="Search patterns, flows, screens..." className="bg-transparent border-none outline-none text-sm w-full placeholder:text-gray-300 font-medium" />
+          </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-16">
           {config.services.map((s, i) => (
             <motion.div 
               key={i}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.1 }}
+              transition={{ delay: i * 0.05, duration: 0.5 }}
               viewport={{ once: true }}
-              className="p-8 rounded-3xl bg-white/5 border border-white/10 hover:border-[#bff720]/30 transition-all group"
+              className="group"
             >
-              <div className="w-12 h-12 rounded-2xl bg-[#bff720]/10 flex items-center justify-center text-[#bff720] mb-6 group-hover:scale-110 transition-transform">
-                {getIcon(s.icon)}
+              <div className="aspect-[3/4.5] rounded-[2.5rem] bg-gray-50 border border-gray-100 overflow-hidden relative shadow-sm hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.1)] transition-all duration-700">
+                {/* Visual Representation */}
+                <div className="absolute inset-4 bg-white rounded-[2rem] border border-gray-50 flex items-center justify-center overflow-hidden">
+                   <div className="absolute inset-0 bg-gradient-to-br from-[#bff720]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                   <div className="text-gray-100 group-hover:text-[#bff720] transition-all duration-700 group-hover:scale-110">
+                     {IconMap[s.icon] ? <IconMap[s.icon] className="w-32 h-32 stroke-[1px]" /> : <Star className="w-32 h-32 stroke-[1px]" />}
+                   </div>
+                   
+                   {/* "Screenshot" Mock Details */}
+                   <div className="absolute bottom-6 left-6 right-6 h-1 bg-gray-50 rounded-full overflow-hidden">
+                      <motion.div 
+                        initial={{ width: 0 }}
+                        whileInView={{ width: "100%" }}
+                        transition={{ duration: 1.5, delay: 0.5 }}
+                        className="h-full bg-[#bff720]"
+                      />
+                   </div>
+                </div>
               </div>
-              <h3 className="text-xl font-bold mb-3 text-[#f8f8f8]">{s.title}</h3>
-              <p className="text-zinc-500 leading-relaxed text-sm">{s.desc}</p>
+              
+              <div className="mt-6 px-4 flex justify-between items-start">
+                <div>
+                  <h3 className="font-black text-base tracking-tight text-zinc-800">{s.title}</h3>
+                  <p className="text-gray-400 text-xs mt-1 font-bold uppercase tracking-widest">{s.desc}</p>
+                </div>
+                <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0">
+                  <ChevronRight className="w-4 h-4 text-gray-400" />
+                </div>
+              </div>
             </motion.div>
           ))}
         </div>
       </section>
 
-      {/* Pricing / Proposal Section */}
-      <section id="precos" className="max-w-7xl mx-auto px-6 py-32 bg-gradient-to-b from-transparent to-[#050505] rounded-[50px]">
-        <div className="text-center mb-20">
-          <h2 className="text-5xl md:text-7xl font-black tracking-tight mb-4 italic uppercase">Planos e Investimento</h2>
-          <p className="text-zinc-500 font-medium">Estruturas modulares pensadas para o seu momento de escala.</p>
+      {/* Pricing - Minimalist Modals */}
+      <section id="precos" className="max-w-6xl mx-auto px-6 py-48">
+        <div className="text-center mb-24 space-y-4">
+           <h2 className="text-7xl font-black tracking-tighter text-zinc-900 italic">Select a Plan</h2>
+           <p className="text-gray-400 font-medium">No hidden fees. Just high performance.</p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           {config.plans.map((p, i) => (
-            <motion.div
-              key={i}
-              whileHover={{ y: -10 }}
-              className={`relative p-10 rounded-[40px] border ${p.popular ? 'border-[#bff720]/40 bg-white/[0.03]' : 'border-white/10 bg-black/40'} flex flex-col`}
+            <motion.div 
+              key={i} 
+              whileHover={{ y: -5 }}
+              className={`p-10 rounded-[3rem] border ${p.popular ? 'border-zinc-900 bg-white shadow-[0_40px_80px_-20px_rgba(0,0,0,0.1)]' : 'border-gray-100 bg-white/50'} flex flex-col relative overflow-hidden`}
             >
               {p.popular && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-[#bff720] text-black text-[10px] font-black uppercase px-4 py-1.5 rounded-full tracking-widest shadow-lg shadow-[#bff720]/40">
-                  Mais Escolhido
+                <div className="absolute top-6 right-6 bg-[#bff720] text-black text-[8px] font-black uppercase px-3 py-1 rounded-full tracking-widest">
+                  Featured
                 </div>
               )}
-              <div className="mb-8">
-                <span className={`text-sm font-black uppercase tracking-widest ${p.accent || 'text-[#bff720]'}`}>{p.name}</span>
-                <div className="mt-4 flex items-baseline gap-1">
-                  <span className="text-4xl font-black leading-none">R$ {p.price}</span>
-                  <span className="text-zinc-500 font-bold">/mês</span>
+              <div className="mb-12">
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400 mb-6">{p.name}</p>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-6xl font-black tracking-tighter text-zinc-900 italic">R${p.price}</span>
+                  <span className="text-gray-300 font-black text-sm uppercase">/Mo</span>
                 </div>
-                <p className="mt-4 text-zinc-400 text-sm leading-relaxed">{p.description}</p>
               </div>
 
-              <div className="space-y-4 mb-10 flex-1">
+              <div className="space-y-5 mb-14 flex-1">
                 {p.features.map((f, j) => (
-                  <div key={j} className="flex items-start gap-3">
-                    <CheckCircle2 className={`w-5 h-5 mt-0.5 shrink-0 ${p.accent || 'text-[#f43f5e]'}`} />
-                    <span className="text-zinc-300 text-sm font-medium">{f}</span>
+                  <div key={j} className="flex items-center gap-4">
+                    <div className="w-5 h-5 rounded-full bg-[#bff720]/10 flex items-center justify-center">
+                       <CheckCircle2 className="w-3 h-3 text-zinc-900" />
+                    </div>
+                    <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">{f}</span>
                   </div>
                 ))}
               </div>
 
               <a href={`https://wa.me/${config.whatsapp}`}>
-                <Button className={`w-full h-14 rounded-2xl text-md font-bold transition-all ${p.popular ? 'bg-[#bff720] text-black hover:bg-[#bff720]/90 shadow-xl shadow-[#bff720]/20' : 'bg-white/10 text-white hover:bg-white/20 border border-white/5'}`}>
-                  {p.popular ? 'Começar Agora' : 'Selecionar Plano'}
+                <Button className={`w-full h-14 rounded-full font-black uppercase tracking-widest text-[10px] ${p.popular ? 'bg-black text-white hover:bg-zinc-800 shadow-xl shadow-black/10' : 'bg-gray-50 text-zinc-400 hover:bg-gray-100 shadow-none'}`}>
+                  Get Started
                 </Button>
               </a>
             </motion.div>
           ))}
         </div>
+      </section>
 
-        {/* Demand Section */}
-        <div className="mt-16 p-8 md:p-12 rounded-[40px] bg-gradient-to-r from-zinc-900/40 to-black/40 border border-white/5 flex flex-col md:flex-row items-center justify-between gap-8">
-           <div className="space-y-2 text-center md:text-left">
-             <h4 className="text-2xl font-bold flex items-center justify-center md:justify-start gap-2">
-               <Zap className="w-6 h-6 text-amber-400 fill-amber-400" /> Projetos Sob Demanda
-             </h4>
-             <p className="text-zinc-500 max-w-md">Precisa de algo específico como Rebrand, Lançamento ou um Shooting avulso? Nós temos a solução.</p>
-           </div>
-           <div className="flex gap-4">
-              <div className="text-center px-6">
-                 <p className="text-zinc-600 uppercase text-[10px] font-black tracking-widest mb-1">Início em</p>
-                 <p className="text-2xl font-bold">R$ 1.500</p>
-              </div>
-              <a href={`https://wa.me/${config.whatsapp}`}>
-                <Button variant="outline" className="rounded-2xl h-14 px-8 border-white/10 hover:bg-zinc-800">
-                  Consultar Tabela
+      {/* Final CTA - Large Pill */}
+      <section id="cta" className="max-w-6xl mx-auto px-6 py-20 text-center">
+         <div className="bg-[#bff720] text-black p-16 md:p-32 rounded-[5rem] relative shadow-[0_50px_100px_-20px_rgba(191,247,32,0.3)]">
+            <h2 className="text-6xl md:text-[120px] font-black tracking-tighter mb-12 leading-[0.85] italic uppercase underline decoration-black decoration-[12px] underline-offset-8">Let's build together</h2>
+            <div className="flex flex-col md:flex-row gap-4 justify-center">
+              <a href={`https://wa.me/${config.whatsapp}`} target="_blank" rel="noopener noreferrer">
+                <Button className="bg-black text-white hover:bg-zinc-800 rounded-full h-16 px-16 text-xs font-black uppercase tracking-[0.2em] shadow-2xl">
+                  Contact via WhatsApp
                 </Button>
               </a>
-           </div>
-        </div>
+            </div>
+         </div>
+         
+         <div className="mt-32 pt-12 border-t border-gray-100 flex flex-col md:flex-row justify-between items-center gap-8 text-gray-300 text-[9px] font-black uppercase tracking-[0.5em]">
+            <span>© 2026 INOVA CO. LAB — ALL RIGHTS RESERVED.</span>
+            <div className="flex gap-12">
+              <a href="#" className="hover:text-black transition-colors">Instagram</a>
+              <a href="#" className="hover:text-black transition-colors">TikTok</a>
+              <a href="#" className="hover:text-black transition-colors">LinkedIn</a>
+            </div>
+         </div>
       </section>
 
-      {/* Social Proof Placeholder with Glow */}
-      <section className="max-w-4xl mx-auto px-6 py-32 text-center">
-        <h2 className="text-4xl md:text-6xl font-black mb-12 italic uppercase">Quem confia na Inova</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 opacity-40 grayscale hover:grayscale-0 transition-all duration-700">
-           <div className="flex items-center justify-center font-black text-2xl tracking-tighter">CLIENTE_01</div>
-           <div className="flex items-center justify-center font-black text-2xl tracking-tighter">CLIENTE_02</div>
-           <div className="flex items-center justify-center font-black text-2xl tracking-tighter">CLIENTE_03</div>
-           <div className="flex items-center justify-center font-black text-2xl tracking-tighter">CLIENTE_04</div>
-        </div>
-      </section>
+      {/* Admin Quick Editor */}
+      <div className="fixed bottom-8 left-8 z-50">
+         <Button size="icon" className="rounded-full w-12 h-12 bg-white border border-gray-200 text-gray-400 hover:text-black shadow-lg hover:shadow-xl transition-all" asChild>
+           <a href="/proposta/editar"><Settings className="w-5 h-5" /></a>
+         </Button>
+      </div>
 
-      {/* Footer / Final CTA */}
-      <section id="cta" className="max-w-7xl mx-auto px-6 py-40 text-center relative">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-[#015f57]/5 blur-[120px] rounded-full -z-10" />
-        
-        <Sparkles className="w-12 h-12 text-[#bff720] mx-auto mb-8 animate-pulse" />
-        <h2 className="text-5xl md:text-8xl font-black mb-10 tracking-tighter uppercase italic text-[#f8f8f8]">VAMOS ESCALAR?</h2>
-        <p className="text-xl text-zinc-400 mb-12 max-w-xl mx-auto">Sua marca merece a estética do futuro. Clique no botão abaixo e fale diretamente com nosso time de atendimento.</p>
-        
-        <a 
-          href={`https://wa.me/${config.whatsapp}`}
-          target="_blank" 
-          rel="noopener noreferrer"
-        >
-          <Button className="bg-[#bff720] text-black hover:bg-[#bff720]/90 rounded-full h-16 px-12 text-xl font-black uppercase tracking-widest shadow-2xl shadow-[#bff720]/20">
-            <MessageCircle className="w-6 h-6 mr-3 fill-black font-bold" /> Falar no WhatsApp
-          </Button>
-        </a>
-
-        <div className="mt-40 pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 text-zinc-600 text-[10px] font-black uppercase tracking-[0.4em]">
-           <span>© 2026 INOVA CO. LAB</span>
-           <div className="flex gap-10">
-             <a href="#" className="hover:text-[#f43f5e] transition-colors">Privacy</a>
-             <a href="#" className="hover:text-[#f43f5e] transition-colors">Terms</a>
-             <a href="#" className="hover:text-[#f43f5e] transition-colors">Contact</a>
-           </div>
-        </div>
-      </section>
     </div>
   );
 }
