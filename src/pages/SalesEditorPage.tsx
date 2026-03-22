@@ -5,10 +5,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
 import { 
   Save, Plus, Trash2, Layout, Zap, CreditCard, Camera, Gavel, 
   Utensils, Dumbbell, Stethoscope, Building2, MousePointer2, 
-  MessageSquare, BarChart3, ListChecks, Edit3, Image as ImageIcon
+  MessageSquare, BarChart3, ListChecks, Edit3, Image as ImageIcon,
+  MessageCircle, Sparkles, Settings, Target
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -46,16 +48,6 @@ const DEFAULT_CONFIG = {
   ]
 };
 
-// Helper para Deep Merge Seguro
-const deepMerge = (target: any, source: any) => {
-  for (const key in source) {
-    if (source[key] instanceof Object && key in target) {
-      Object.assign(source[key], deepMerge(target[key], source[key]));
-    }
-  }
-  return { ...target, ...source };
-};
-
 export default function SalesEditorPage() {
   const [config, setConfig] = useState(DEFAULT_CONFIG);
 
@@ -64,7 +56,6 @@ export default function SalesEditorPage() {
     if (saved) {
       try { 
         const parsed = JSON.parse(saved);
-        // Deep merge para garantir que campos novos (strategy, badge, cta) existam se o usuário tinha config antiga
         const merged = {
           ...DEFAULT_CONFIG,
           ...parsed,
@@ -95,6 +86,7 @@ export default function SalesEditorPage() {
              <div className="w-3 h-3 bg-[#bff720] rounded-full animate-pulse" />
              <span className="text-[10px] font-black uppercase tracking-[0.4em] opacity-40 italic">Inova Narrative Engine</span>
           </div>
+          <Badge className="bg-primary/10 text-primary border-none mb-4 px-4 py-1 uppercase font-black tracking-widest text-[8px]">PROPOSTA ELEMENTOR STYLE</Badge>
           <h1 className="text-5xl font-black tracking-tighter italic uppercase leading-none">BUILDER DE PROPOSTA</h1>
           <p className="text-muted-foreground font-medium italic mt-4 text-sm">Personalização total de cada pixel da sua oferta comercial.</p>
         </div>
@@ -219,7 +211,7 @@ function VisualThemeBtn({ id, label, img, active, set }: any) {
     <button onClick={() => set(id)} className={`relative group w-full h-28 rounded-3xl overflow-hidden border-2 transition-all duration-500 ${isSelected ? 'border-primary ring-4 ring-primary/20 scale-[1.02] shadow-2xl shadow-primary/10' : 'border-border/60 grayscale hover:grayscale-0 hover:scale-[1.01]'}`}>
        <img src={img} alt={label} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
        <div className={`absolute inset-0 transition-opacity ${isSelected ? 'bg-primary/20' : 'bg-black/60 group-hover:bg-black/40'}`} />
-       <div className="absolute inset-0 p-6 flex flex-col justify-end">
+       <div className="absolute inset-0 p-6 flex flex-col justify-end text-left">
           <p className={`text-[8px] font-black uppercase tracking-[0.4em] mb-1 transition-colors ${isSelected ? 'text-white' : 'text-white/40'}`}>Nicho // Premium</p>
           <p className="text-lg font-black text-white italic uppercase leading-none drop-shadow-xl">{label}</p>
        </div>
@@ -227,5 +219,3 @@ function VisualThemeBtn({ id, label, img, active, set }: any) {
     </button>
   );
 }
-
-import { MessageCircle, Sparkles } from 'lucide-react';

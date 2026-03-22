@@ -41,7 +41,7 @@ function AppRoutes() {
                        location.pathname.startsWith('/contrato/') || 
                        location.pathname.startsWith('/vitrine') || 
                        location.pathname.startsWith('/briefing') ||
-                       (location.pathname === '/proposta' || location.pathname === '/proposta/');
+                       location.pathname.startsWith('/proposta');
 
   if (isPublicPage) {
     return (
@@ -52,6 +52,7 @@ function AppRoutes() {
         <Route path="/vitrine" element={<PublicPortfolioPage />} />
         <Route path="/briefing" element={<BriefingFormPage />} />
         <Route path="/proposta" element={<SalesLP />} />
+        <Route path="/proposta/editar" element={<SalesEditorPage />} />
       </Routes>
     );
   }
@@ -72,7 +73,7 @@ function AppRoutes() {
                 <Route path="/planejamento" element={<ContentPlanningPage />} />
                 <Route path="/permissoes" element={<PermissionsPage />} />
                 <Route path="/contratos" element={<ContractsPage />} />
-            <Route path="/briefings" element={<BriefingsPage />} />
+                <Route path="/briefings" element={<BriefingsPage />} />
                 <Route path="/relatorios" element={<ReportsPage />} />
                 <Route path="/portfolio" element={<PortfolioPage />} />
                 <Route path="/gravacoes" element={<ShootingSchedulePage />} />
