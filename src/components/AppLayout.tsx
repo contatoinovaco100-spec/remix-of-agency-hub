@@ -16,6 +16,7 @@ import {
   Palette,
   LayoutList,
   Bot,
+  Sparkles,
 } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
@@ -36,6 +37,7 @@ const allNavItems: NavItem[] = [
   { title: 'Gravações', url: '/gravacoes', icon: Clapperboard, module: 'operacional' },
   { title: 'Whiteboard', url: '/whiteboard', icon: Palette },
   { title: 'Prospecção IA', url: '/prospeccao', icon: Bot, module: 'comercial' },
+  { title: 'Proposta Comercial', url: '/proposta', icon: Sparkles, module: 'comercial' },
 ];
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
@@ -65,7 +67,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           onClick={toggleMobileMenu}
           className="p-2 text-muted-foreground hover:text-foreground"
         >
-          <Palette className="h-6 w-6" /> {/* Placeholder for Menu icon, using Palette as its already imported otherwise import Menu */}
+          <Palette className="h-6 w-6" />
         </button>
       </header>
 

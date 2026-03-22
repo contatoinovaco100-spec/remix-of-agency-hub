@@ -23,6 +23,7 @@ import ShootingSchedulePage from "./pages/ShootingSchedulePage";
 import WhiteboardPage from "./pages/WhiteboardPage";
 import ContentPlanningPage from "@/pages/ContentPlanningPage";
 import ProspectionPage from "@/pages/ProspectionPage";
+import SalesLP from "@/pages/SalesLP";
 
 import PublicPortfolioPage from "./pages/PublicPortfolioPage";
 import ClientPortalPage from "./pages/ClientPortalPage";
@@ -34,7 +35,12 @@ const queryClient = new QueryClient();
 
 function AppRoutes() {
   const location = useLocation();
-  const isPublicPage = location.pathname.startsWith('/conteudo/') || location.pathname.startsWith('/portal/') || location.pathname.startsWith('/contrato/') || location.pathname === '/vitrine' || location.pathname === '/briefing';
+  const isPublicPage = location.pathname.startsWith('/conteudo/') || 
+                       location.pathname.startsWith('/portal/') || 
+                       location.pathname.startsWith('/contrato/') || 
+                       location.pathname === '/vitrine' || 
+                       location.pathname === '/briefing' ||
+                       location.pathname === '/proposta';
 
   if (isPublicPage) {
     return (
@@ -70,6 +76,7 @@ function AppRoutes() {
                 <Route path="/gravacoes" element={<ShootingSchedulePage />} />
                 <Route path="/whiteboard" element={<WhiteboardPage />} />
                 <Route path="/prospeccao" element={<ProspectionPage />} />
+                <Route path="/proposta" element={<SalesLP />} />
                 
                 <Route path="*" element={<NotFound />} />
               </Routes>
