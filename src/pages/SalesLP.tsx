@@ -87,9 +87,19 @@ export default function SalesLP() {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        // Ensure theme is present
-        if (!parsed.theme) parsed.theme = 'mobbin';
-        setConfig(parsed);
+        // Safely merge with default config to prevent crashes from missing fields
+        setConfig({
+          ...DEFAULT_CONFIG,
+          ...parsed,
+          hero: { ...DEFAULT_CONFIG.hero, ...parsed.hero },
+          // Ensure arrays exist
+          services: parsed.services || DEFAULT_CONFIG.services,
+          plans: (parsed.plans || DEFAULT_CONFIG.plans).map((p: any, i: number) => ({
+            ...DEFAULT_CONFIG.plans[i],
+            ...p,
+            features: p.features || DEFAULT_CONFIG.plans[i]?.features || []
+          }))
+        });
       } catch (e) {
         console.error('Error loading config', e);
       }

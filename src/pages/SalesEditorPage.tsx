@@ -58,8 +58,19 @@ export default function SalesEditorPage() {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        if (!parsed.theme) parsed.theme = 'mobbin';
-        setConfig(parsed);
+        // Safely merge with default config to prevent crashes from missing fields
+        setConfig({
+          ...DEFAULT_CONFIG,
+          ...parsed,
+          hero: { ...DEFAULT_CONFIG.hero, ...parsed.hero },
+          // Ensure arrays exist
+          services: parsed.services || DEFAULT_CONFIG.services,
+          plans: (parsed.plans || DEFAULT_CONFIG.plans).map((p: any, i: number) => ({
+            ...DEFAULT_CONFIG.plans[i],
+            ...p,
+            features: p.features || DEFAULT_CONFIG.plans[i]?.features || []
+          }))
+        });
       } catch (e) {
         console.error('Error loading config', e);
       }
@@ -253,10 +264,12 @@ export default function SalesEditorPage() {
                     </div>
                     <div className="space-y-2">
                        <Label>Key Features (comma separated)</Label>
-                       <Textarea value={p.features.join(', ')} onChange={(e) => {
-                          const newPlans = [...config.plans];
-                          newPlans[i].features = e.target.value.split(',').map(f => f.trim());
-                          setConfig({...config, plans: newPlans});
+                       <Textarea 
+                         value={Array.isArray(p.features) ? p.features.join(', ') : ''} 
+                         onChange={(e) => {
+                           const newPlans = [...config.plans];
+                           newPlans[i].features = e.target.value.split(',').map(f => f.trim());
+                           setConfig({...config, plans: newPlans});
                        }} />
                     </div>
                  </div>
