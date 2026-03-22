@@ -11,39 +11,39 @@ import { toast } from 'sonner';
 const DEFAULT_CONFIG = {
   theme: 'mobbin',
   hero: {
-    title: "A AGÊNCIA QUE REALMENTE FAZ AS COISAS.",
-    tagline: "Não entregamos apenas posts. Entregamos a infraestrutura de vendas e a estética de cinema que colocam sua marca no topo.",
-    badge: "Proposta Digital 2026"
+    title: "BRANDING AS A WEAPON. NARRATIVE AS POWER.",
+    tagline: "Being seen is easy. Being remembered is strategy. We build perception, authority, and market dominance through high-end cinematic execution.",
+    badge: "STRATEGIC POSITIONING 2026"
   },
   whatsapp: "5562999999999",
   services: [
-    { title: "Produção Audiovisual", desc: "Equipamentos de cinema e edições que prendem a atenção nos primeiros segundos.", icon: "Video" },
-    { title: "Inteligência Artificial", desc: "Processos de prospecção e planejamento tunados por IAs de última geração.", icon: "Bot" },
-    { title: "Growth Marketing", desc: "Estratégias baseadas em dados para escalar faturamento e reconhecimento.", icon: "PieChart" },
-    { title: "Digital Solutions", desc: "De Landing Pages a CRM, construímos a infraestrutura que sua empresa precisa.", icon: "Monitor" }
+    { title: "Narrative Architecture", desc: "Strategic positioning and differential mapping to dominate your market.", icon: "Layers" },
+    { title: "Cinematic Production", desc: "Professional video capture and high-impact reels designed for authority.", icon: "Video" },
+    { title: "Conversion Funnels", desc: "Strategic scripts and funnel structures focused on high-ticket sales.", icon: "Activity" },
+    { title: "Authority Growth", desc: "Building a structured ecosystem for your brand to dominate the industry.", icon: "Crown" }
   ],
   plans: [
     {
       name: "Essential",
-      price: "2.900",
-      description: "Ideal para marcas que querem consistência e posicionamento nas redes sociais.",
-      features: ["Gestão de Instagram & TikTok", "3 Postagens semanais (Reels/Feed)", "Design de alta performance", "Estratégia de Linhas Editoriais", "Relatório mensal de métricas"],
+      price: "1.200",
+      description: "For brands seeking consistency and clear positioning in the market.",
+      features: ["Social Media Management", "3 Strategic posts weekly", "High-performance design", "Monthly reports"],
       accent: "text-[#bff720]",
       popular: false
     },
     {
-      name: "Growth",
-      price: "5.500",
-      description: "Foco em escala, tráfego e produção de material visual de cinema.",
-      features: ["Tudo do plano Essential", "Gestão de Tráfego Pago (Meta/Google)", "2 Visitas mensais para Filmagens", "Edição Premium com Storytelling", "Configuração de Funil de Vendas", "Suporte Prioritário via WhatsApp"],
+      name: "Authority",
+      price: "2.500",
+      description: "Full-service production and high-impact sales funnel integration.",
+      features: ["Paid Traffic (Meta/Google)", "2 Monthly Filming Visits", "Sales Funnel Structure", "VIP Support"],
       accent: "text-[#bff720]",
       popular: true
     },
     {
       name: "Elite",
-      price: "12.000",
-      description: "O braço direito completo para dominar o mercado com IA e Audiovisual.",
-      features: ["Tudo do plano Growth", "Production Day: 4 Filmagens mensais", "Automação Inteligente (SDR & IA)", "Criação de Website / Landing Page", "Brand Consulting & Branding", "Diretoria de Criação Dedicada"],
+      price: "5.000",
+      description: "The complete strategic arm to control the narrative of your industry.",
+      features: ["4 Production Days", "AI Automation (SDR)", "Branding Consulting", "Creative Direction"],
       accent: "text-[#bff720]",
       popular: false
     }
@@ -57,7 +57,9 @@ export default function SalesEditorPage() {
     const saved = localStorage.getItem('agency_lp_config');
     if (saved) {
       try {
-        setConfig(JSON.parse(saved));
+        const parsed = JSON.parse(saved);
+        if (!parsed.theme) parsed.theme = 'mobbin';
+        setConfig(parsed);
       } catch (e) {
         console.error('Error loading config', e);
       }
@@ -66,94 +68,56 @@ export default function SalesEditorPage() {
 
   const handleSave = () => {
     localStorage.setItem('agency_lp_config', JSON.stringify(config));
-    toast.success('Configurações da Landing Page salvas!');
-  };
-
-  const updateHero = (field: string, value: string) => {
-    setConfig({ ...config, hero: { ...config.hero, [field]: value } });
-  };
-
-  const updateService = (index: number, field: string, value: string) => {
-    const newServices = [...config.services];
-    newServices[index] = { ...newServices[index], [field]: value };
-    setConfig({ ...config, services: newServices });
+    toast.success('Proposal configuration saved successfully!');
   };
 
   const addService = () => {
     setConfig({
       ...config,
-      services: [...config.services, { title: 'Novo Serviço', desc: 'Descrição do serviço', icon: 'Star' }]
+      services: [...config.services, { title: "New Service", desc: "Service description", icon: "Star" }]
     });
   };
 
   const removeService = (index: number) => {
-    setConfig({ ...config, services: config.services.filter((_, i) => i !== index) });
-  };
-
-  const updatePlan = (index: number, field: string, value: any) => {
-    const newPlans = [...config.plans];
-    newPlans[index] = { ...newPlans[index], [field]: value };
-    setConfig({ ...config, plans: newPlans });
-  };
-
-  const updateFeature = (planIndex: number, featureIndex: number, value: string) => {
-    const newPlans = [...config.plans];
-    newPlans[planIndex].features[featureIndex] = value;
-    setConfig({ ...config, plans: newPlans });
-  };
-
-  const addFeature = (planIndex: number) => {
-    const newPlans = [...config.plans];
-    newPlans[planIndex].features.push('Nova funcionalidade');
-    setConfig({ ...config, plans: newPlans });
-  };
-
-  const removeFeature = (planIndex: number, featureIndex: number) => {
-    const newPlans = [...config.plans];
-    newPlans[planIndex].features = newPlans[planIndex].features.filter((_, i) => i !== featureIndex);
-    setConfig({ ...config, plans: newPlans });
+    const newServices = config.services.filter((_, i) => i !== index);
+    setConfig({ ...config, services: newServices });
   };
 
   return (
-    <div className="max-w-5xl mx-auto py-8 px-4 space-y-8">
-      <div className="flex items-center justify-between">
+    <div className="min-h-screen bg-gray-50 p-8 pt-24 max-w-5xl mx-auto">
+      <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Editor da Landing Page</h1>
-          <p className="text-muted-foreground">Personalize o conteúdo da sua proposta comercial digital.</p>
+          <h1 className="text-3xl font-black tracking-tight">PROPOSAL EDITOR</h1>
+          <p className="text-gray-500 font-medium">Customize your strategic landing page in real-time.</p>
         </div>
-        <div className="flex gap-3">
-          <Button variant="outline" asChild>
-            <a href="/proposta" target="_blank"><Globe className="mr-2 h-4 w-4" /> Ver Página</a>
-          </Button>
-          <Button onClick={handleSave} className="bg-[#bff720] hover:bg-[#bff720]/90 text-black font-bold">
-            <Save className="mr-2 h-4 w-4" /> Salvar Edições
-          </Button>
-        </div>
+        <Button onClick={handleSave} className="bg-black text-white rounded-full px-8 gap-2">
+          <Save size={18} /> Save Changes
+        </Button>
       </div>
 
-      <Tabs defaultValue="hero" className="w-full">
+      <Tabs defaultValue="design" className="w-full">
         <TabsList className="grid w-full grid-cols-5 mb-8">
           <TabsTrigger value="design"><Settings className="mr-2 h-4 w-4" /> Design</TabsTrigger>
           <TabsTrigger value="hero"><Layout className="mr-2 h-4 w-4" /> Hero</TabsTrigger>
-          <TabsTrigger value="services"><Briefcase className="mr-2 h-4 w-4" /> Serviços</TabsTrigger>
-          <TabsTrigger value="plans"><DollarSign className="mr-2 h-4 w-4" /> Planos</TabsTrigger>
-          <TabsTrigger value="settings"><Globe className="mr-2 h-4 w-4" /> Geral</TabsTrigger>
+          <TabsTrigger value="services"><Briefcase className="mr-2 h-4 w-4" /> Solutions</TabsTrigger>
+          <TabsTrigger value="plans"><DollarSign className="mr-2 h-4 w-4" /> Pricing</TabsTrigger>
+          <TabsTrigger value="settings"><Globe className="mr-2 h-4 w-4" /> Settings</TabsTrigger>
         </TabsList>
 
         <TabsContent value="design">
           <Card>
             <CardHeader>
-              <CardTitle>Template da Proposta</CardTitle>
-              <CardDescription>Escolha o estilo visual da sua landing page.</CardDescription>
+              <CardTitle>Template Selection</CardTitle>
+              <CardDescription>Choose the visual style that fits your brand narrative.</CardDescription>
             </CardHeader>
-            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-8">
+            <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-6 pb-8">
                <button 
                  onClick={() => setConfig({ ...config, theme: 'mobbin' })}
                  className={`p-6 rounded-3xl border-2 text-left transition-all ${config.theme === 'mobbin' ? 'border-[#bff720] bg-[#bff720]/5' : 'border-gray-100 bg-white hover:border-gray-200'}`}
                >
                  <div className="w-12 h-12 rounded-2xl bg-gray-100 flex items-center justify-center mb-4"><Layout className="w-6 h-6 text-black" /></div>
                  <h4 className="font-black text-lg">Mobbin Style</h4>
-                 <p className="text-xs text-gray-400 mt-1 uppercase font-bold tracking-widest">Clean • Grid • Discovery</p>
+                 <p className="text-[10px] text-gray-400 mt-1 uppercase font-bold tracking-widest">Clean • Grid • Elite</p>
                </button>
 
                <button 
@@ -162,7 +126,7 @@ export default function SalesEditorPage() {
                >
                  <div className="w-12 h-12 rounded-2xl bg-zinc-800 flex items-center justify-center mb-4"><Zap className="w-6 h-6 text-[#bff720]" /></div>
                  <h4 className="font-black text-lg">OpenClaw Style</h4>
-                 <p className="text-xs text-zinc-500 mt-1 uppercase font-bold tracking-widest text-[#bff720]">Dark • Premium • Cinematic</p>
+                 <p className="text-[10px] text-zinc-500 mt-1 uppercase font-bold tracking-widest text-[#bff720]">Dark • Premium • Lux</p>
                </button>
 
                <button 
@@ -171,7 +135,7 @@ export default function SalesEditorPage() {
                >
                  <div className="w-12 h-12 rounded-2xl bg-[#bff720]/10 flex items-center justify-center mb-4"><CreditCard className="w-6 h-6 text-[#bff720]" /></div>
                  <h4 className="font-black text-lg">Fintech Style</h4>
-                 <p className="text-xs text-gray-400 mt-1 uppercase font-bold tracking-widest">Modern • SaaS • Banking</p>
+                 <p className="text-[10px] text-gray-400 mt-1 uppercase font-bold tracking-widest text-[#bff720]">SaaS • Bank • Scale</p>
                </button>
             </CardContent>
           </Card>
@@ -180,118 +144,147 @@ export default function SalesEditorPage() {
         <TabsContent value="hero">
           <Card>
             <CardHeader>
-              <CardTitle>Seção Principal (Hero)</CardTitle>
-              <CardDescription>O primeiro impacto que o cliente terá ao abrir sua proposta.</CardDescription>
+              <CardTitle>Hero Section</CardTitle>
+              <CardDescription>First impression is the positioning battlefield.</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-6">
               <div className="space-y-2">
-                <Label>Título de Impacto (H1)</Label>
-                <Input value={config.hero.title} onChange={e => updateHero('title', e.target.value)} />
+                <Label>Title (Main Heading)</Label>
+                <Input value={config.hero.title} onChange={(e) => setConfig({...config, hero: {...config.hero, title: e.target.value.toUpperCase()}})} />
               </div>
               <div className="space-y-2">
-                <Label>Tagline / Subtítulo</Label>
-                <Textarea value={config.hero.tagline} onChange={e => updateHero('tagline', e.target.value)} />
+                <Label>Tagline (Subheading)</Label>
+                <Textarea value={config.hero.tagline} onChange={(e) => setConfig({...config, hero: {...config.hero, tagline: e.target.value}})} />
               </div>
               <div className="space-y-2">
-                <Label>Badge de Topo</Label>
-                <Input value={config.hero.badge} onChange={e => updateHero('badge', e.target.value)} />
+                <Label>Badge Text</Label>
+                <Input value={config.hero.badge} onChange={(e) => setConfig({...config, hero: {...config.hero, badge: e.target.value.toUpperCase()}})} />
               </div>
             </CardContent>
           </Card>
         </TabsContent>
 
         <TabsContent value="services">
-          <div className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h3 className="text-lg font-semibold">Nossos Serviços</h3>
-              <Button size="sm" onClick={addService}><Plus className="h-4 w-4 mr-1" /> Add Serviço</Button>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {config.services.map((s, i) => (
-                <Card key={i}>
-                  <CardHeader className="py-4 flex flex-row items-center justify-between">
-                    <CardTitle className="text-sm">Serviço #{i + 1}</CardTitle>
-                    <Button variant="ghost" size="sm" onClick={() => removeService(i)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <Input placeholder="Título" value={s.title} onChange={e => updateService(i, 'title', e.target.value)} />
-                    <Textarea placeholder="Descrição curta" value={s.desc} onChange={e => updateService(i, 'desc', e.target.value)} />
-                    <Input placeholder="Ícone (Lucide name)" value={s.icon} onChange={e => updateService(i, 'icon', e.target.value)} />
-                  </CardContent>
-                </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle>Solutions & Expertises</CardTitle>
+                <CardDescription>Managing how the market perceives your service.</CardDescription>
+              </div>
+              <Button onClick={addService} size="sm" variant="outline" className="rounded-full gap-2">
+                <Plus size={16} /> Add Solution
+              </Button>
+            </CardHeader>
+            <CardContent className="space-y-8">
+              {config.services.map((s: any, i: number) => (
+                <div key={i} className="p-6 border border-gray-100 rounded-3xl relative animate-in fade-in slide-in-from-top-4">
+                  <Button onClick={() => removeService(i)} variant="ghost" size="icon" className="absolute top-4 right-4 text-red-500 hover:bg-red-50">
+                    <Trash2 size={16} />
+                  </Button>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Solution Title</Label>
+                      <Input value={s.title} onChange={(e) => {
+                        const newServices = [...config.services];
+                        newServices[i].title = e.target.value;
+                        setConfig({...config, services: newServices});
+                      }} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Icon Name (Lucide)</Label>
+                      <Input value={s.icon} onChange={(e) => {
+                        const newServices = [...config.services];
+                        newServices[i].icon = e.target.value;
+                        setConfig({...config, services: newServices});
+                      }} />
+                    </div>
+                    <div className="space-y-2 md:col-span-2">
+                      <Label>Brief Description</Label>
+                      <Textarea value={s.desc} onChange={(e) => {
+                        const newServices = [...config.services];
+                        newServices[i].desc = e.target.value;
+                        setConfig({...config, services: newServices});
+                      }} />
+                    </div>
+                  </div>
+                </div>
               ))}
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         </TabsContent>
 
         <TabsContent value="plans">
-          <div className="space-y-8">
-            {config.plans.map((p, i) => (
-              <Card key={i} className={p.popular ? 'border-[#bff720]/50 shadow-md' : ''}>
-                <CardHeader>
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <CardTitle>Plano {p.name}</CardTitle>
-                      <CardDescription>Configure o preço e as entregas deste nível.</CardDescription>
+          <Card>
+            <CardHeader>
+              <CardTitle>Investment Plans</CardTitle>
+              <CardDescription>Control the value perception of your offers.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-12 pb-12">
+               {config.plans.map((p: any, i: number) => (
+                 <div key={i} className={`p-8 rounded-[2rem] border-2 ${p.popular ? 'border-[#bff720] bg-[#bff720]/5' : 'border-gray-100'} space-y-6`}>
+                    <div className="flex justify-between items-center">
+                       <h3 className="text-xl font-black">{p.name} Plan</h3>
+                       <div className="flex items-center gap-2">
+                          <Label className="text-[10px] font-black uppercase text-gray-400">Popular</Label>
+                          <input type="checkbox" checked={p.popular} className="accent-[#bff720]" onChange={(e) => {
+                             const newPlans = [...config.plans];
+                             newPlans[i].popular = e.target.checked;
+                             setConfig({...config, plans: newPlans});
+                          }} />
+                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                       <Label className="text-xs">Popular?</Label>
-                       <input 
-                         type="checkbox" 
-                         checked={p.popular} 
-                         onChange={e => updatePlan(i, 'popular', e.target.checked)}
-                         className="h-4 w-4 accent-[#bff720]"
-                       />
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                       <Label>Nome do Plano</Label>
-                       <Input value={p.name} onChange={e => updatePlan(i, 'name', e.target.value)} />
-                    </div>
-                    <div className="space-y-2">
-                       <Label>Preço (R$)</Label>
-                       <Input value={p.price} onChange={e => updatePlan(i, 'price', e.target.value)} />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Descrição Curta</Label>
-                    <Input value={p.description} onChange={e => updatePlan(i, 'description', e.target.value)} />
-                  </div>
-                  <div className="space-y-3">
-                    <Label>Funcionalidades (Checklist)</Label>
-                    {p.features.map((f, featureIdx) => (
-                      <div key={featureIdx} className="flex gap-2">
-                        <Input value={f} onChange={e => updateFeature(i, featureIdx, e.target.value)} />
-                        <Button variant="ghost" size="sm" onClick={() => removeFeature(i, featureIdx)}><Trash2 className="h-4 w-4" /></Button>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <Label>Plan Name</Label>
+                        <Input value={p.name} onChange={(e) => {
+                          const newPlans = [...config.plans];
+                          newPlans[i].name = e.target.value;
+                          setConfig({...config, plans: newPlans});
+                        }} />
                       </div>
-                    ))}
-                    <Button variant="outline" size="sm" className="w-full" onClick={() => addFeature(i)}><Plus className="h-4 w-4 mr-1" /> Add Funcionalidade</Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                      <div className="space-y-2">
+                        <Label>Price (Monthly)</Label>
+                        <Input value={p.price} onChange={(e) => {
+                          const newPlans = [...config.plans];
+                          newPlans[i].price = e.target.value;
+                          setConfig({...config, plans: newPlans});
+                        }} />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                       <Label>Key Features (comma separated)</Label>
+                       <Textarea value={p.features.join(', ')} onChange={(e) => {
+                          const newPlans = [...config.plans];
+                          newPlans[i].features = e.target.value.split(',').map(f => f.trim());
+                          setConfig({...config, plans: newPlans});
+                       }} />
+                    </div>
+                 </div>
+               ))}
+            </CardContent>
+          </Card>
         </TabsContent>
 
         <TabsContent value="settings">
           <Card>
             <CardHeader>
-              <CardTitle>Configurações Gerais</CardTitle>
-              <CardDescription>Links e contatos da proposta.</CardDescription>
+              <CardTitle>Global Settings</CardTitle>
+              <CardDescription>Contact info and platform parameters.</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-6">
               <div className="space-y-2">
-                <Label>WhatsApp para Contato (DDI + DDD + Número)</Label>
-                <Input value={config.whatsapp} onChange={e => setConfig({ ...config, whatsapp: e.target.value })} placeholder="Ex: 5562999999999" />
-                <p className="text-[10px] text-muted-foreground">Este número será usado no botão de fechamento da Landing Page.</p>
+                <Label>WhatsApp Number (With DDD)</Label>
+                <Input value={config.whatsapp} onChange={(e) => setConfig({...config, whatsapp: e.target.value})} />
+                <p className="text-[10px] text-gray-400">Format: 5562999999999</p>
               </div>
             </CardContent>
           </Card>
         </TabsContent>
       </Tabs>
+      
+      <div className="mt-20 text-center opacity-20 text-[10px] font-black uppercase tracking-widest italic">
+        The Strategist • Narratives that Profit
+      </div>
     </div>
   );
 }
