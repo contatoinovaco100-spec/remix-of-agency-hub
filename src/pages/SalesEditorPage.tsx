@@ -11,20 +11,20 @@ import { toast } from 'sonner';
 const DEFAULT_CONFIG = {
   theme: 'mobbin',
   hero: {
-    title: "BRANDING AS A WEAPON. NARRATIVE AS POWER.",
+    title: "BEYOND THE LENS. WE BUILD POWERFUL NARRATIVES.",
     tagline: "Being seen is easy. Being remembered is strategy. We build perception, authority, and market dominance through high-end cinematic execution.",
-    badge: "STRATEGIC POSITIONING 2026"
+    badge: "THE STRATEGIST • 2026"
   },
   whatsapp: "5562999999999",
   services: [
-    { title: "Narrative Architecture", desc: "Strategic positioning and differential mapping to dominate your market.", icon: "Layers" },
-    { title: "Cinematic Production", desc: "Professional video capture and high-impact reels designed for authority.", icon: "Video" },
-    { title: "Conversion Funnels", desc: "Strategic scripts and funnel structures focused on high-ticket sales.", icon: "Activity" },
-    { title: "Authority Growth", desc: "Building a structured ecosystem for your brand to dominate the industry.", icon: "Crown" }
+    { title: "Narrative Architecture", desc: "Strategic positioning and differential mapping to define how the market perceives your brand.", icon: "Layers" },
+    { title: "Cinematic Production", desc: "High-end video capture and strategic reels designed to build immediate authority.", icon: "Video" },
+    { title: "Performance Funnels", desc: "Result-driven content and funnel structures focused on high-ticket sales conversion.", icon: "Activity" },
+    { title: "Market Dominance", desc: "A complete strategic ecosystem to ensure your brand is not just seen, but remembered.", icon: "Crown" }
   ],
   plans: [
     {
-      name: "Essential",
+      name: "Strategic Foundation",
       price: "1.200",
       description: "For brands seeking consistency and clear positioning in the market.",
       features: ["Social Media Management", "3 Strategic posts weekly", "High-performance design", "Monthly reports"],
@@ -32,7 +32,7 @@ const DEFAULT_CONFIG = {
       popular: false
     },
     {
-      name: "Authority",
+      name: "Authority Dominance",
       price: "2.500",
       description: "Full-service production and high-impact sales funnel integration.",
       features: ["Paid Traffic (Meta/Google)", "2 Monthly Filming Visits", "Sales Funnel Structure", "VIP Support"],
@@ -40,10 +40,10 @@ const DEFAULT_CONFIG = {
       popular: true
     },
     {
-      name: "Elite",
+      name: "Elite Ecosystem",
       price: "5.000",
-      description: "The complete strategic arm to control the narrative of your industry.",
-      features: ["4 Production Days", "AI Automation (SDR)", "Branding Consulting", "Creative Direction"],
+      description: "The complete strategic arm for market leaders who want to control the narrative.",
+      features: ["4 Production Days", "AI-Powered SDR Automation", "Branding Consulting", "Creative Direction"],
       accent: "text-[#bff720]",
       popular: false
     }
@@ -63,7 +63,6 @@ export default function SalesEditorPage() {
           ...DEFAULT_CONFIG,
           ...parsed,
           hero: { ...DEFAULT_CONFIG.hero, ...parsed.hero },
-          // Ensure arrays exist
           services: parsed.services || DEFAULT_CONFIG.services,
           plans: (parsed.plans || DEFAULT_CONFIG.plans).map((p: any, i: number) => ({
             ...DEFAULT_CONFIG.plans[i],
@@ -128,7 +127,7 @@ export default function SalesEditorPage() {
                >
                  <div className="w-12 h-12 rounded-2xl bg-gray-100 flex items-center justify-center mb-4"><Layout className="w-6 h-6 text-black" /></div>
                  <h4 className="font-black text-lg">Mobbin Style</h4>
-                 <p className="text-[10px] text-gray-400 mt-1 uppercase font-bold tracking-widest">Clean • Grid • Elite</p>
+                 <p className="text-[10px] text-gray-400 mt-1 uppercase font-bold tracking-widest">Clean • Discovery • Catalog</p>
                </button>
 
                <button 
@@ -137,7 +136,7 @@ export default function SalesEditorPage() {
                >
                  <div className="w-12 h-12 rounded-2xl bg-zinc-800 flex items-center justify-center mb-4"><Zap className="w-6 h-6 text-[#bff720]" /></div>
                  <h4 className="font-black text-lg">OpenClaw Style</h4>
-                 <p className="text-[10px] text-zinc-500 mt-1 uppercase font-bold tracking-widest text-[#bff720]">Dark • Premium • Lux</p>
+                 <p className="text-[10px] text-zinc-500 mt-1 uppercase font-bold tracking-widest text-[#bff720]">Dark • Manifesto • Bold</p>
                </button>
 
                <button 
@@ -146,7 +145,7 @@ export default function SalesEditorPage() {
                >
                  <div className="w-12 h-12 rounded-2xl bg-[#bff720]/10 flex items-center justify-center mb-4"><CreditCard className="w-6 h-6 text-[#bff720]" /></div>
                  <h4 className="font-black text-lg">Fintech Style</h4>
-                 <p className="text-[10px] text-gray-400 mt-1 uppercase font-bold tracking-widest text-[#bff720]">SaaS • Bank • Scale</p>
+                 <p className="text-[10px] text-gray-400 mt-1 uppercase font-bold tracking-widest text-[#bff720]">Corporate • Infrastructure • Growth</p>
                </button>
             </CardContent>
           </Card>
@@ -179,11 +178,11 @@ export default function SalesEditorPage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
-                <CardTitle>Solutions & Expertises</CardTitle>
-                <CardDescription>Managing how the market perceives your service.</CardDescription>
+                <CardTitle>Architecture of Power</CardTitle>
+                <CardDescription>Managing how the market perceives your absolute authority.</CardDescription>
               </div>
               <Button onClick={addService} size="sm" variant="outline" className="rounded-full gap-2">
-                <Plus size={16} /> Add Solution
+                <Plus size={16} /> Add Expertise
               </Button>
             </CardHeader>
             <CardContent className="space-y-8">
@@ -194,7 +193,7 @@ export default function SalesEditorPage() {
                   </Button>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label>Solution Title</Label>
+                      <Label>Expertise Title</Label>
                       <Input value={s.title} onChange={(e) => {
                         const newServices = [...config.services];
                         newServices[i].title = e.target.value;
@@ -227,14 +226,14 @@ export default function SalesEditorPage() {
         <TabsContent value="plans">
           <Card>
             <CardHeader>
-              <CardTitle>Investment Plans</CardTitle>
-              <CardDescription>Control the value perception of your offers.</CardDescription>
+              <CardTitle>Investment Models</CardTitle>
+              <CardDescription>Control the value perception and entry point for growth.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-12 pb-12">
                {config.plans.map((p: any, i: number) => (
                  <div key={i} className={`p-8 rounded-[2rem] border-2 ${p.popular ? 'border-[#bff720] bg-[#bff720]/5' : 'border-gray-100'} space-y-6`}>
                     <div className="flex justify-between items-center">
-                       <h3 className="text-xl font-black">{p.name} Plan</h3>
+                       <h3 className="text-xl font-black">{p.name} Scale</h3>
                        <div className="flex items-center gap-2">
                           <Label className="text-[10px] font-black uppercase text-gray-400">Popular</Label>
                           <input type="checkbox" checked={p.popular} className="accent-[#bff720]" onChange={(e) => {
@@ -281,7 +280,7 @@ export default function SalesEditorPage() {
         <TabsContent value="settings">
           <Card>
             <CardHeader>
-              <CardTitle>Global Settings</CardTitle>
+              <CardTitle>Global Context</CardTitle>
               <CardDescription>Contact info and platform parameters.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -296,7 +295,7 @@ export default function SalesEditorPage() {
       </Tabs>
       
       <div className="mt-20 text-center opacity-20 text-[10px] font-black uppercase tracking-widest italic">
-        The Strategist • Narratives that Profit
+        The Strategist • Building Narrative Equity
       </div>
     </div>
   );
