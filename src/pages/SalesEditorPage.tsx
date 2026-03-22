@@ -5,10 +5,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Save, Plus, Trash2, Layout, Briefcase, DollarSign, Settings, Globe } from 'lucide-react';
+import { Save, Plus, Trash2, Layout, Briefcase, DollarSign, Settings, Globe, Zap } from 'lucide-react';
 import { toast } from 'sonner';
 
 const DEFAULT_CONFIG = {
+  theme: 'mobbin',
   hero: {
     title: "A AGÊNCIA QUE REALMENTE FAZ AS COISAS.",
     tagline: "Não entregamos apenas posts. Entregamos a infraestrutura de vendas e a estética de cinema que colocam sua marca no topo.",
@@ -131,12 +132,41 @@ export default function SalesEditorPage() {
       </div>
 
       <Tabs defaultValue="hero" className="w-full">
-        <TabsList className="grid w-full grid-cols-4 mb-8">
+        <TabsList className="grid w-full grid-cols-5 mb-8">
+          <TabsTrigger value="design"><Settings className="mr-2 h-4 w-4" /> Design</TabsTrigger>
           <TabsTrigger value="hero"><Layout className="mr-2 h-4 w-4" /> Hero</TabsTrigger>
           <TabsTrigger value="services"><Briefcase className="mr-2 h-4 w-4" /> Serviços</TabsTrigger>
           <TabsTrigger value="plans"><DollarSign className="mr-2 h-4 w-4" /> Planos</TabsTrigger>
-          <TabsTrigger value="settings"><Settings className="mr-2 h-4 w-4" /> Geral</TabsTrigger>
+          <TabsTrigger value="settings"><Globe className="mr-2 h-4 w-4" /> Geral</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="design">
+          <Card>
+            <CardHeader>
+              <CardTitle>Template da Proposta</CardTitle>
+              <CardDescription>Escolha o estilo visual da sua landing page.</CardDescription>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-8">
+               <button 
+                 onClick={() => setConfig({ ...config, theme: 'mobbin' })}
+                 className={`p-6 rounded-3xl border-2 text-left transition-all ${config.theme === 'mobbin' ? 'border-[#bff720] bg-[#bff720]/5' : 'border-gray-100 bg-white hover:border-gray-200'}`}
+               >
+                 <div className="w-12 h-12 rounded-2xl bg-gray-100 flex items-center justify-center mb-4"><Layout className="w-6 h-6 text-black" /></div>
+                 <h4 className="font-black text-lg">Mobbin Style</h4>
+                 <p className="text-xs text-gray-400 mt-1 uppercase font-bold tracking-widest">Clean • Grid • Discovery</p>
+               </button>
+
+               <button 
+                 onClick={() => setConfig({ ...config, theme: 'openclaw' })}
+                 className={`p-6 rounded-3xl border-2 text-left transition-all ${config.theme === 'openclaw' ? 'border-[#bff720] bg-black text-white' : 'border-gray-100 bg-white hover:border-gray-200'}`}
+               >
+                 <div className="w-12 h-12 rounded-2xl bg-zinc-800 flex items-center justify-center mb-4"><Zap className="w-6 h-6 text-[#bff720]" /></div>
+                 <h4 className="font-black text-lg">OpenClaw Style</h4>
+                 <p className="text-xs text-zinc-500 mt-1 uppercase font-bold tracking-widest text-[#bff720]">Dark • Premium • Cinematic</p>
+               </button>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
         <TabsContent value="hero">
           <Card>
