@@ -39,9 +39,9 @@ function AppRoutes() {
   const isPublicPage = location.pathname.startsWith('/conteudo/') || 
                        location.pathname.startsWith('/portal/') || 
                        location.pathname.startsWith('/contrato/') || 
-                       location.pathname === '/vitrine' || 
-                       location.pathname === '/briefing' ||
-                       location.pathname === '/proposta';
+                       location.pathname.startsWith('/vitrine') || 
+                       location.pathname.startsWith('/briefing') ||
+                       location.pathname.startsWith('/proposta');
 
   if (isPublicPage) {
     return (
