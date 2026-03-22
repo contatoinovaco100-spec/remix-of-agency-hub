@@ -51,6 +51,7 @@ function AppRoutes() {
         <Route path="/contrato/:contractId" element={<ContractSignPage />} />
         <Route path="/vitrine" element={<PublicPortfolioPage />} />
         <Route path="/briefing" element={<BriefingFormPage />} />
+        <Route path="/proposta" element={<SalesLP />} />
       </Routes>
     );
   }
@@ -77,7 +78,6 @@ function AppRoutes() {
                 <Route path="/gravacoes" element={<ShootingSchedulePage />} />
                 <Route path="/whiteboard" element={<WhiteboardPage />} />
                 <Route path="/prospeccao" element={<ProspectionPage />} />
-                <Route path="/proposta" element={<SalesLP />} />
                 <Route path="/proposta/editar" element={<SalesEditorPage />} />
                 
                 <Route path="*" element={<NotFound />} />
