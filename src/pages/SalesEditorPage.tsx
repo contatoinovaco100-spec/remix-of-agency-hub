@@ -5,7 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Save, Plus, Trash2, Layout, Briefcase, DollarSign, Settings, Globe, Zap } from 'lucide-react';
+import { Save, Plus, Trash2, Layout, Briefcase, DollarSign, Settings, Globe, Zap, CreditCard } from 'lucide-react';
 import { toast } from 'sonner';
 
 const DEFAULT_CONFIG = {
@@ -163,6 +163,15 @@ export default function SalesEditorPage() {
                  <div className="w-12 h-12 rounded-2xl bg-zinc-800 flex items-center justify-center mb-4"><Zap className="w-6 h-6 text-[#bff720]" /></div>
                  <h4 className="font-black text-lg">OpenClaw Style</h4>
                  <p className="text-xs text-zinc-500 mt-1 uppercase font-bold tracking-widest text-[#bff720]">Dark • Premium • Cinematic</p>
+               </button>
+
+               <button 
+                 onClick={() => setConfig({ ...config, theme: 'fintech' })}
+                 className={`p-6 rounded-3xl border-2 text-left transition-all ${config.theme === 'fintech' ? 'border-[#bff720] bg-[#001D11] text-white' : 'border-gray-100 bg-white hover:border-gray-200'}`}
+               >
+                 <div className="w-12 h-12 rounded-2xl bg-[#bff720]/10 flex items-center justify-center mb-4"><CreditCard className="w-6 h-6 text-[#bff720]" /></div>
+                 <h4 className="font-black text-lg">Fintech Style</h4>
+                 <p className="text-xs text-gray-400 mt-1 uppercase font-bold tracking-widest">Modern • SaaS • Banking</p>
                </button>
             </CardContent>
           </Card>

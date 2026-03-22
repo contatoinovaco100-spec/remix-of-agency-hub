@@ -16,7 +16,13 @@ import {
   Star,
   Settings,
   Search,
-  ChevronRight
+  ChevronRight,
+  Shield,
+  CreditCard,
+  Globe,
+  Smartphone,
+  BarChart3,
+  Users
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -24,7 +30,7 @@ import LogoInova from '@/assets/logo-inova.png';
 
 // Helper to map icon names to components
 const IconMap: Record<string, any> = {
-  Video, Bot, PieChart, Monitor, Rocket, Target, Zap, Sparkles, Star, ShieldCheck
+  Video, Bot, PieChart, Monitor, Rocket, Target, Zap, Sparkles, Star, ShieldCheck, Shield, CreditCard, Globe, Smartphone, BarChart3, Users
 };
 
 const DEFAULT_CONFIG = {
@@ -90,6 +96,10 @@ export default function SalesLP() {
 
   if (config.theme === 'openclaw') {
     return renderOpenClaw(config, getIcon);
+  }
+
+  if (config.theme === 'fintech') {
+    return renderFintech(config, getIcon);
   }
 
   return renderMobbin(config, getIcon);
@@ -179,6 +189,111 @@ function renderMobbin(config: any, getIcon: any) {
   );
 }
 
+// --- FINTECH THEME (Modern SaaS / Image Reference) ---
+function renderFintech(config: any, getIcon: any) {
+  return (
+    <div className="min-h-screen bg-white text-zinc-900 font-sans selection:bg-[#bff720]/30 selection:text-black overflow-x-hidden">
+      
+      {/* Background Gradient Hero */}
+      <div className="bg-gradient-to-b from-[#001D11] via-[#002A1A] to-white pt-8 pb-32">
+        <nav className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center bg-white/5 backdrop-blur-md rounded-full border border-white/10 mb-20 group">
+           <img src={LogoInova} alt="Inova Co." className="h-8 w-auto object-contain brightness-200" />
+           <div className="hidden md:flex gap-8 text-[11px] font-black uppercase tracking-widest text-white/60">
+             <a href="#servicos" className="hover:text-white">Soluções</a>
+             <a href="#precos" className="hover:text-white">Investimento</a>
+           </div>
+           <Button className="bg-[#bff720] text-black rounded-full px-8 text-xs font-black uppercase tracking-widest hover:scale-105 transition-transform">Get Started</Button>
+        </nav>
+
+        <section className="max-w-5xl mx-auto px-6 text-center text-white">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+             <Badge className="bg-[#bff720]/10 text-[#bff720] border-none mb-8 px-4 py-1.5 uppercase font-black text-[10px] tracking-widest">
+               ⚡ {config.hero.badge}
+             </Badge>
+             <h1 className="text-6xl md:text-8xl font-black tracking-tight mb-8 leading-[0.95] drop-shadow-2xl">
+               {config.hero.title}
+             </h1>
+             <p className="text-xl text-white/60 max-w-2xl mx-auto mb-12 font-medium">
+               {config.hero.tagline}
+             </p>
+             <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                 <Button className="bg-[#bff720] text-black hover:bg-[#bff720]/90 rounded-full h-14 px-12 text-sm font-black uppercase tracking-widest">Join Waitlist</Button>
+                 <Button variant="ghost" className="text-white hover:bg-white/5 rounded-full h-14 px-12 text-sm font-black uppercase tracking-widest border border-white/10">View Demo</Button>
+             </div>
+          </motion.div>
+        </section>
+      </div>
+
+      {/* Services Grid (Fintech Icons) */}
+      <section id="servicos" className="max-w-7xl mx-auto px-6 -mt-10 mb-32">
+         <div className="bg-gray-50/50 border border-gray-100 p-12 rounded-[3.5rem] shadow-xl shadow-gray-200/20 backdrop-blur-xl">
+           <div className="text-center mb-16">
+             <h2 className="text-3xl font-black tracking-tighter italic uppercase underline decoration-[#bff720] decoration-4 underline-offset-4">Banking Remagined</h2>
+           </div>
+           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+             {config.services.map((s: any, i: number) => (
+                <div key={i} className="p-8 bg-white border border-gray-100 rounded-3xl hover:-translate-y-2 transition-transform duration-500 shadow-sm">
+                   <div className="w-12 h-12 bg-[#bff720]/10 rounded-2xl flex items-center justify-center text-[#bff720] mb-6">
+                      {getIcon(s.icon)}
+                   </div>
+                   <h3 className="text-xl font-black mb-3">{s.title}</h3>
+                   <p className="text-gray-400 text-sm leading-relaxed">{s.desc}</p>
+                </div>
+             ))}
+           </div>
+         </div>
+      </section>
+
+      {/* Stats Bar */}
+      <section className="bg-white py-20 border-y border-gray-100">
+         <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-12 text-center items-center">
+            <div>
+              <p className="text-4xl font-black tracking-tighter text-zinc-900">10M+</p>
+              <p className="text-[10px] font-black uppercase text-gray-400 tracking-widest mt-2">Active Users</p>
+            </div>
+            <div className="bg-[#bff720]/5 py-10 rounded-[2rem] border border-[#bff720]/20">
+              <p className="text-4xl font-black tracking-tighter text-zinc-900">7M+</p>
+              <p className="text-[10px] font-black uppercase text-gray-400 tracking-widest mt-2">Happy Clients</p>
+            </div>
+            <div>
+              <p className="text-4xl font-black tracking-tighter text-zinc-900">5.5*</p>
+              <p className="text-[10px] font-black uppercase text-gray-400 tracking-widest mt-2">Trustpilot</p>
+            </div>
+            <div>
+              <p className="text-4xl font-black tracking-tighter text-zinc-900">$8.8B</p>
+              <p className="text-[10px] font-black uppercase text-gray-400 tracking-widest mt-2">Processed</p>
+            </div>
+         </div>
+      </section>
+
+      {/* Pricing - Dark Fintech Style */}
+      <section id="precos" className="bg-[#000E08] text-white py-32 rounded-[4rem] mx-4 my-20">
+         <div className="max-w-6xl mx-auto px-6">
+            <h2 className="text-5xl font-black tracking-tighter text-center mb-20 italic">Select a plan</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+               {config.plans.map((p: any, i: number) => (
+                  <div key={i} className={`p-10 rounded-3xl border ${p.popular ? 'border-[#bff720] bg-zinc-900' : 'border-white/10 bg-zinc-950'} flex flex-col`}>
+                     <p className="text-[#bff720] text-xs font-black uppercase mb-6 tracking-widest">{p.name}</p>
+                     <div className="text-5xl font-black tracking-tighter italic mb-10">R${p.price}</div>
+                     <div className="space-y-4 flex-1 mb-10">
+                       {p.features.map((f: string, featureIdx: number) => (
+                          <div key={featureIdx} className="flex items-center gap-3 text-sm font-bold text-white/70">
+                             <CheckCircle2 className="w-4 h-4 text-[#bff720]" /> {f}
+                          </div>
+                       ))}
+                     </div>
+                     <Button className={`w-full h-12 rounded-full font-black uppercase tracking-widest text-[9px] ${p.popular ? 'bg-[#bff720] text-black shadow-lg shadow-[#bff720]/20' : 'bg-white/5 text-white'}`}>Open Account</Button>
+                  </div>
+               ))}
+            </div>
+         </div>
+      </section>
+
+      <Footer whatsapp={config.whatsapp} isDark />
+    </div>
+  );
+}
+
 // --- OPENCLAW THEME (Dark Cinematic) ---
 function renderOpenClaw(config: any, getIcon: any) {
   return (
@@ -188,7 +303,7 @@ function renderOpenClaw(config: any, getIcon: any) {
 
       <nav className="max-w-7xl mx-auto px-6 py-12 flex justify-between items-center relative z-10">
         <div className="flex items-center gap-2">
-          <img src={LogoInova} alt="Inova Co." className="h-8 w-auto object-contain" />
+           <img src={LogoInova} alt="Inova Co." className="h-8 w-auto object-contain" />
         </div>
         <div className="hidden md:flex items-center gap-12 text-sm font-bold uppercase tracking-widest text-zinc-400">
           <a href="#servicos" className="hover:text-white transition-colors">Serviços</a>
