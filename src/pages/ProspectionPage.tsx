@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -31,9 +31,23 @@ export default function ProspectionPage() {
   const [searchCity, setSearchCity] = useState('');
   const [searching, setSearching] = useState(false);
   const [leads, setLeads] = useState<Lead[]>([]);
-  const [agencyName, setAgencyName] = useState('Inova Lab');
-  const [agencyService, setAgencyService] = useState('gestão de redes sociais e produção de conteúdo em vídeo');
-  const [messageTemplate, setMessageTemplate] = useState('Oi! Tudo bem? Aqui é da {agencia} 👋\nVi o trabalho da {empresa} e achei incrível! Estamos ajudando negócios como o seu a crescer nas redes sociais com vídeos estratégicos.\nPosso te mandar alguns resultados que tivemos com clientes parecidos?');
+  
+  // Persistência local
+  const [agencyName, setAgencyName] = useState(() => localStorage.getItem('prospection_agency_name') || 'Inova Lab');
+  const [agencyService, setAgencyService] = useState(() => localStorage.getItem('prospection_agency_service') || 'gestão de redes sociais e produção de conteúdo em vídeo');
+  const [messageTemplate, setMessageTemplate] = useState(() => localStorage.getItem('prospection_message_template') || 'Oi! Tudo bem? Aqui é da {agencia} 👋\nVi o trabalho da {empresa} e achei incrível! Estamos ajudando negócios como o seu a crescer nas redes sociais com vídeos estratégicos.\nPosso te mandar alguns resultados que tivemos com clientes parecidos?');
+
+  useEffect(() => {
+    localStorage.setItem('prospection_agency_name', agencyName);
+  }, [agencyName]);
+
+  useEffect(() => {
+    localStorage.setItem('prospection_agency_service', agencyService);
+  }, [agencyService]);
+
+  useEffect(() => {
+    localStorage.setItem('prospection_message_template', messageTemplate);
+  }, [messageTemplate]);
 
   // Manual lead add
   const [showManualAdd, setShowManualAdd] = useState(false);
