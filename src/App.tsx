@@ -12,16 +12,13 @@ import ClientsPage from "./pages/ClientsPage";
 import CRMPage from "./pages/CRMPage";
 import TasksPage from "./pages/TasksPage";
 import TeamPage from "./pages/TeamPage";
-import CalendarPage from "./pages/CalendarPage";
 import ClientContentPage from "./pages/ClientContentPage";
 import LoginPage from "./pages/LoginPage";
 import PermissionsPage from "./pages/PermissionsPage";
 import ContractsPage from "./pages/ContractsPage";
 import ContractSignPage from "./pages/ContractSignPage";
 import ReportsPage from "./pages/ReportsPage";
-import MeetingsPage from "./pages/MeetingsPage";
 import PortfolioPage from "./pages/PortfolioPage";
-import EquipmentPage from "./pages/EquipmentPage";
 import ShootingSchedulePage from "./pages/ShootingSchedulePage";
 import WhiteboardPage from "./pages/WhiteboardPage";
 import ContentPlanningPage from "@/pages/ContentPlanningPage";
@@ -64,15 +61,12 @@ function AppRoutes() {
                 <Route path="/clientes" element={<ClientsPage />} />
                 <Route path="/crm" element={<CRMPage />} />
                 <Route path="/tarefas" element={<TasksPage />} />
-                <Route path="/calendario" element={<CalendarPage />} />
                 <Route path="/planejamento" element={<ContentPlanningPage />} />
                 <Route path="/permissoes" element={<PermissionsPage />} />
                 <Route path="/contratos" element={<ContractsPage />} />
             <Route path="/briefings" element={<BriefingsPage />} />
                 <Route path="/relatorios" element={<ReportsPage />} />
-                <Route path="/reunioes" element={<MeetingsPage />} />
                 <Route path="/portfolio" element={<PortfolioPage />} />
-                <Route path="/equipamentos" element={<EquipmentPage />} />
                 <Route path="/gravacoes" element={<ShootingSchedulePage />} />
                 <Route path="/whiteboard" element={<WhiteboardPage />} />
                 <Route path="/prospeccao" element={<ProspectionPage />} />
