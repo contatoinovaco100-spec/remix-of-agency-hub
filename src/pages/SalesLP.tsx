@@ -45,7 +45,16 @@ export default function SalesLP() {
 
   const accent = config.styles?.accentColor || DEFAULTS.styles.accentColor;
   const heroSize = config.styles?.heroTitleSize || DEFAULTS.styles.heroTitleSize;
-  const themeImage = ASSETS[config.theme as keyof typeof ASSETS] || ASSETS.hero;
+  const layoutId = config.styles?.layoutTheme || 'light';
+  const isDark = layoutId === 'dark';
+  const themeImage = config.styles?.heroImage || ASSETS[config.theme as keyof typeof ASSETS] || ASSETS.hero;
+  const extraBlocks = config.extraBlocks || [];
+
+  const bgClass = isDark ? 'bg-[#050508] text-white' : layoutId === 'warm' ? 'bg-[#FDF8F4] text-stone-900' : layoutId === 'blue' ? 'bg-slate-50 text-slate-900' : 'bg-white text-gray-900';
+  const navBg = isDark ? 'bg-black/60 backdrop-blur-2xl border-white/5' : 'bg-white/80 backdrop-blur-2xl border-gray-100';
+  const cardBg = isDark ? 'bg-white/[0.04] border-white/[0.06]' : layoutId === 'warm' ? 'bg-white border-stone-200' : 'bg-gray-50 border-gray-100';
+  const textMuted = isDark ? 'text-white/40' : 'text-gray-500';
+  const textFaint = isDark ? 'text-white/20' : 'text-gray-300';
 
   const h = { ...DEFAULTS.hero, ...config.hero };
   const s = { ...DEFAULTS.strategy, ...config.strategy };
@@ -68,27 +77,29 @@ export default function SalesLP() {
   const fadeUp = { hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0 } };
 
   return (
-    <div className="min-h-screen bg-white text-gray-900 overflow-x-hidden" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
+    <div className={`min-h-screen ${bgClass} overflow-x-hidden`} style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
 
       {/* ═══════════ NAVBAR ═══════════ */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-2xl border-b border-gray-100">
+      <nav className={`fixed top-0 left-0 right-0 z-50 ${navBg} border-b`}>
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <img src={LogoInova} alt="Inova" className="h-7 w-auto" />
-          <div className="hidden md:flex items-center gap-10 text-[13px] font-semibold text-gray-500">
-            <a href="#services" className="hover:text-gray-900 transition-colors">Serviços</a>
-            <a href="#process" className="hover:text-gray-900 transition-colors">Processo</a>
-            <a href="#pricing" className="hover:text-gray-900 transition-colors">Investimento</a>
+          <img src={LogoInova} alt="Inova" className={`h-7 w-auto ${isDark ? 'brightness-200' : ''}`} />
+          <div className={`hidden md:flex items-center gap-10 text-[13px] font-semibold ${textMuted}`}>
+            <a href="#services" className="hover:opacity-80 transition-colors">Serviços</a>
+            <a href="#process" className="hover:opacity-80 transition-colors">Processo</a>
+            <a href="#pricing" className="hover:opacity-80 transition-colors">Investimento</a>
           </div>
-          <Button className="rounded-full h-10 px-6 text-[13px] font-bold shadow-lg shadow-blue-500/20 transition-all hover:shadow-xl hover:shadow-blue-500/30 active:scale-95" style={{ backgroundColor: accent, color: '#fff' }}>
-            Falar Conosco
-          </Button>
+          <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noopener noreferrer">
+            <Button className="rounded-full h-10 px-6 text-[13px] font-bold shadow-lg transition-all hover:shadow-xl active:scale-95" style={{ backgroundColor: accent, color: isDark && accent !== '#000000' ? '#000' : '#fff' }}>
+              Falar Conosco
+            </Button>
+          </a>
         </div>
       </nav>
 
       {/* ═══════════ HERO ═══════════ */}
       <section className="pt-32 pb-20 px-6 relative overflow-hidden">
         {/* Gradient bg */}
-        <div className="absolute top-0 right-0 w-[800px] h-[800px] rounded-full blur-[200px] opacity-[0.07]" style={{ backgroundColor: accent }} />
+        <div className="absolute top-0 right-0 w-[800px] h-[800px] rounded-full blur-[200px] opacity-[0.08]" style={{ backgroundColor: accent }} />
         <div className="absolute bottom-0 left-0 w-[600px] h-[600px] rounded-full blur-[200px] opacity-[0.05] bg-amber-400" />
         
         <div className="max-w-7xl mx-auto">
@@ -103,14 +114,14 @@ export default function SalesLP() {
                   </span>
                 ))}
               </h1>
-              <p className="text-lg text-gray-500 leading-relaxed mb-12 max-w-lg">{h.tagline}</p>
+              <p className={`text-lg ${textMuted} leading-relaxed mb-12 max-w-lg`}>{h.tagline}</p>
               <div className="flex flex-wrap gap-4">
                 <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noopener noreferrer">
                   <Button className="rounded-full h-14 px-8 text-[15px] font-bold shadow-lg shadow-blue-500/25 transition-all hover:shadow-xl active:scale-95 group" style={{ backgroundColor: accent, color: '#fff' }}>
                     {h.cta} <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </a>
-                <Button variant="outline" className="rounded-full h-14 px-8 text-[15px] font-bold border-gray-200 text-gray-600 hover:bg-gray-50 transition-all">
+                <Button variant="outline" className={`rounded-full h-14 px-8 text-[15px] font-bold transition-all ${isDark ? 'border-white/10 text-white/60 hover:bg-white/5' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
                   <Play className="mr-2 w-4 h-4" /> Ver Portfólio
                 </Button>
               </div>
@@ -119,27 +130,27 @@ export default function SalesLP() {
             {/* Hero Image Block */}
             <motion.div initial={{ opacity: 0, x: 60 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.9, delay: 0.3 }}>
               <div className="relative">
-                <div className="rounded-[2rem] overflow-hidden shadow-2xl shadow-black/10 border border-gray-100">
+                <div className={`rounded-[2rem] overflow-hidden shadow-2xl ${isDark ? 'shadow-black/40 border-white/5' : 'shadow-black/10 border-gray-100'} border`}>
                   <img src={themeImage} alt="Produção" className="w-full h-[460px] object-cover" />
                 </div>
                 {/* Floating Stats Card */}
-                <div className="absolute -bottom-6 -left-6 bg-white rounded-2xl shadow-xl shadow-black/10 border border-gray-100 p-5 flex items-center gap-4">
+                <div className={`absolute -bottom-6 -left-6 ${isDark ? 'bg-gray-900 border-white/10' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border p-5 flex items-center gap-4`}>
                   <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ backgroundColor: `${accent}15`, color: accent }}><BarChart3 size={24} /></div>
                   <div>
                     <p className="text-2xl font-black" style={{ color: accent }}>+340%</p>
-                    <p className="text-[11px] text-gray-400 font-semibold">Engajamento médio</p>
+                    <p className={`text-[11px] ${textMuted} font-semibold`}>Engajamento médio</p>
                   </div>
                 </div>
                 {/* Floating Badge */}
-                <div className="absolute -top-4 -right-4 bg-white rounded-2xl shadow-xl shadow-black/10 border border-gray-100 p-4 flex items-center gap-3">
+                <div className={`absolute -top-4 -right-4 ${isDark ? 'bg-gray-900 border-white/10' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border p-4 flex items-center gap-3`}>
                   <div className="flex -space-x-2">
-                    <div className="w-8 h-8 rounded-full bg-gray-200 border-2 border-white" />
-                    <div className="w-8 h-8 rounded-full bg-gray-300 border-2 border-white" />
-                    <div className="w-8 h-8 rounded-full bg-gray-400 border-2 border-white" />
+                    <div className={`w-8 h-8 rounded-full ${isDark ? 'bg-gray-700' : 'bg-gray-200'} border-2 ${isDark ? 'border-gray-900' : 'border-white'}`} />
+                    <div className={`w-8 h-8 rounded-full ${isDark ? 'bg-gray-600' : 'bg-gray-300'} border-2 ${isDark ? 'border-gray-900' : 'border-white'}`} />
+                    <div className={`w-8 h-8 rounded-full ${isDark ? 'bg-gray-500' : 'bg-gray-400'} border-2 ${isDark ? 'border-gray-900' : 'border-white'}`} />
                   </div>
                   <div>
                     <p className="text-sm font-bold">+50 marcas</p>
-                    <p className="text-[10px] text-gray-400">confiam na Inova</p>
+                    <p className={`text-[10px] ${textMuted}`}>confiam na Inova</p>
                   </div>
                 </div>
               </div>
@@ -149,10 +160,10 @@ export default function SalesLP() {
       </section>
 
       {/* ═══════════ TRUST BAR ═══════════ */}
-      <section className="py-10 border-y border-gray-100">
+      <section className={`py-10 border-y ${isDark ? 'border-white/5' : 'border-gray-100'}`}>
         <div className="max-w-7xl mx-auto px-6">
-          <p className="text-center text-[11px] font-semibold text-gray-300 uppercase tracking-[0.3em] mb-6">Confiado por mais de 50 empresas</p>
-          <div className="flex items-center justify-center gap-16 text-gray-300 text-sm font-bold uppercase tracking-widest opacity-40">
+          <p className={`text-center text-[11px] font-semibold uppercase tracking-[0.3em] mb-6 ${textFaint}`}>Confiado por mais de 50 empresas</p>
+          <div className={`flex items-center justify-center gap-16 text-sm font-bold uppercase tracking-widest opacity-40 ${textFaint}`}>
             <span>Restaurante XYZ</span><span>•</span><span>Clínica Premium</span><span>•</span><span>Studio Pro</span><span>•</span><span>Fitness Hub</span><span>•</span><span>Advocacia Elite</span>
           </div>
         </div>
@@ -170,14 +181,14 @@ export default function SalesLP() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             {/* Card: Problema */}
-            <motion.div initial="hidden" whileInView="visible" variants={fadeUp} className="bg-gray-50 rounded-[1.5rem] p-10 border border-gray-100 flex flex-col justify-between min-h-[320px]">
+            <motion.div initial="hidden" whileInView="visible" variants={fadeUp} className={`${cardBg} rounded-[1.5rem] p-10 border flex flex-col justify-between min-h-[320px]`}>
               <div>
-                <p className="text-[11px] font-bold uppercase tracking-widest text-gray-300 mb-6">O Desafio</p>
+                <p className={`text-[11px] font-bold uppercase tracking-widest ${textFaint} mb-6`}>O Desafio</p>
                 <p className="text-xl font-bold text-gray-800 leading-relaxed">{s.problem}</p>
               </div>
-              <div className="flex items-center gap-3 mt-8 pt-6 border-t border-gray-200">
+              <div className={`flex items-center gap-3 mt-8 pt-6 border-t ${isDark ? 'border-white/5' : 'border-gray-200'}`}>
                 <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-red-50 text-red-400"><Target size={20} /></div>
-                <p className="text-[12px] font-bold text-gray-400">Invisibilidade digital = perda de clientes</p>
+                <p className={`text-[12px] font-bold ${textMuted}`}>Invisibilidade digital = perda de clientes</p>
               </div>
             </motion.div>
 
@@ -191,7 +202,7 @@ export default function SalesLP() {
                   <p className="text-[12px] text-white/40 font-semibold mt-1">em retorno para nossos clientes</p>
                 </div>
               </div>
-              <div className="bg-gray-50 rounded-[1.5rem] p-8 border border-gray-100 flex-1 flex flex-col justify-between">
+              <div className={`${cardBg} rounded-[1.5rem] p-8 border flex-1 flex flex-col justify-between`}>
                 <p className="text-[11px] font-bold uppercase tracking-widest text-gray-300">Satisfação</p>
                 <div className="mt-auto flex items-end gap-2">
                   <p className="text-4xl font-black text-gray-900">98%</p>
@@ -353,6 +364,25 @@ export default function SalesLP() {
         </div>
       </section>
 
+      {/* ═══════════ EXTRA BLOCKS ═══════════ */}
+      {extraBlocks.map((block: any, i: number) => (
+        <motion.section key={i} initial="hidden" whileInView="visible" variants={fadeUp} className="px-6 py-16">
+          <div className="max-w-7xl mx-auto">
+            {block.type === 'text' ? (
+              <div>
+                <h2 className="text-3xl font-black tracking-tight mb-6">{block.title}</h2>
+                <p className={`text-lg ${textMuted} leading-relaxed max-w-3xl`}>{block.body}</p>
+              </div>
+            ) : (
+              <div>
+                <img src={block.url} alt={block.caption || ''} className="w-full h-[400px] object-cover rounded-[2rem]" />
+                {block.caption && <p className={`text-center text-sm ${textMuted} mt-4 font-medium italic`}>{block.caption}</p>}
+              </div>
+            )}
+          </div>
+        </motion.section>
+      ))}
+
       {/* ═══════════ CTA FINAL ═══════════ */}
       <section className="py-32 px-6 relative overflow-hidden">
         <div className="absolute inset-0 opacity-[0.03]" style={{ background: `linear-gradient(135deg, ${accent}, #f59e0b)` }} />
@@ -375,16 +405,16 @@ export default function SalesLP() {
       </section>
 
       {/* ═══════════ FOOTER ═══════════ */}
-      <footer className="py-16 px-6 border-t border-gray-100">
+      <footer className={`py-16 px-6 border-t ${isDark ? 'border-white/5' : 'border-gray-100'}`}>
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="flex items-center gap-3">
-            <img src={LogoInova} alt="Inova" className="h-6 w-auto" />
-            <span className="text-[12px] text-gray-300 font-semibold">© 2026 Inova Produções</span>
+            <img src={LogoInova} alt="Inova" className={`h-6 w-auto ${isDark ? 'brightness-200' : ''}`} />
+            <span className={`text-[12px] ${textFaint} font-semibold`}>© 2026 Inova Produções</span>
           </div>
-          <div className="flex items-center gap-8 text-[13px] font-semibold text-gray-400">
-            <a href="#services" className="hover:text-gray-600 transition-colors">Serviços</a>
-            <a href="#pricing" className="hover:text-gray-600 transition-colors">Investimento</a>
-            <a href={`https://wa.me/${whatsapp}`} className="hover:text-gray-600 transition-colors">Contato</a>
+          <div className={`flex items-center gap-8 text-[13px] font-semibold ${textMuted}`}>
+            <a href="#services" className="hover:opacity-80 transition-colors">Serviços</a>
+            <a href="#pricing" className="hover:opacity-80 transition-colors">Investimento</a>
+            <a href={`https://wa.me/${whatsapp}`} className="hover:opacity-80 transition-colors">Contato</a>
           </div>
         </div>
       </footer>

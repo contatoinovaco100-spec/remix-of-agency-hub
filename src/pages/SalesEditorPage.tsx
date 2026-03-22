@@ -9,157 +9,79 @@ import {
   ArrowRight, BarChart3, Target, Star, Video, Camera, Zap, 
   Lightbulb, Globe, Shield, Play, ArrowUpRight, ChevronRight,
   Edit3, X, MousePointer2, Pencil, GripVertical, Type, Image as ImageIcon,
-  Palette, Layout, Monitor
+  Palette, Layout, Monitor, Copy, Layers, PaintBucket, Sun, Moon, Gradient,
+  Grid3X3, LayoutGrid, LayoutList, Columns, Square, Circle, Triangle
 } from 'lucide-react';
 import { toast } from 'sonner';
 import LogoInova from '@/assets/logo-inova.png';
 
-/* ═══════════ TEMPLATES POR NICHO ═══════════ */
+/* ═══════ NICHE TEMPLATES ═══════ */
 const NICHE_TEMPLATES: Record<string, any> = {
   restaurant: {
     theme: 'restaurant',
     hero: { title: "Seu restaurante pode estar cheio… mas invisível no digital.", tagline: "Transformamos restaurantes em marcas desejadas nas redes sociais.", badge: "INOVA PRODUÇÕES • 2026", cta: "BORÁ DIGITALIZAR 🚀" },
     strategy: { problem: "Hoje a maioria das pessoas escolhe onde comer pelo Instagram. Se o seu restaurante não aparece com conteúdo profissional, ele simplesmente não entra na decisão do cliente.", solution: "A Inova é uma produtora estratégica que cria conteúdos profissionais e posiciona seu restaurante para atrair mais clientes.", results: "Visibilidade Máxima, Mais Reservas, Autoridade Gastro", steps: "Diagnóstico, Planejamento, Captação, Edição, Entrega" },
     services: [
-      { title: "Captação Gourmet", desc: "Filmagem 4K com foco em textura e experiência gastronômica." },
-      { title: "Reels & Stories", desc: "Conteúdo otimizado para engajamento no Instagram." },
-      { title: "Copy Estratégica", desc: "Textos que despertam o desejo e levam à ação." },
-      { title: "Tráfego Pago", desc: "Anúncios segmentados para atrair clientes locais." },
-      { title: "Planejamento Mensal", desc: "Calendário editorial completo do mês." },
-      { title: "Edição Profissional", desc: "Pós-produção cinematográfica de cada peça." }
+      { title: "Captação Gourmet", desc: "Filmagem 4K com foco em textura e experiência." }, { title: "Reels & Stories", desc: "Conteúdo otimizado para engajamento." },
+      { title: "Copy Estratégica", desc: "Textos que vendem." }, { title: "Tráfego Pago", desc: "Anúncios para clientes locais." },
+      { title: "Planejamento Mensal", desc: "Calendário editorial completo." }, { title: "Edição Profissional", desc: "Pós-produção cinematográfica." }
     ],
     plans: [
       { name: "Plano Start", price: "1500", features: ["6 vídeos/mês", "2 captações", "Copy estratégica", "Edição profissional"], popular: false },
-      { name: "Plano Growth", price: "3500", features: ["12 vídeos/mês", "4 captações", "Funil de vendas", "Tráfego pago incluso", "Suporte VIP"], popular: true }
-    ],
-    whatsapp: "5562999999999"
+      { name: "Plano Growth", price: "3500", features: ["12 vídeos/mês", "4 captações", "Funil de vendas", "Tráfego incluso", "Suporte VIP"], popular: true }
+    ], whatsapp: "5562999999999"
   },
-  personal: {
-    theme: 'personal',
-    hero: { title: "Seu treino transforma corpos. Nosso conteúdo transforma carreiras.", tagline: "Posicionamos personais como autoridade digital com vídeos que vendem.", badge: "INOVA PRODUÇÕES • 2026", cta: "ESCALAR MINHA MARCA 💪" },
-    strategy: { problem: "Você é um ótimo profissional, mas sem presença digital estratégica, continua dependendo de indicação e cobrando barato.", solution: "A Inova cria conteúdo cinematográfico que posiciona você como referência e atrai alunos dispostos a pagar mais.", results: "Autoridade Digital, Mais Alunos, Ticket Maior", steps: "Diagnóstico, Planejamento, Set de Filmagem, Edição, Entrega" },
-    services: [
-      { title: "Vídeos de Treino", desc: "Captação profissional de exercícios e dicas." },
-      { title: "Conteúdo Educativo", desc: "Reels com dicas de treino e nutrição." },
-      { title: "Branding Pessoal", desc: "Fotos e vídeos de posicionamento." },
-      { title: "Funil de Captação", desc: "Estratégia para converter seguidores em alunos." },
-      { title: "Stories Diários", desc: "Templates e roteiros para stories que engajam." },
-      { title: "Gestão de Tráfego", desc: "Anúncios para atrair alunos da sua região." }
-    ],
-    plans: [
-      { name: "Plano Start", price: "1800", features: ["8 vídeos/mês", "2 captações", "Copy estratégica", "Edição profissional"], popular: false },
-      { name: "Plano Elite", price: "4000", features: ["15 vídeos/mês", "4 captações", "Funil completo", "Tráfego pago", "Mentoria de marca"], popular: true }
-    ],
-    whatsapp: "5562999999999"
-  },
-  clinica: {
-    theme: 'clinica',
-    hero: { title: "Sua clínica oferece o melhor. Mas o digital não mostra isso.", tagline: "Posicionamos clínicas de estética como referência premium no digital.", badge: "INOVA PRODUÇÕES • 2026", cta: "POSICIONAR MINHA CLÍNICA ✨" },
-    strategy: { problem: "Pacientes escolhem clínicas pelo Instagram antes de ligar. Se sua presença digital não transmite confiança e sofisticação, você perde para quem comunica melhor.", solution: "A Inova cria conteúdos de luxo que transmitem a sofisticação da sua clínica e atraem pacientes de alto padrão.", results: "Posicionamento Premium, Mais Agendamentos, Ticket Elevado", steps: "Diagnóstico, Planejamento, Captação, Edição, Entrega" },
-    services: [
-      { title: "Vídeos de Procedimento", desc: "Captação elegante de antes e depois." },
-      { title: "Branding da Clínica", desc: "Imagens que transmitem sofisticação." },
-      { title: "Depoimentos em Vídeo", desc: "Prova social cinematográfica." },
-      { title: "Reels Educativos", desc: "Conteúdos sobre tratamentos e resultados." },
-      { title: "Copy Médica", desc: "Textos que respeitam o CFM e vendem." },
-      { title: "Tráfego Premium", desc: "Anúncios para atrair pacientes qualificados." }
-    ],
-    plans: [
-      { name: "Plano Essencial", price: "2500", features: ["8 vídeos/mês", "2 captações", "Copy estratégica", "Edição premium"], popular: false },
-      { name: "Plano VIP", price: "5500", features: ["16 vídeos/mês", "4 captações", "Funil de agendamento", "Tráfego pago", "Gestão de reputação"], popular: true }
-    ],
-    whatsapp: "5562999999999"
-  },
-  lawyer: {
-    theme: 'lawyer',
-    hero: { title: "Advocacia de excelência merece posicionamento de excelência.", tagline: "Construímos autoridade digital para escritórios que querem dominar seu mercado.", badge: "INOVA PRODUÇÕES • 2026", cta: "CONSTRUIR AUTORIDADE ⚖️" },
-    strategy: { problem: "O mercado jurídico está saturado. Sem uma presença digital estratégica, seu escritório se torna apenas mais um na multidão.", solution: "A Inova posiciona advogados como referência com conteúdo que educa, engaja e converte clientes de alto valor.", results: "Prestígio Digital, Mais Clientes, Casos de Alto Valor", steps: "Diagnóstico, Planejamento, Captação, Edição, Entrega" },
-    services: [
-      { title: "Vídeos Educativos", desc: "Conteúdo sobre temas jurídicos relevantes." },
-      { title: "Posicionamento", desc: "Branding do advogado como autoridade." },
-      { title: "Conteúdo para LinkedIn", desc: "Artigos e vídeos para rede profissional." },
-      { title: "Reels Informativos", desc: "Dicas jurídicas que viralizam." },
-      { title: "Copy Jurídica", desc: "Textos que respeitam a OAB e convertem." },
-      { title: "Tráfego Qualificado", desc: "Anúncios para atrair clientes ideais." }
-    ],
-    plans: [
-      { name: "Plano Essencial", price: "2000", features: ["6 vídeos/mês", "2 captações", "Copy estratégica", "Edição profissional"], popular: false },
-      { name: "Plano Autoridade", price: "4500", features: ["12 vídeos/mês", "4 captações", "Funil completo", "LinkedIn premium", "Consultoria de marca"], popular: true }
-    ],
-    whatsapp: "5562999999999"
-  },
-  realestate: {
-    theme: 'realestate',
-    hero: { title: "Imóveis extraordinários merecem uma apresentação à altura.", tagline: "Vídeos e fotos que vendem antes mesmo da visita presencial.", badge: "INOVA PRODUÇÕES • 2026", cta: "VALORIZAR MEUS IMÓVEIS 🏠" },
-    strategy: { problem: "Fotos amadoras e vídeos de celular desvalorizam seus imóveis e afastam compradores qualificados.", solution: "A Inova cria apresentações cinematográficas que valorizam cada imóvel e aceleram suas vendas.", results: "Imóveis Valorizados, Vendas Aceleradas, Clientes Premium", steps: "Diagnóstico, Planejamento, Captação, Edição, Entrega" },
-    services: [
-      { title: "Tour Virtual", desc: "Vídeos imersivos de cada imóvel." },
-      { title: "Fotos Profissionais", desc: "Imagens que valorizam cada ambiente." },
-      { title: "Drone Aéreo", desc: "Captação aérea da propriedade e região." },
-      { title: "Vídeos para Ads", desc: "Conteúdo otimizado para anúncios." },
-      { title: "Copy Imobiliária", desc: "Descrições que vendem o sonho." },
-      { title: "Tráfego Segmentado", desc: "Anúncios para compradores qualificados." }
-    ],
-    plans: [
-      { name: "Plano Start", price: "2000", features: ["6 vídeos/mês", "Fotos profissionais", "Copy estratégica", "Edição premium"], popular: false },
-      { name: "Plano Destaque", price: "5000", features: ["12 vídeos/mês", "Drone incluso", "Tour virtual", "Tráfego pago", "Gestão de portfólio"], popular: true }
-    ],
-    whatsapp: "5562999999999"
-  },
-  studio: {
-    theme: 'studio',
-    hero: { title: "Produção audiovisual de alto impacto para marcas ambiciosas.", tagline: "Do conceito à entrega: narrativas que posicionam e vendem.", badge: "INOVA PRODUÇÕES • 2026", cta: "INICIAR PRODUÇÃO 🎬" },
-    strategy: { problem: "Sua marca precisa de conteúdo profissional, mas contratar freelancers gera inconsistência e perda de tempo.", solution: "A Inova é seu departamento criativo completo: planejamento, captação, edição e distribuição em um só lugar.", results: "Consistência, Qualidade Cinema, Escala de Marca", steps: "Briefing, Planejamento, Produção, Pós-produção, Entrega" },
-    services: [
-      { title: "Captação 4K", desc: "Filmagem profissional com equipamento cinema." },
-      { title: "Edição Cinematográfica", desc: "Color grading e pós-produção de elite." },
-      { title: "Motion Graphics", desc: "Animações e elementos gráficos." },
-      { title: "Roteirização", desc: "Roteiros estratégicos para cada peça." },
-      { title: "Direção de Arte", desc: "Conceito visual completo." },
-      { title: "Distribuição", desc: "Estratégia de publicação multi-plataforma." }
-    ],
-    plans: [
-      { name: "Plano Produção", price: "3000", features: ["8 vídeos/mês", "2 diárias de captação", "Edição cinema", "Roteirização"], popular: false },
-      { name: "Plano Full Service", price: "6500", features: ["16 vídeos/mês", "4 diárias", "Motion graphics", "Drone", "Direção de arte", "Distribuição"], popular: true }
-    ],
-    whatsapp: "5562999999999"
-  }
+  personal: { theme: 'personal', hero: { title: "Seu treino transforma corpos. Nosso conteúdo transforma carreiras.", tagline: "Posicionamos personais como autoridade digital.", badge: "INOVA PRODUÇÕES • 2026", cta: "ESCALAR MINHA MARCA 💪" }, strategy: { problem: "Sem presença digital estratégica, você continua dependendo de indicação.", solution: "Conteúdo cinematográfico que posiciona você como referência.", results: "Autoridade, Mais Alunos, Ticket Maior", steps: "Diagnóstico, Planejamento, Filmagem, Edição, Entrega" }, services: [{ title: "Vídeos de Treino", desc: "Captação profissional." }, { title: "Branding Pessoal", desc: "Posicionamento visual." }, { title: "Funil de Captação", desc: "Converter seguidores em alunos." }, { title: "Stories Diários", desc: "Roteiros que engajam." }, { title: "Tráfego", desc: "Anúncios regionais." }, { title: "Conteúdo Educativo", desc: "Reels de dicas." }], plans: [{ name: "Plano Start", price: "1800", features: ["8 vídeos/mês", "2 captações", "Copy", "Edição"], popular: false }, { name: "Plano Elite", price: "4000", features: ["15 vídeos/mês", "4 captações", "Funil completo", "Tráfego", "Mentoria"], popular: true }], whatsapp: "5562999999999" },
+  clinica: { theme: 'clinica', hero: { title: "Sua clínica oferece o melhor. Mas o digital não mostra isso.", tagline: "Posicionamos clínicas como referência premium.", badge: "INOVA PRODUÇÕES • 2026", cta: "POSICIONAR MINHA CLÍNICA ✨" }, strategy: { problem: "Pacientes escolhem clínicas pelo Instagram. Se não transmite confiança, você perde.", solution: "Conteúdos de luxo que atraem pacientes de alto padrão.", results: "Posicionamento Premium, Agendamentos, Ticket Alto", steps: "Diagnóstico, Planejamento, Captação, Edição, Entrega" }, services: [{ title: "Vídeos de Procedimento", desc: "Antes e depois elegante." }, { title: "Branding da Clínica", desc: "Sofisticação visual." }, { title: "Depoimentos", desc: "Prova social cinema." }, { title: "Reels Educativos", desc: "Tratamentos e resultados." }, { title: "Copy Médica", desc: "CFM compliance." }, { title: "Tráfego Premium", desc: "Pacientes qualificados." }], plans: [{ name: "Plano Essencial", price: "2500", features: ["8 vídeos/mês", "2 captações", "Copy", "Edição premium"], popular: false }, { name: "Plano VIP", price: "5500", features: ["16 vídeos/mês", "4 captações", "Funil agendamento", "Tráfego", "Reputação"], popular: true }], whatsapp: "5562999999999" },
+  lawyer: { theme: 'lawyer', hero: { title: "Advocacia de excelência merece posicionamento de excelência.", tagline: "Autoridade digital para escritórios que querem dominar.", badge: "INOVA PRODUÇÕES • 2026", cta: "CONSTRUIR AUTORIDADE ⚖️" }, strategy: { problem: "Mercado jurídico saturado. Sem presença digital, você é mais um.", solution: "Posicionamos advogados como referência com conteúdo estratégico.", results: "Prestígio, Mais Clientes, Alto Valor", steps: "Diagnóstico, Planejamento, Captação, Edição, Entrega" }, services: [{ title: "Vídeos Educativos", desc: "Temas jurídicos." }, { title: "Posicionamento", desc: "Branding de autoridade." }, { title: "LinkedIn", desc: "Conteúdo profissional." }, { title: "Reels Informativos", desc: "Dicas que viralizam." }, { title: "Copy Jurídica", desc: "OAB compliance." }, { title: "Tráfego", desc: "Clientes ideais." }], plans: [{ name: "Plano Essencial", price: "2000", features: ["6 vídeos/mês", "2 captações", "Copy", "Edição"], popular: false }, { name: "Plano Autoridade", price: "4500", features: ["12 vídeos/mês", "4 captações", "Funil", "LinkedIn", "Consultoria"], popular: true }], whatsapp: "5562999999999" },
+  realestate: { theme: 'realestate', hero: { title: "Imóveis extraordinários merecem apresentação à altura.", tagline: "Vídeos e fotos que vendem antes da visita.", badge: "INOVA PRODUÇÕES • 2026", cta: "VALORIZAR IMÓVEIS 🏠" }, strategy: { problem: "Fotos amadoras desvalorizam imóveis e afastam compradores.", solution: "Apresentações cinematográficas que valorizam e aceleram vendas.", results: "Imóveis Valorizados, Vendas Rápidas, Clientes Premium", steps: "Diagnóstico, Planejamento, Captação, Edição, Entrega" }, services: [{ title: "Tour Virtual", desc: "Vídeos imersivos." }, { title: "Fotos Pro", desc: "Cada ambiente valorizado." }, { title: "Drone", desc: "Captação aérea." }, { title: "Vídeos Ads", desc: "Otimizado para anúncios." }, { title: "Copy Imobiliária", desc: "Descrições que vendem." }, { title: "Tráfego", desc: "Compradores qualificados." }], plans: [{ name: "Plano Start", price: "2000", features: ["6 vídeos/mês", "Fotos pro", "Copy", "Edição"], popular: false }, { name: "Plano Destaque", price: "5000", features: ["12 vídeos/mês", "Drone", "Tour virtual", "Tráfego", "Portfólio"], popular: true }], whatsapp: "5562999999999" },
+  studio: { theme: 'studio', hero: { title: "Produção audiovisual de alto impacto para marcas ambiciosas.", tagline: "Do conceito à entrega: narrativas que posicionam.", badge: "INOVA PRODUÇÕES • 2026", cta: "INICIAR PRODUÇÃO 🎬" }, strategy: { problem: "Freelancers geram inconsistência e perda de tempo.", solution: "Departamento criativo completo: planejamento, captação, edição e distribuição.", results: "Consistência, Qualidade Cinema, Escala", steps: "Briefing, Planejamento, Produção, Pós-produção, Entrega" }, services: [{ title: "Captação 4K", desc: "Equipamento cinema." }, { title: "Edição Cinema", desc: "Color grading elite." }, { title: "Motion Graphics", desc: "Animações." }, { title: "Roteirização", desc: "Roteiros estratégicos." }, { title: "Direção de Arte", desc: "Conceito visual." }, { title: "Distribuição", desc: "Multi-plataforma." }], plans: [{ name: "Plano Produção", price: "3000", features: ["8 vídeos/mês", "2 diárias", "Edição cinema", "Roteiros"], popular: false }, { name: "Plano Full Service", price: "6500", features: ["16 vídeos/mês", "4 diárias", "Motion", "Drone", "Direção", "Distribuição"], popular: true }], whatsapp: "5562999999999" }
 };
 
-const NICHE_IMAGES: Record<string, string> = {
-  restaurant: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=80&w=400",
-  personal: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&q=80&w=400",
-  clinica: "https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&q=80&w=400",
-  lawyer: "https://images.unsplash.com/photo-1505664194779-8beaceb93744?auto=format&fit=crop&q=80&w=400",
-  realestate: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=400",
-  studio: "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&q=80&w=400",
-};
+const NICHE_IMAGES: Record<string, string> = { restaurant: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=80&w=400", personal: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&q=80&w=400", clinica: "https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&q=80&w=400", lawyer: "https://images.unsplash.com/photo-1505664194779-8beaceb93744?auto=format&fit=crop&q=80&w=400", realestate: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=400", studio: "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&q=80&w=400" };
 const NICHE_LABELS: Record<string, string> = { restaurant: "Gastro", personal: "Fitness", clinica: "Clínica", lawyer: "Jurídico", realestate: "Imobiliária", studio: "Estúdio" };
 
-const ASSETS = {
-  hero: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&q=80&w=1200",
-  restaurant: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=80&w=1200",
-  personal: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&q=80&w=1200",
-  clinica: "https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&q=80&w=1200",
-  lawyer: "https://images.unsplash.com/photo-1505664194779-8beaceb93744?auto=format&fit=crop&q=80&w=1200",
-  realestate: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=1200",
-  studio: "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&q=80&w=1200",
-  team: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=800",
-  editing: "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&q=80&w=800",
-  testimonial: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400",
-};
+/* ═══════ PHOTO GALLERY ═══════ */
+const PHOTO_GALLERY = [
+  { url: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&q=80&w=1200", label: "Equipe Profissional" },
+  { url: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=80&w=1200", label: "Gastronomia" },
+  { url: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&q=80&w=1200", label: "Academia / Fitness" },
+  { url: "https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&q=80&w=1200", label: "Clínica / Saúde" },
+  { url: "https://images.unsplash.com/photo-1505664194779-8beaceb93744?auto=format&fit=crop&q=80&w=1200", label: "Escritório / Jurídico" },
+  { url: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=1200", label: "Imobiliário / Luxo" },
+  { url: "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&q=80&w=1200", label: "Estúdio / Produção" },
+  { url: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=1200", label: "Time / Colaboração" },
+  { url: "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&q=80&w=1200", label: "Edição / Pós-produção" },
+  { url: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=1200", label: "Analytics / Dados" },
+  { url: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&q=80&w=1200", label: "Redes Sociais" },
+  { url: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=1200", label: "Dashboard" },
+];
 
-/* ═══════════ COMPONENTE EDITÁVEL INLINE ═══════════ */
+/* ═══════ LAYOUT THEMES ═══════ */
+const LAYOUT_THEMES = [
+  { id: 'light', label: 'Clássico Light', bg: 'bg-white', text: 'text-gray-900', cardBg: 'bg-gray-50', icon: Sun },
+  { id: 'dark', label: 'Dark Premium', bg: 'bg-[#050508]', text: 'text-white', cardBg: 'bg-white/5', icon: Moon },
+  { id: 'warm', label: 'Warm Elegante', bg: 'bg-[#FDF8F4]', text: 'text-stone-900', cardBg: 'bg-white', icon: Gradient },
+  { id: 'blue', label: 'Corporate Blue', bg: 'bg-slate-50', text: 'text-slate-900', cardBg: 'bg-white', icon: Square },
+];
+
+const ACCENT_PRESETS = [
+  { color: '#2563eb', label: 'Azul' }, { color: '#7c3aed', label: 'Roxo' },
+  { color: '#059669', label: 'Verde' }, { color: '#dc2626', label: 'Vermelho' },
+  { color: '#ea580c', label: 'Laranja' }, { color: '#0891b2', label: 'Cyan' },
+  { color: '#bff720', label: 'Neon' }, { color: '#f59e0b', label: 'Dourado' },
+  { color: '#ec4899', label: 'Rosa' }, { color: '#000000', label: 'Preto' },
+];
+
+/* ═══════ EDITABLE COMPONENT ═══════ */
 function Editable({ value, onChange, tag = 'p', className = '', style = {}, multiline = false }: {
-  value: string; onChange: (v: string) => void; tag?: string;
-  className?: string; style?: React.CSSProperties; multiline?: boolean;
+  value: string; onChange: (v: string) => void; tag?: string; className?: string; style?: React.CSSProperties; multiline?: boolean;
 }) {
   const [editing, setEditing] = useState(false);
   const [tempValue, setTempValue] = useState(value);
   const inputRef = useRef<HTMLTextAreaElement | HTMLInputElement>(null);
-
   useEffect(() => { setTempValue(value); }, [value]);
-  useEffect(() => { if (editing && inputRef.current) inputRef.current.focus(); }, [editing]);
+  useEffect(() => { if (editing && inputRef.current) { inputRef.current.focus(); inputRef.current.select(); } }, [editing]);
 
   if (editing) {
     return (
@@ -168,36 +90,83 @@ function Editable({ value, onChange, tag = 'p', className = '', style = {}, mult
           <textarea ref={inputRef as any} value={tempValue} onChange={(e) => setTempValue(e.target.value)}
             onBlur={() => { onChange(tempValue); setEditing(false); }}
             onKeyDown={(e) => { if (e.key === 'Escape') { setTempValue(value); setEditing(false); } }}
-            className={`${className} bg-blue-50 border-2 border-blue-400 rounded-lg p-3 outline-none w-full resize-none min-h-[80px]`} style={style} />
+            className={`bg-blue-50 border-2 border-blue-400 rounded-lg p-3 outline-none w-full resize-none min-h-[80px] text-gray-900`} style={{ ...style, color: '#111' }} />
         ) : (
           <input ref={inputRef as any} value={tempValue} onChange={(e) => setTempValue(e.target.value)}
             onBlur={() => { onChange(tempValue); setEditing(false); }}
             onKeyDown={(e) => { if (e.key === 'Enter') { onChange(tempValue); setEditing(false); } if (e.key === 'Escape') { setTempValue(value); setEditing(false); } }}
-            className={`${className} bg-blue-50 border-2 border-blue-400 rounded-lg p-2 outline-none w-full`} style={style} />
+            className={`bg-blue-50 border-2 border-blue-400 rounded-lg px-3 py-2 outline-none w-full text-gray-900`} style={{ ...style, color: '#111' }} />
         )}
-        <div className="absolute -top-8 left-0 bg-blue-500 text-white text-[9px] font-bold px-3 py-1 rounded-t-lg uppercase tracking-wider flex items-center gap-1">
-          <Pencil size={10} /> Editando • Enter/Clique fora para salvar
+        <div className="absolute -top-7 left-0 bg-blue-500 text-white text-[8px] font-bold px-2 py-0.5 rounded-t-md uppercase tracking-wider flex items-center gap-1 z-30">
+          <Pencil size={8} /> Editando
         </div>
       </div>
     );
   }
-
   const Tag = tag as any;
   return (
-    <Tag className={`${className} cursor-pointer relative group/editable transition-all`} style={style}
-      onClick={() => setEditing(true)}>
+    <Tag className={`${className} cursor-pointer relative group/ed`} style={style} onClick={() => setEditing(true)}>
       {value}
-      <span className="absolute -top-2 -right-2 opacity-0 group-hover/editable:opacity-100 transition-all bg-blue-500 text-white w-6 h-6 rounded-full flex items-center justify-center shadow-lg z-20 pointer-events-none">
-        <Pencil size={10} />
-      </span>
-      <span className="absolute inset-0 border-2 border-transparent group-hover/editable:border-blue-400 group-hover/editable:border-dashed rounded-lg pointer-events-none transition-all" />
+      <span className="absolute -top-1.5 -right-1.5 opacity-0 group-hover/ed:opacity-100 bg-blue-500 text-white w-5 h-5 rounded-full flex items-center justify-center shadow-lg z-20 pointer-events-none transition-all"><Pencil size={8} /></span>
+      <span className="absolute inset-0 border-2 border-transparent group-hover/ed:border-blue-400 group-hover/ed:border-dashed rounded-lg pointer-events-none transition-all" />
     </Tag>
   );
 }
 
-/* ═══════════ EDITOR PRINCIPAL ═══════════ */
+/* ═══════ CLICKABLE IMAGE ═══════ */
+function EditableImage({ src, onChangeSrc, className = '', alt = '' }: { src: string; onChangeSrc: (url: string) => void; className?: string; alt?: string }) {
+  const [showGallery, setShowGallery] = useState(false);
+  return (
+    <div className="relative group/img">
+      <img src={src} alt={alt} className={className} />
+      <button onClick={() => setShowGallery(true)}
+        className="absolute top-3 right-3 opacity-0 group-hover/img:opacity-100 bg-white/90 backdrop-blur text-gray-700 w-9 h-9 rounded-xl flex items-center justify-center shadow-lg z-20 hover:bg-blue-500 hover:text-white transition-all">
+        <ImageIcon size={16} />
+      </button>
+      {showGallery && (
+        <div className="absolute inset-0 bg-black/80 backdrop-blur-sm z-30 flex flex-col rounded-[inherit] overflow-hidden">
+          <div className="flex items-center justify-between p-4 border-b border-white/10">
+            <p className="text-white text-[11px] font-bold uppercase tracking-widest">Trocar Foto</p>
+            <button onClick={() => setShowGallery(false)} className="text-white/50 hover:text-white"><X size={18} /></button>
+          </div>
+          <div className="flex-1 overflow-y-auto p-3 grid grid-cols-3 gap-2" style={{ scrollbarWidth: 'thin' }}>
+            {PHOTO_GALLERY.map((photo, i) => (
+              <button key={i} onClick={() => { onChangeSrc(photo.url); setShowGallery(false); toast.success('Foto atualizada!'); }}
+                className="relative rounded-lg overflow-hidden h-20 group/ph hover:ring-2 hover:ring-blue-400 transition-all">
+                <img src={photo.url} alt={photo.label} className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-black/40 group-hover/ph:bg-black/20 transition-all" />
+                <p className="absolute bottom-1 inset-x-1 text-[7px] text-white font-bold text-center truncate">{photo.label}</p>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ═══════ BLOCK WRAPPER ═══════ */
+function BlockWrapper({ label, onDuplicate, onDelete, children, className = '' }: { label: string; onDuplicate: () => void; onDelete: () => void; children: React.ReactNode; className?: string }) {
+  return (
+    <div className={`relative group/block ${className}`}>
+      <div className="absolute -left-10 top-4 opacity-0 group-hover/block:opacity-100 transition-all flex flex-col gap-1 z-30">
+        <button onClick={onDuplicate} title="Duplicar bloco" className="w-7 h-7 rounded-md bg-blue-500 text-white flex items-center justify-center shadow-md hover:bg-blue-600 transition-all"><Copy size={12} /></button>
+        <button onClick={onDelete} title="Remover bloco" className="w-7 h-7 rounded-md bg-red-500 text-white flex items-center justify-center shadow-md hover:bg-red-600 transition-all"><Trash2 size={12} /></button>
+      </div>
+      <div className="absolute -left-10 top-0 opacity-0 group-hover/block:opacity-100 transition-all z-30">
+        <span className="bg-gray-800 text-white text-[7px] font-bold px-2 py-0.5 rounded uppercase tracking-wider whitespace-nowrap">{label}</span>
+      </div>
+      <div className="group-hover/block:ring-2 group-hover/block:ring-blue-400 group-hover/block:ring-offset-2 rounded-[inherit] transition-all">
+        {children}
+      </div>
+    </div>
+  );
+}
+
+/* ═══════ MAIN EDITOR ═══════ */
 export default function SalesEditorPage() {
   const [config, setConfig] = useState<any>(null);
+  const [panelTab, setPanelTab] = useState<'template' | 'design' | 'blocks'>('template');
   const [panelOpen, setPanelOpen] = useState(true);
 
   useEffect(() => {
@@ -205,323 +174,329 @@ export default function SalesEditorPage() {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        const template = NICHE_TEMPLATES[parsed.theme] || NICHE_TEMPLATES.restaurant;
-        setConfig({
-          ...template, ...parsed,
-          styles: { heroTitleSize: "56", accentColor: "#2563eb", ...(parsed.styles || {}) },
-          hero: { ...template.hero, ...(parsed.hero || {}) },
-          strategy: { ...template.strategy, ...(parsed.strategy || {}) },
-          services: parsed.services?.length ? parsed.services : template.services,
-          plans: parsed.plans?.length ? parsed.plans : template.plans,
-        });
+        const t = NICHE_TEMPLATES[parsed.theme] || NICHE_TEMPLATES.restaurant;
+        setConfig({ ...t, ...parsed, styles: { heroTitleSize: "56", accentColor: "#2563eb", layoutTheme: "light", heroImage: "", ...(parsed.styles || {}) }, hero: { ...t.hero, ...(parsed.hero || {}) }, strategy: { ...t.strategy, ...(parsed.strategy || {}) }, services: parsed.services?.length ? parsed.services : t.services, plans: parsed.plans?.length ? parsed.plans : t.plans, extraBlocks: parsed.extraBlocks || [] });
       } catch { loadTemplate('restaurant'); }
     } else { loadTemplate('restaurant'); }
   }, []);
 
-  const loadTemplate = (niche: string) => {
-    setConfig({ ...NICHE_TEMPLATES[niche], styles: { heroTitleSize: "56", accentColor: "#2563eb" } });
-  };
-
-  const switchNiche = (niche: string) => {
-    setConfig({ ...NICHE_TEMPLATES[niche], styles: config?.styles || { heroTitleSize: "56", accentColor: "#2563eb" } });
-    toast.success(`Template "${NICHE_LABELS[niche]}" aplicado!`);
-  };
-
-  const handleSave = () => {
-    localStorage.setItem('agency_lp_config', JSON.stringify(config));
-    toast.success('Página Publicada com Sucesso! 🚀');
-  };
+  const loadTemplate = (niche: string) => { setConfig({ ...NICHE_TEMPLATES[niche], styles: { heroTitleSize: "56", accentColor: "#2563eb", layoutTheme: "light", heroImage: "" }, extraBlocks: [] }); };
+  const switchNiche = (niche: string) => { setConfig({ ...NICHE_TEMPLATES[niche], styles: config?.styles || { heroTitleSize: "56", accentColor: "#2563eb", layoutTheme: "light" }, extraBlocks: config?.extraBlocks || [] }); toast.success(`Template "${NICHE_LABELS[niche]}" aplicado!`); };
+  const handleSave = () => { localStorage.setItem('agency_lp_config', JSON.stringify(config)); toast.success('Página Publicada! 🚀'); };
+  const addTextBlock = () => { setConfig({ ...config, extraBlocks: [...(config.extraBlocks || []), { type: 'text', title: 'Novo Título', body: 'Escreva seu texto aqui. Clique para editar.' }] }); toast.success('Bloco de texto adicionado!'); };
+  const addImageBlock = () => { setConfig({ ...config, extraBlocks: [...(config.extraBlocks || []), { type: 'image', url: PHOTO_GALLERY[0].url, caption: 'Legenda da imagem' }] }); toast.success('Bloco de imagem adicionado!'); };
+  const duplicateExtra = (i: number) => { const blocks = [...(config.extraBlocks || [])]; blocks.splice(i + 1, 0, { ...blocks[i] }); setConfig({ ...config, extraBlocks: blocks }); toast.success('Bloco duplicado!'); };
+  const deleteExtra = (i: number) => { setConfig({ ...config, extraBlocks: (config.extraBlocks || []).filter((_: any, idx: number) => idx !== i) }); toast.success('Bloco removido!'); };
 
   if (!config) return null;
   const accent = config.styles?.accentColor || "#2563eb";
   const heroSize = config.styles?.heroTitleSize || "56";
-  const themeImage = ASSETS[config.theme as keyof typeof ASSETS] || ASSETS.hero;
-  const h = config.hero || {};
-  const s = config.strategy || {};
-  const services = config.services || [];
-  const plans = (config.plans || []).slice(0, 2);
+  const layoutTheme = LAYOUT_THEMES.find(t => t.id === (config.styles?.layoutTheme || 'light')) || LAYOUT_THEMES[0];
+  const isDark = layoutTheme.id === 'dark';
+  const heroImage = config.styles?.heroImage || NICHE_IMAGES[config.theme] || PHOTO_GALLERY[0].url;
+  const h = config.hero || {}; const s = config.strategy || {};
+  const services = config.services || []; const plans = (config.plans || []).slice(0, 2);
   const results = (s.results || '').split(',').map((r: string) => r.trim());
   const steps = (s.steps || '').split(',').map((r: string) => r.trim());
-  const whatsapp = config.whatsapp || "5562999999999";
+  const extraBlocks = config.extraBlocks || [];
 
   return (
     <div className="flex h-screen bg-gray-100 overflow-hidden">
-      {/* ═══════════ FLOATING TOOLBAR ═══════════ */}
-      <div className="fixed top-0 left-0 right-0 z-[60] h-14 bg-white border-b border-gray-200 flex items-center justify-between px-6 shadow-sm">
-        <div className="flex items-center gap-4">
-          <img src={LogoInova} alt="Inova" className="h-6" />
-          <div className="h-6 w-px bg-gray-200" />
-          <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Editor Visual</span>
-          <Badge className="bg-green-50 text-green-600 border-green-200 text-[9px] font-bold">
-            <span className="w-1.5 h-1.5 bg-green-500 rounded-full mr-1.5 inline-block animate-pulse" />
-            Ao vivo
-          </Badge>
-        </div>
+      {/* TOOLBAR */}
+      <div className="fixed top-0 left-0 right-0 z-[60] h-12 bg-white border-b border-gray-200 flex items-center justify-between px-5 shadow-sm">
         <div className="flex items-center gap-3">
-          <Button variant="outline" size="sm" className="h-9 rounded-lg text-[11px] font-bold gap-2 border-gray-200"
-            onClick={() => setPanelOpen(!panelOpen)}>
-            <Settings size={14} /> {panelOpen ? 'Fechar Painel' : 'Abrir Painel'}
+          <img src={LogoInova} alt="Inova" className="h-5" />
+          <div className="h-5 w-px bg-gray-200" />
+          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Editor Visual</span>
+          <Badge className="bg-green-50 text-green-600 border-green-200 text-[8px] font-bold"><span className="w-1.5 h-1.5 bg-green-500 rounded-full mr-1 inline-block animate-pulse" />Ao vivo</Badge>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" className="h-8 rounded-lg text-[10px] font-bold gap-1.5 border-gray-200" onClick={() => setPanelOpen(!panelOpen)}>
+            <Settings size={12} /> {panelOpen ? 'Fechar' : 'Painel'}
           </Button>
-          <a href="/proposta" target="_blank">
-            <Button variant="outline" size="sm" className="h-9 rounded-lg text-[11px] font-bold gap-2 border-gray-200">
-              <Eye size={14} /> Visualizar
-            </Button>
-          </a>
-          <Button size="sm" className="h-9 rounded-lg text-[11px] font-bold gap-2 shadow-lg active:scale-95 transition-all" style={{ backgroundColor: accent, color: '#fff' }}
-            onClick={handleSave}>
-            <Save size={14} /> Publicar
-          </Button>
+          <a href="/proposta" target="_blank"><Button variant="outline" size="sm" className="h-8 rounded-lg text-[10px] font-bold gap-1.5 border-gray-200"><Eye size={12} /> Ver Site</Button></a>
+          <Button size="sm" className="h-8 rounded-lg text-[10px] font-bold gap-1.5 shadow-md active:scale-95" style={{ backgroundColor: accent, color: isDark && accent === '#bff720' ? '#000' : '#fff' }} onClick={handleSave}><Save size={12} /> Publicar</Button>
         </div>
       </div>
 
-      {/* ═══════════ SIDE PANEL (Colapsável) ═══════════ */}
+      {/* SIDE PANEL */}
       {panelOpen && (
-        <aside className="w-[300px] h-full pt-14 bg-white border-r border-gray-200 flex flex-col z-40 shrink-0 shadow-lg">
-          <div className="flex-1 overflow-y-auto p-5 space-y-6" style={{ scrollbarWidth: 'thin' }}>
-            {/* Nicho Selector */}
-            <div>
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">Template do Nicho</p>
-              <div className="grid grid-cols-3 gap-2">
-                {Object.keys(NICHE_TEMPLATES).map((niche) => (
+        <aside className="w-[280px] h-full pt-12 bg-white border-r border-gray-200 flex flex-col z-40 shrink-0">
+          {/* Panel Tabs */}
+          <div className="flex border-b border-gray-100 shrink-0">
+            {[{ id: 'template' as const, label: 'Nichos', icon: Grid3X3 }, { id: 'design' as const, label: 'Design', icon: Palette }, { id: 'blocks' as const, label: 'Blocos', icon: Layers }].map(tab => (
+              <button key={tab.id} onClick={() => setPanelTab(tab.id)}
+                className={`flex-1 py-3 text-[9px] font-bold uppercase tracking-widest flex flex-col items-center gap-1 transition-all ${panelTab === tab.id ? 'text-blue-600 border-b-2 border-blue-500' : 'text-gray-400 hover:text-gray-600'}`}>
+                <tab.icon size={14} />{tab.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex-1 overflow-y-auto p-4 space-y-5" style={{ scrollbarWidth: 'thin' }}>
+            {/* ── NICHOS ── */}
+            {panelTab === 'template' && (<>
+              <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Template do Nicho</p>
+              <div className="grid grid-cols-3 gap-1.5">
+                {Object.keys(NICHE_TEMPLATES).map(niche => (
                   <button key={niche} onClick={() => switchNiche(niche)}
-                    className={`relative group w-full h-16 rounded-xl overflow-hidden border-2 transition-all ${config.theme === niche ? 'border-blue-500 ring-2 ring-blue-500/20' : 'border-gray-100 hover:border-gray-300'}`}>
-                    <img src={NICHE_IMAGES[niche]} alt={NICHE_LABELS[niche]} className="w-full h-full object-cover" />
+                    className={`relative w-full h-14 rounded-lg overflow-hidden border-2 transition-all ${config.theme === niche ? 'border-blue-500 ring-2 ring-blue-500/20' : 'border-gray-100 hover:border-gray-300'}`}>
+                    <img src={NICHE_IMAGES[niche]} alt="" className="w-full h-full object-cover" />
                     <div className={`absolute inset-0 ${config.theme === niche ? 'bg-blue-500/20' : 'bg-black/50'}`} />
-                    <p className="absolute bottom-1.5 inset-x-0 text-center text-[7px] font-bold text-white uppercase">{NICHE_LABELS[niche]}</p>
+                    <p className="absolute bottom-1 inset-x-0 text-center text-[6px] font-bold text-white uppercase">{NICHE_LABELS[niche]}</p>
                   </button>
                 ))}
               </div>
-            </div>
-
-            <div className="h-px bg-gray-100" />
-
-            {/* Ajustes Rápidos */}
-            <div>
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">Ajustes Rápidos</p>
-              <div className="space-y-3">
-                <div className="space-y-1.5">
-                  <Label className="text-[9px] font-bold text-gray-400 uppercase">WhatsApp</Label>
-                  <Input className="h-9 text-[12px] rounded-lg border-gray-200" value={config.whatsapp || ''} onChange={(e) => setConfig({...config, whatsapp: e.target.value})} />
+              <div className="h-px bg-gray-100" />
+              <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Ajustes Rápidos</p>
+              <MiniField label="WhatsApp" val={config.whatsapp || ''} set={(v) => setConfig({...config, whatsapp: v})} />
+              <MiniField label="Tamanho Título (px)" val={heroSize} set={(v) => setConfig({...config, styles: {...config.styles, heroTitleSize: v}})} />
+              <div className="h-px bg-gray-100" />
+              <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Serviços ({services.length})</p>
+              {services.map((svc: any, i: number) => (
+                <div key={i} className="flex items-center gap-1.5 p-2 bg-gray-50 rounded-lg group text-[10px]">
+                  <span className="font-bold text-gray-700 flex-1 truncate">{svc.title}</span>
+                  <button onClick={() => { const n = [...services]; n.splice(i+1, 0, {...svc}); setConfig({...config, services: n}); }} className="opacity-0 group-hover:opacity-100 text-blue-400"><Copy size={10} /></button>
+                  <button onClick={() => setConfig({...config, services: services.filter((_: any, idx: number) => idx !== i)})} className="opacity-0 group-hover:opacity-100 text-red-400"><Trash2 size={10} /></button>
                 </div>
-                <div className="space-y-1.5">
-                  <Label className="text-[9px] font-bold text-gray-400 uppercase">Tamanho Título (px)</Label>
-                  <Input className="h-9 text-[12px] rounded-lg border-gray-200" value={heroSize} onChange={(e) => setConfig({...config, styles: {...config.styles, heroTitleSize: e.target.value}})} />
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-[9px] font-bold text-gray-400 uppercase">Cor Principal (HEX)</Label>
-                  <div className="flex gap-2">
-                    <div className="w-9 h-9 rounded-lg border border-gray-200 shrink-0" style={{ backgroundColor: accent }} />
-                    <Input className="h-9 text-[12px] rounded-lg border-gray-200" value={accent} onChange={(e) => setConfig({...config, styles: {...config.styles, accentColor: e.target.value}})} />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="h-px bg-gray-100" />
-
-            {/* Serviços */}
-            <div>
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">Serviços ({services.length})</p>
-              <div className="space-y-2">
-                {services.map((svc: any, i: number) => (
-                  <div key={i} className="flex items-center gap-2 p-2.5 bg-gray-50 rounded-lg group text-[11px]">
-                    <GripVertical size={12} className="text-gray-300" />
-                    <span className="font-bold text-gray-700 flex-1 truncate">{svc.title}</span>
-                    <button onClick={() => setConfig({...config, services: services.filter((_: any, idx: number) => idx !== i)})} className="opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-600 transition-all"><Trash2 size={12} /></button>
-                  </div>
-                ))}
-                <button onClick={() => setConfig({...config, services: [...services, {title: "Novo Serviço", desc: "Descrição aqui..."}]})}
-                  className="flex items-center gap-2 p-2.5 w-full rounded-lg border border-dashed border-gray-200 text-[11px] font-bold text-gray-400 hover:text-blue-500 hover:border-blue-300 transition-all">
-                  <Plus size={12} /> Adicionar
-                </button>
-              </div>
-            </div>
-
-            <div className="h-px bg-gray-100" />
-
-            {/* Planos */}
-            <div>
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">Planos (2)</p>
+              ))}
+              <button onClick={() => setConfig({...config, services: [...services, {title: "Novo Serviço", desc: "Clique para editar."}]})} className="flex items-center gap-1.5 p-2 w-full rounded-lg border border-dashed border-gray-200 text-[10px] font-bold text-gray-400 hover:text-blue-500 hover:border-blue-300 transition-all"><Plus size={10} /> Adicionar</button>
+              <div className="h-px bg-gray-100" />
+              <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Planos (2)</p>
               {plans.map((p: any, i: number) => (
-                <div key={i} className="p-3 bg-gray-50 rounded-lg mb-2 space-y-2">
-                  <Input className="h-8 text-[11px] rounded-md border-gray-200 font-bold" value={p.name} onChange={(e) => { const n = [...(config.plans || [])]; n[i] = {...p, name: e.target.value}; setConfig({...config, plans: n}); }} />
-                  <div className="flex gap-2">
-                    <Input className="h-8 text-[11px] rounded-md border-gray-200 font-bold flex-1" value={p.price} placeholder="Preço" onChange={(e) => { const n = [...(config.plans || [])]; n[i] = {...p, price: e.target.value}; setConfig({...config, plans: n}); }} />
-                    <label className="flex items-center gap-1.5 text-[9px] font-bold text-gray-400 shrink-0">
-                      <input type="checkbox" checked={p.popular} className="accent-blue-500" onChange={(e) => { const n = [...(config.plans || [])]; n[i] = {...p, popular: e.target.checked}; setConfig({...config, plans: n}); }} /> Destaque
-                    </label>
+                <div key={i} className="p-2.5 bg-gray-50 rounded-lg space-y-1.5">
+                  <Input className="h-7 text-[10px] rounded border-gray-200 font-bold" value={p.name} onChange={(e) => { const n=[...(config.plans||[])];n[i]={...p,name:e.target.value};setConfig({...config,plans:n});}} />
+                  <div className="flex gap-1.5">
+                    <Input className="h-7 text-[10px] rounded border-gray-200 font-bold flex-1" value={p.price} onChange={(e) => { const n=[...(config.plans||[])];n[i]={...p,price:e.target.value};setConfig({...config,plans:n});}} />
+                    <label className="flex items-center gap-1 text-[8px] font-bold text-gray-400 shrink-0"><input type="checkbox" checked={p.popular} className="accent-blue-500 w-3 h-3" onChange={(e) => { const n=[...(config.plans||[])];n[i]={...p,popular:e.target.checked};setConfig({...config,plans:n});}} />Top</label>
                   </div>
                 </div>
               ))}
-            </div>
-          </div>
+            </>)}
 
-          {/* Dica */}
-          <div className="p-4 border-t border-gray-100 bg-blue-50/50">
-            <p className="text-[10px] text-blue-600 font-semibold flex items-center gap-2"><MousePointer2 size={12} /> Clique em qualquer texto para editar diretamente na página</p>
+            {/* ── DESIGN ── */}
+            {panelTab === 'design' && (<>
+              <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Tema de Fundo</p>
+              <div className="grid grid-cols-2 gap-2">
+                {LAYOUT_THEMES.map(t => (
+                  <button key={t.id} onClick={() => setConfig({...config, styles: {...config.styles, layoutTheme: t.id}})}
+                    className={`p-3 rounded-xl border-2 transition-all flex flex-col items-center gap-2 ${config.styles?.layoutTheme === t.id ? 'border-blue-500 ring-2 ring-blue-500/20' : 'border-gray-100 hover:border-gray-300'}`}>
+                    <div className={`w-full h-8 rounded-lg ${t.bg} border border-gray-200`} />
+                    <span className="text-[8px] font-bold text-gray-500 uppercase">{t.label}</span>
+                  </button>
+                ))}
+              </div>
+              <div className="h-px bg-gray-100" />
+              <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Cor de Destaque</p>
+              <div className="grid grid-cols-5 gap-2">
+                {ACCENT_PRESETS.map(a => (
+                  <button key={a.color} onClick={() => setConfig({...config, styles: {...config.styles, accentColor: a.color}})}
+                    className={`w-full aspect-square rounded-xl border-2 transition-all ${accent === a.color ? 'border-gray-800 ring-2 ring-gray-300 scale-110' : 'border-gray-200 hover:scale-105'}`}
+                    style={{ backgroundColor: a.color }} title={a.label} />
+                ))}
+              </div>
+              <MiniField label="Cor Personalizada (HEX)" val={accent} set={(v) => setConfig({...config, styles: {...config.styles, accentColor: v}})} />
+              <div className="h-px bg-gray-100" />
+              <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Foto do Hero</p>
+              <div className="grid grid-cols-3 gap-1.5">
+                {PHOTO_GALLERY.slice(0, 9).map((photo, i) => (
+                  <button key={i} onClick={() => setConfig({...config, styles: {...config.styles, heroImage: photo.url}})}
+                    className={`h-14 rounded-lg overflow-hidden border-2 transition-all ${heroImage === photo.url ? 'border-blue-500' : 'border-gray-100 hover:border-gray-300'}`}>
+                    <img src={photo.url} alt="" className="w-full h-full object-cover" />
+                  </button>
+                ))}
+              </div>
+            </>)}
+
+            {/* ── BLOCOS ── */}
+            {panelTab === 'blocks' && (<>
+              <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Adicionar Bloco</p>
+              <div className="grid grid-cols-2 gap-2">
+                <button onClick={addTextBlock} className="p-4 rounded-xl border-2 border-dashed border-gray-200 hover:border-blue-400 hover:bg-blue-50 transition-all flex flex-col items-center gap-2">
+                  <Type size={20} className="text-gray-400" />
+                  <span className="text-[9px] font-bold text-gray-500 uppercase">Texto</span>
+                </button>
+                <button onClick={addImageBlock} className="p-4 rounded-xl border-2 border-dashed border-gray-200 hover:border-blue-400 hover:bg-blue-50 transition-all flex flex-col items-center gap-2">
+                  <ImageIcon size={20} className="text-gray-400" />
+                  <span className="text-[9px] font-bold text-gray-500 uppercase">Imagem</span>
+                </button>
+              </div>
+              <div className="h-px bg-gray-100" />
+              <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Blocos Personalizados ({extraBlocks.length})</p>
+              {extraBlocks.length === 0 && <p className="text-[10px] text-gray-300 italic">Nenhum bloco adicionado. Use os botões acima.</p>}
+              {extraBlocks.map((block: any, i: number) => (
+                <div key={i} className="flex items-center gap-2 p-2.5 bg-gray-50 rounded-lg group text-[10px]">
+                  {block.type === 'text' ? <Type size={12} className="text-blue-400" /> : <ImageIcon size={12} className="text-green-400" />}
+                  <span className="font-bold text-gray-700 flex-1 truncate">{block.type === 'text' ? block.title : 'Imagem'}</span>
+                  <button onClick={() => duplicateExtra(i)} className="opacity-0 group-hover:opacity-100 text-blue-400"><Copy size={10} /></button>
+                  <button onClick={() => deleteExtra(i)} className="opacity-0 group-hover:opacity-100 text-red-400"><Trash2 size={10} /></button>
+                </div>
+              ))}
+            </>)}
+          </div>
+          <div className="p-3 border-t border-gray-100 bg-blue-50/50 shrink-0">
+            <p className="text-[9px] text-blue-600 font-semibold flex items-center gap-1.5"><MousePointer2 size={10} /> Clique no texto para editar. Passe o mouse nos blocos para opções.</p>
           </div>
         </aside>
       )}
 
-      {/* ═══════════ CANVAS: LP RENDERIZADA COM EDIÇÃO INLINE ═══════════ */}
-      <main className="flex-1 h-full pt-14 overflow-y-auto bg-gray-100" style={{ scrollbarWidth: 'thin' }}>
-        <div className="max-w-[1400px] mx-auto py-8 px-8">
-          <div className="bg-white rounded-2xl shadow-2xl shadow-gray-200/50 overflow-hidden border border-gray-100">
+      {/* ═══════ CANVAS ═══════ */}
+      <main className="flex-1 h-full pt-12 overflow-y-auto bg-gray-200" style={{ scrollbarWidth: 'thin' }}>
+        <div className="max-w-[1300px] mx-auto py-6 px-6">
+          <div className={`${layoutTheme.bg} ${layoutTheme.text} rounded-2xl shadow-2xl shadow-gray-300/50 overflow-hidden border border-gray-200`}>
 
-            {/* Nav Preview */}
-            <div className="bg-white border-b border-gray-100 px-8 h-14 flex items-center justify-between">
-              <img src={LogoInova} alt="Inova" className="h-6" />
-              <div className="flex items-center gap-8 text-[12px] font-semibold text-gray-400">
-                <span>Serviços</span><span>Processo</span><span>Investimento</span>
-              </div>
-              <Button size="sm" className="rounded-full h-9 px-6 text-[11px] font-bold" style={{ backgroundColor: accent, color: '#fff' }}>Falar Conosco</Button>
+            {/* Nav */}
+            <div className={`${isDark ? 'bg-black/40 border-white/5' : 'bg-white/80 border-gray-100'} backdrop-blur-xl border-b px-8 h-12 flex items-center justify-between`}>
+              <img src={LogoInova} alt="Inova" className={`h-5 ${isDark ? 'brightness-200' : ''}`} />
+              <Button size="sm" className="rounded-full h-8 px-5 text-[10px] font-bold" style={{ backgroundColor: accent, color: isDark && accent!=='#000000' ? '#000' : '#fff' }}>Falar Conosco</Button>
             </div>
 
-            {/* HERO INLINE */}
-            <section className="px-12 py-20 relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full blur-[160px] opacity-[0.06]" style={{ backgroundColor: accent }} />
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10">
-                <div>
-                  <Editable value={h.badge || ''} onChange={(v) => setConfig({...config, hero: {...h, badge: v}})}
-                    className="inline-block bg-gray-50 text-gray-500 border border-gray-200 px-4 py-1.5 text-[11px] font-semibold rounded-full mb-8" />
-                  <Editable value={h.title || ''} onChange={(v) => setConfig({...config, hero: {...h, title: v}})} tag="h1" multiline
-                    className="text-gray-900 font-black tracking-tight leading-[1.1] mb-8" style={{ fontSize: `${heroSize}px` }} />
-                  <Editable value={h.tagline || ''} onChange={(v) => setConfig({...config, hero: {...h, tagline: v}})} multiline
-                    className="text-lg text-gray-500 leading-relaxed mb-10 max-w-lg" />
-                  <Editable value={h.cta || ''} onChange={(v) => setConfig({...config, hero: {...h, cta: v}})}
-                    className="inline-block rounded-full px-8 py-4 text-[15px] font-bold text-white" style={{ backgroundColor: accent }} />
-                </div>
-                <div className="relative">
-                  <div className="rounded-[2rem] overflow-hidden shadow-2xl border border-gray-100">
-                    <img src={themeImage} alt="Produção" className="w-full h-[400px] object-cover" />
+            {/* HERO */}
+            <BlockWrapper label="Capa" onDuplicate={() => toast('A capa é fixa.')} onDelete={() => toast('A capa não pode ser removida.')}>
+              <section className="px-10 py-16 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-[400px] h-[400px] rounded-full blur-[150px] opacity-[0.07]" style={{ backgroundColor: accent }} />
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
+                  <div>
+                    <Editable value={h.badge||''} onChange={v=>setConfig({...config,hero:{...h,badge:v}})} className={`inline-block ${isDark?'bg-white/5 text-white/40 border-white/10':'bg-gray-50 text-gray-500 border-gray-200'} border px-3 py-1 text-[10px] font-semibold rounded-full mb-6`} />
+                    <Editable value={h.title||''} onChange={v=>setConfig({...config,hero:{...h,title:v}})} tag="h1" multiline className="font-black tracking-tight leading-[1.1] mb-6" style={{fontSize:`${heroSize}px`}} />
+                    <Editable value={h.tagline||''} onChange={v=>setConfig({...config,hero:{...h,tagline:v}})} multiline className={`text-base ${isDark?'text-white/40':'text-gray-500'} leading-relaxed mb-8 max-w-md`} />
+                    <Editable value={h.cta||''} onChange={v=>setConfig({...config,hero:{...h,cta:v}})} className="inline-block rounded-full px-7 py-3 text-[14px] font-bold text-white" style={{backgroundColor:accent}} />
                   </div>
-                  <div className="absolute -bottom-4 -left-4 bg-white rounded-2xl shadow-xl border border-gray-100 p-4 flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: `${accent}15`, color: accent }}><BarChart3 size={20} /></div>
-                    <div><p className="text-xl font-black" style={{ color: accent }}>+340%</p><p className="text-[10px] text-gray-400 font-semibold">Engajamento</p></div>
+                  <EditableImage src={heroImage} onChangeSrc={url=>setConfig({...config,styles:{...config.styles,heroImage:url}})}
+                    className="w-full h-[360px] object-cover rounded-[1.5rem] shadow-xl" alt="Hero" />
+                </div>
+              </section>
+            </BlockWrapper>
+
+            {/* STRATEGY */}
+            <BlockWrapper label="Estratégia" onDuplicate={() => toast('Use blocos extras para duplicar.')} onDelete={() => toast('Use blocos extras.')}>
+              <section className="px-10 py-16">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className={`${isDark?'bg-white/5 border-white/5':'bg-gray-50 border-gray-100'} rounded-[1.5rem] p-8 border`}>
+                    <p className={`text-[10px] font-bold uppercase tracking-widest ${isDark?'text-white/20':'text-gray-300'} mb-4`}>O Desafio</p>
+                    <Editable value={s.problem||''} onChange={v=>setConfig({...config,strategy:{...s,problem:v}})} multiline className="text-lg font-bold leading-relaxed" />
+                  </div>
+                  <div className="rounded-[1.5rem] p-8 border border-transparent text-white" style={{backgroundColor:accent}}>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-white/40 mb-4">A Solução</p>
+                    <Editable value={s.solution||''} onChange={v=>setConfig({...config,strategy:{...s,solution:v}})} multiline className="text-lg font-bold text-white leading-relaxed" />
                   </div>
                 </div>
-              </div>
-            </section>
+              </section>
+            </BlockWrapper>
 
-            {/* STRATEGY INLINE */}
-            <section className="px-12 py-20">
-              <div className="text-center mb-16">
-                <p className="text-[12px] font-semibold uppercase tracking-[0.3em] mb-4" style={{ color: accent }}>Por que nos escolher</p>
-                <h2 className="text-4xl font-black tracking-tight">Potencialize sua <span className="italic" style={{ fontFamily: "'Georgia', serif", color: accent }}>jornada digital</span></h2>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="bg-gray-50 rounded-[1.5rem] p-10 border border-gray-100">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-gray-300 mb-4">O Desafio</p>
-                  <Editable value={s.problem || ''} onChange={(v) => setConfig({...config, strategy: {...s, problem: v}})} multiline
-                    className="text-xl font-bold text-gray-800 leading-relaxed" />
+            {/* SERVICES */}
+            <BlockWrapper label="Serviços" onDuplicate={() => toast('Use blocos extras.')} onDelete={() => toast('Use blocos extras.')}>
+              <section className={`px-10 py-16 ${isDark?'bg-white/[0.02]':'bg-gray-50/50'}`}>
+                <div className="text-center mb-12">
+                  <h2 className="text-3xl font-black tracking-tight">Tudo que você precisa em <span className="italic" style={{fontFamily:"'Georgia',serif",color:accent}}>um só lugar</span></h2>
                 </div>
-                <div className="rounded-[1.5rem] p-10 border border-gray-100 text-white" style={{ backgroundColor: accent }}>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-white/40 mb-4">A Solução</p>
-                  <Editable value={s.solution || ''} onChange={(v) => setConfig({...config, strategy: {...s, solution: v}})} multiline
-                    className="text-xl font-bold text-white leading-relaxed" />
-                </div>
-              </div>
-            </section>
-
-            {/* SERVICES INLINE */}
-            <section className="px-12 py-20 bg-gray-50/50">
-              <div className="text-center mb-16">
-                <p className="text-[12px] font-semibold uppercase tracking-[0.3em] mb-4" style={{ color: accent }}>Arsenal Completo</p>
-                <h2 className="text-4xl font-black tracking-tight">Tudo que você precisa em <span className="italic" style={{ fontFamily: "'Georgia', serif", color: accent }}>um só lugar</span></h2>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {services.map((svc: any, i: number) => {
-                  const icons = [Video, Camera, Zap, Lightbulb, Globe, Shield];
-                  const Icon = icons[i % icons.length];
-                  return (
-                    <div key={i} className="flex items-start gap-5 p-6 rounded-2xl hover:bg-white hover:shadow-md transition-all group/svc border border-transparent hover:border-gray-100">
-                      <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: `${accent}10`, color: accent }}><Icon size={20} /></div>
-                      <div className="flex-1">
-                        <Editable value={svc.title} onChange={(v) => { const n = [...services]; n[i] = {...n[i], title: v}; setConfig({...config, services: n}); }}
-                          className="text-[14px] font-bold text-gray-900 mb-1" />
-                        <Editable value={svc.desc} onChange={(v) => { const n = [...services]; n[i] = {...n[i], desc: v}; setConfig({...config, services: n}); }}
-                          className="text-[12px] text-gray-400 leading-relaxed" />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </section>
-
-            {/* PROCESS INLINE */}
-            <section className="px-12 py-20">
-              <div className="text-center mb-16">
-                <p className="text-[12px] font-semibold uppercase tracking-[0.3em] mb-4" style={{ color: accent }}>Como Funciona</p>
-                <h2 className="text-4xl font-black tracking-tight">Processo <span className="italic" style={{ fontFamily: "'Georgia', serif", color: accent }}>simples e eficiente</span></h2>
-              </div>
-              <div className="grid grid-cols-5 gap-4">
-                {steps.map((step: string, i: number) => (
-                  <div key={i} className="bg-gray-50 rounded-2xl p-6 border border-gray-100 text-center relative">
-                    <div className="w-10 h-10 rounded-full flex items-center justify-center mx-auto mb-4 text-white font-black text-sm" style={{ backgroundColor: accent }}>{i + 1}</div>
-                    <p className="text-[13px] font-bold text-gray-800">{step}</p>
-                    {i < steps.length - 1 && <ChevronRight className="absolute top-1/2 -right-3 text-gray-200 hidden md:block" size={16} />}
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            {/* PRICING INLINE */}
-            <section className="px-12 py-20 bg-gray-50/50">
-              <div className="text-center mb-16">
-                <p className="text-[12px] font-semibold uppercase tracking-[0.3em] mb-4" style={{ color: accent }}>Investimento</p>
-                <h2 className="text-4xl font-black tracking-tight">Investimento <span className="italic" style={{ fontFamily: "'Georgia', serif", color: accent }}>transparente</span></h2>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
-                {plans.map((p: any, i: number) => (
-                  <div key={i} className={`rounded-[2rem] p-10 flex flex-col min-h-[420px] border-2 ${p.popular ? 'bg-gray-900 text-white' : 'bg-white border-gray-100'}`} style={{ borderColor: p.popular ? 'transparent' : undefined }}>
-                    <div className="flex justify-between items-start mb-6">
-                      <Editable value={p.name} onChange={(v) => { const n = [...(config.plans || [])]; n[i] = {...p, name: v}; setConfig({...config, plans: n}); }}
-                        className={`text-[12px] font-bold uppercase tracking-widest ${p.popular ? 'text-white/40' : 'text-gray-300'}`} />
-                      {p.popular && <Badge className="text-[9px] font-bold px-3 py-1 rounded-full" style={{ backgroundColor: accent, color: '#fff' }}>Popular</Badge>}
-                    </div>
-                    <div className="mb-8">
-                      <span className={`text-sm font-bold ${p.popular ? 'text-white/30' : 'text-gray-300'}`}>R$</span>
-                      <Editable value={p.price} onChange={(v) => { const n = [...(config.plans || [])]; n[i] = {...p, price: v}; setConfig({...config, plans: n}); }}
-                        tag="span" className="text-5xl font-black tracking-tighter" />
-                      <span className={`text-sm font-semibold ${p.popular ? 'text-white/30' : 'text-gray-300'}`}>/mês</span>
-                    </div>
-                    <div className="space-y-3 flex-1">
-                      {(p.features || []).map((f: string, j: number) => (
-                        <div key={j} className={`flex items-center gap-3 text-[13px] font-medium ${p.popular ? 'text-white/60' : 'text-gray-500'}`}>
-                          <Check className="w-4 h-4 shrink-0" style={{ color: accent }} /> {f}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                  {services.map((svc:any,i:number)=>{
+                    const icons=[Video,Camera,Zap,Lightbulb,Globe,Shield];const Icon=icons[i%icons.length];
+                    return(
+                      <div key={i} className={`flex items-start gap-4 p-5 rounded-xl ${isDark?'hover:bg-white/5':'hover:bg-white hover:shadow-md'} transition-all border border-transparent ${isDark?'hover:border-white/5':'hover:border-gray-100'} group/svc`}>
+                        <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0" style={{backgroundColor:`${accent}15`,color:accent}}><Icon size={18}/></div>
+                        <div className="flex-1 min-w-0">
+                          <Editable value={svc.title} onChange={v=>{const n=[...services];n[i]={...n[i],title:v};setConfig({...config,services:n});}} className="text-[13px] font-bold mb-0.5" />
+                          <Editable value={svc.desc} onChange={v=>{const n=[...services];n[i]={...n[i],desc:v};setConfig({...config,services:n});}} className={`text-[11px] ${isDark?'text-white/30':'text-gray-400'} leading-relaxed`} />
                         </div>
-                      ))}
-                    </div>
-                    <Button className={`w-full h-12 rounded-full font-bold text-[14px] mt-8 ${p.popular ? '' : 'border-2 border-gray-200 bg-white text-gray-900 hover:bg-gray-50'}`}
-                      style={p.popular ? { backgroundColor: accent, color: '#fff' } : {}}>Iniciar Projeto</Button>
-                  </div>
-                ))}
-              </div>
-            </section>
+                      </div>
+                    );
+                  })}
+                </div>
+              </section>
+            </BlockWrapper>
 
-            {/* CTA FINAL */}
-            <section className="px-12 py-24 text-center relative overflow-hidden">
-              <div className="absolute inset-0 opacity-[0.03]" style={{ background: `linear-gradient(135deg, ${accent}, #f59e0b)` }} />
-              <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-10" style={{ backgroundColor: `${accent}15`, color: accent }}><Sparkles size={32} /></div>
-              <h2 className="text-5xl font-black tracking-tight mb-6">Pronto para <span className="italic" style={{ fontFamily: "'Georgia', serif", color: accent }}>escalar?</span></h2>
-              <p className="text-gray-400 text-lg max-w-xl mx-auto mb-10">Entre em contato e descubra como podemos transformar a presença digital da sua marca.</p>
-              <Editable value={h.cta || 'Agendar Consultoria'} onChange={(v) => setConfig({...config, hero: {...h, cta: v}})}
-                className="inline-block rounded-full px-10 py-4 text-[16px] font-bold text-white" style={{ backgroundColor: accent }} />
-            </section>
+            {/* PROCESS */}
+            <BlockWrapper label="Processo" onDuplicate={() => toast('Use blocos extras.')} onDelete={() => toast('Use blocos extras.')}>
+              <section className="px-10 py-16">
+                <div className="text-center mb-12">
+                  <h2 className="text-3xl font-black tracking-tight">Processo <span className="italic" style={{fontFamily:"'Georgia',serif",color:accent}}>simples</span></h2>
+                </div>
+                <div className="grid grid-cols-5 gap-3">
+                  {steps.map((step:string,i:number)=>(
+                    <div key={i} className={`${isDark?'bg-white/5 border-white/5':'bg-gray-50 border-gray-100'} rounded-xl p-5 border text-center relative`}>
+                      <div className="w-8 h-8 rounded-full flex items-center justify-center mx-auto mb-3 text-white font-black text-xs" style={{backgroundColor:accent}}>{i+1}</div>
+                      <p className="text-[12px] font-bold">{step}</p>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            </BlockWrapper>
+
+            {/* PRICING */}
+            <BlockWrapper label="Investimento" onDuplicate={() => toast('Use blocos extras.')} onDelete={() => toast('Use blocos extras.')}>
+              <section className={`px-10 py-16 ${isDark?'bg-white/[0.02]':'bg-gray-50/50'}`}>
+                <div className="text-center mb-12">
+                  <h2 className="text-3xl font-black tracking-tight">Investimento <span className="italic" style={{fontFamily:"'Georgia',serif",color:accent}}>transparente</span></h2>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 max-w-3xl mx-auto">
+                  {plans.map((p:any,i:number)=>(
+                    <div key={i} className={`rounded-[1.5rem] p-8 flex flex-col min-h-[380px] border-2 ${p.popular?(isDark?'bg-white/10':'bg-gray-900 text-white'):(isDark?'bg-white/5 border-white/5':'bg-white border-gray-100')}`} style={{borderColor:p.popular?'transparent':undefined}}>
+                      <div className="flex justify-between items-start mb-5">
+                        <Editable value={p.name} onChange={v=>{const n=[...(config.plans||[])];n[i]={...p,name:v};setConfig({...config,plans:n});}} className={`text-[11px] font-bold uppercase tracking-widest ${p.popular?'text-white/40':(isDark?'text-white/30':'text-gray-300')}`} />
+                        {p.popular && <Badge className="text-[8px] font-bold px-3 py-1 rounded-full" style={{backgroundColor:accent,color:'#fff'}}>Popular</Badge>}
+                      </div>
+                      <div className="mb-6">
+                        <span className="text-sm font-bold opacity-30">R$</span>
+                        <Editable value={p.price} onChange={v=>{const n=[...(config.plans||[])];n[i]={...p,price:v};setConfig({...config,plans:n});}} tag="span" className="text-5xl font-black tracking-tighter" />
+                        <span className="text-sm font-semibold opacity-30">/mês</span>
+                      </div>
+                      <div className="space-y-2.5 flex-1">
+                        {(p.features||[]).map((f:string,j:number)=>(
+                          <div key={j} className={`flex items-center gap-2.5 text-[12px] font-medium ${p.popular?'text-white/60':(isDark?'text-white/40':'text-gray-500')}`}><Check className="w-4 h-4 shrink-0" style={{color:accent}} />{f}</div>
+                        ))}
+                      </div>
+                      <Button className={`w-full h-11 rounded-full font-bold text-[13px] mt-6 ${p.popular?'':`border-2 ${isDark?'border-white/10 bg-transparent hover:bg-white/5':'border-gray-200 bg-white text-gray-900 hover:bg-gray-50'}`}`} style={p.popular?{backgroundColor:accent,color:'#fff'}:{}}>Iniciar Projeto</Button>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            </BlockWrapper>
+
+            {/* EXTRA BLOCKS */}
+            {extraBlocks.map((block: any, i: number) => (
+              <BlockWrapper key={i} label={block.type === 'text' ? 'Bloco de Texto' : 'Bloco de Imagem'} onDuplicate={() => duplicateExtra(i)} onDelete={() => deleteExtra(i)}>
+                {block.type === 'text' ? (
+                  <section className="px-10 py-16">
+                    <Editable value={block.title} onChange={v=>{const n=[...extraBlocks];n[i]={...n[i],title:v};setConfig({...config,extraBlocks:n});}} tag="h2" className="text-3xl font-black tracking-tight mb-6" />
+                    <Editable value={block.body} onChange={v=>{const n=[...extraBlocks];n[i]={...n[i],body:v};setConfig({...config,extraBlocks:n});}} multiline className={`text-base ${isDark?'text-white/50':'text-gray-500'} leading-relaxed max-w-3xl`} />
+                  </section>
+                ) : (
+                  <section className="px-10 py-8">
+                    <EditableImage src={block.url} onChangeSrc={url=>{const n=[...extraBlocks];n[i]={...n[i],url};setConfig({...config,extraBlocks:n});}}
+                      className="w-full h-[300px] object-cover rounded-[1.5rem]" alt="Bloco" />
+                    <Editable value={block.caption||''} onChange={v=>{const n=[...extraBlocks];n[i]={...n[i],caption:v};setConfig({...config,extraBlocks:n});}} className={`text-center text-sm ${isDark?'text-white/30':'text-gray-400'} mt-4 font-medium italic`} />
+                  </section>
+                )}
+              </BlockWrapper>
+            ))}
+
+            {/* CTA Final */}
+            <BlockWrapper label="CTA Final" onDuplicate={() => toast('Use blocos extras.')} onDelete={() => toast('CTA é fixo.')}>
+              <section className="px-10 py-20 text-center relative overflow-hidden">
+                <div className="absolute inset-0 opacity-[0.03]" style={{background:`linear-gradient(135deg,${accent},#f59e0b)`}} />
+                <h2 className="text-4xl font-black tracking-tight mb-5 relative z-10">Pronto para <span className="italic" style={{fontFamily:"'Georgia',serif",color:accent}}>escalar?</span></h2>
+                <Editable value={h.cta||'Agendar'} onChange={v=>setConfig({...config,hero:{...h,cta:v}})} className="inline-block rounded-full px-8 py-3.5 text-[15px] font-bold text-white relative z-10" style={{backgroundColor:accent}} />
+              </section>
+            </BlockWrapper>
 
             {/* Footer */}
-            <div className="px-12 py-8 border-t border-gray-100 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <img src={LogoInova} alt="Inova" className="h-5" />
-                <span className="text-[11px] text-gray-300 font-semibold">© 2026 Inova Produções</span>
-              </div>
-              <div className="flex items-center gap-6 text-[12px] font-semibold text-gray-400">
-                <span>Serviços</span><span>Investimento</span><span>Contato</span>
-              </div>
+            <div className={`px-10 py-6 ${isDark?'border-white/5':'border-gray-100'} border-t flex items-center justify-between`}>
+              <div className="flex items-center gap-2"><img src={LogoInova} alt="Inova" className={`h-4 ${isDark?'brightness-200':''}`}/><span className={`text-[10px] ${isDark?'text-white/20':'text-gray-300'} font-semibold`}>© 2026 Inova Produções</span></div>
+              <div className={`flex gap-5 text-[11px] font-semibold ${isDark?'text-white/30':'text-gray-400'}`}><span>Serviços</span><span>Investimento</span><span>Contato</span></div>
             </div>
           </div>
         </div>
       </main>
+    </div>
+  );
+}
+
+function MiniField({label,val,set}:{label:string;val:string;set:(v:string)=>void}) {
+  return (
+    <div className="space-y-1">
+      <Label className="text-[8px] font-bold text-gray-400 uppercase">{label}</Label>
+      <Input className="h-8 text-[11px] rounded-lg border-gray-200" value={val} onChange={(e)=>set(e.target.value)} />
     </div>
   );
 }
