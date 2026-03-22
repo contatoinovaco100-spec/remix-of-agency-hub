@@ -24,6 +24,7 @@ import WhiteboardPage from "./pages/WhiteboardPage";
 import ContentPlanningPage from "@/pages/ContentPlanningPage";
 import ProspectionPage from "@/pages/ProspectionPage";
 import SalesLP from "@/pages/SalesLP";
+import SalesEditorPage from "@/pages/SalesEditorPage";
 
 import PublicPortfolioPage from "./pages/PublicPortfolioPage";
 import ClientPortalPage from "./pages/ClientPortalPage";
@@ -77,6 +78,7 @@ function AppRoutes() {
                 <Route path="/whiteboard" element={<WhiteboardPage />} />
                 <Route path="/prospeccao" element={<ProspectionPage />} />
                 <Route path="/proposta" element={<SalesLP />} />
+                <Route path="/proposta/editar" element={<SalesEditorPage />} />
                 
                 <Route path="*" element={<NotFound />} />
               </Routes>

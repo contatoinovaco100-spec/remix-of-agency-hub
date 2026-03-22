@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Rocket, 
@@ -11,41 +12,46 @@ import {
   Video, 
   Monitor,
   Sparkles,
-  Bot
+  Bot,
+  Star,
+  Settings
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
-export default function SalesLP() {
-  const plans = [
+// Helper to map icon names to components
+const IconMap: Record<string, any> = {
+  Video, Bot, PieChart, Monitor, Rocket, Target, Zap, Sparkles, Star, ShieldCheck
+};
+
+const DEFAULT_CONFIG = {
+  hero: {
+    title: "A AGÊNCIA QUE REALMENTE FAZ AS COISAS.",
+    tagline: "Não entregamos apenas posts. Entregamos a infraestrutura de vendas e a estética de cinema que colocam sua marca no topo.",
+    badge: "Proposta Digital 2026"
+  },
+  whatsapp: "5562999999999",
+  services: [
+    { title: "Produção Audiovisual", desc: "Equipamentos de cinema e edições que prendem a atenção nos primeiros segundos.", icon: "Video" },
+    { title: "Inteligência Artificial", desc: "Processos de prospecção e planejamento tunados por IAs de última geração.", icon: "Bot" },
+    { title: "Growth Marketing", desc: "Estratégias baseadas em dados para escalar faturamento e reconhecimento.", icon: "PieChart" },
+    { title: "Digital Solutions", desc: "De Landing Pages a CRM, construímos a infraestrutura que sua empresa precisa.", icon: "Monitor" }
+  ],
+  plans: [
     {
       name: "Essential",
       price: "2.900",
       description: "Ideal para marcas que querem consistência e posicionamento nas redes sociais.",
-      features: [
-        "Gestão de Instagram & TikTok",
-        "3 Postagens semanais (Reels/Feed)",
-        "Design de alta performance",
-        "Estratégia de Linhas Editoriais",
-        "Relatório mensal de métricas"
-      ],
-      color: "from-blue-500/20 to-cyan-500/20",
-      accent: "text-blue-400"
+      features: ["Gestão de Instagram & TikTok", "3 Postagens semanais (Reels/Feed)", "Design de alta performance", "Estratégia de Linhas Editoriais", "Relatório mensal de métricas"],
+      accent: "text-blue-400",
+      popular: false
     },
     {
       name: "Growth",
       price: "5.500",
       description: "Foco em escala, tráfego e produção de material visual de cinema.",
-      features: [
-        "Tudo do plano Essential",
-        "Gestão de Tráfego Pago (Meta/Google)",
-        "2 Visitas mensais para Filmagens",
-        "Edição Premium com Storytelling",
-        "Configuração de Funil de Vendas",
-        "Suporte Prioritário via WhatsApp"
-      ],
-      color: "from-[#f43f5e]/20 to-orange-500/20",
+      features: ["Tudo do plano Essential", "Gestão de Tráfego Pago (Meta/Google)", "2 Visitas mensais para Filmagens", "Edição Premium com Storytelling", "Configuração de Funil de Vendas", "Suporte Prioritário via WhatsApp"],
       accent: "text-[#f43f5e]",
       popular: true
     },
@@ -53,25 +59,31 @@ export default function SalesLP() {
       name: "Elite",
       price: "12.000",
       description: "O braço direito completo para dominar o mercado com IA e Audiovisual.",
-      features: [
-        "Tudo do plano Growth",
-        "Production Day: 4 Filmagens mensais",
-        "Automação Inteligente (SDR & IA)",
-        "Criação de Website / Landing Page",
-        "Brand Consulting & Branding",
-        "Diretoria de Criação Dedicada"
-      ],
-      color: "from-purple-500/20 to-pink-500/20",
-      accent: "text-purple-400"
+      features: ["Tudo do plano Growth", "Production Day: 4 Filmagens mensais", "Automação Inteligente (SDR & IA)", "Criação de Website / Landing Page", "Brand Consulting & Branding", "Diretoria de Criação Dedicada"],
+      accent: "text-purple-400",
+      popular: false
     }
-  ];
+  ]
+};
 
-  const services = [
-    { icon: <Video className="w-6 h-6" />, title: "Produção Audiovisual", desc: "Equipamentos de cinema e edições que prendem a atenção nos primeiros segundos." },
-    { icon: <Bot className="w-6 h-6" />, title: "Inteligência Artificial", desc: "Processos de prospecção e planejamento tunados por IAs de última geração." },
-    { icon: <PieChart className="w-6 h-6" />, title: "Growth Marketing", desc: "Estratégias baseadas em dados para escalar faturamento e reconhecimento." },
-    { icon: <Monitor className="w-6 h-6" />, title: "Digital Solutions", desc: "De Landing Pages a CRM, construímos a infraestrutura que sua empresa precisa." }
-  ];
+export default function SalesLP() {
+  const [config, setConfig] = useState(DEFAULT_CONFIG);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('agency_lp_config');
+    if (saved) {
+      try {
+        setConfig(JSON.parse(saved));
+      } catch (e) {
+        console.error('Error loading config', e);
+      }
+    }
+  }, []);
+
+  const getIcon = (name: string) => {
+    const Icon = IconMap[name] || Star;
+    return <Icon className="w-6 h-6" />;
+  };
 
   return (
     <div className="min-h-screen bg-[#030712] text-white selection:bg-[#f43f5e]/30 font-sans selection:text-white overflow-x-hidden">
@@ -79,6 +91,13 @@ export default function SalesLP() {
       {/* Glow Effects */}
       <div className="fixed top-0 left-1/4 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[120px] -z-10 pointer-events-none" />
       <div className="fixed bottom-0 right-1/4 w-[500px] h-[500px] bg-[#f43f5e]/10 rounded-full blur-[120px] -z-10 pointer-events-none" />
+
+      {/* Admin Button (Visible only in dev or for logged in users) */}
+      <div className="fixed bottom-6 left-6 z-50">
+         <Button variant="ghost" size="sm" className="rounded-full bg-white/5 border border-white/10 text-zinc-500 hover:text-white" asChild>
+           <a href="/proposta/editar"><Settings className="w-4 h-4 mr-2" /> Editar Proposta</a>
+         </Button>
+      </div>
 
       {/* Nav */}
       <nav className="max-w-7xl mx-auto px-6 py-8 flex justify-between items-center">
@@ -103,19 +122,20 @@ export default function SalesLP() {
           transition={{ duration: 0.6 }}
         >
           <Badge className="mb-6 bg-[#f43f5e]/10 text-[#f43f5e] border-[#f43f5e]/20 px-4 py-1 text-xs uppercase tracking-[0.2em] font-black">
-            Proposta Digital 2026
+            {config.hero.badge}
           </Badge>
           <h1 className="text-5xl md:text-8xl font-black tracking-tighter mb-8 leading-[0.9]">
-            A AGÊNCIA QUE <span className="text-zinc-500">REALMENTE</span> <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-zinc-600">FAZ AS COISAS.</span>
+            {config.hero.title}
           </h1>
           <p className="text-lg md:text-xl text-zinc-400 max-w-2xl mx-auto mb-10 font-medium italic">
-            Não entregamos apenas posts. Entregamos a infraestrutura de vendas e a estética de cinema que colocam sua marca no topo.
+            {config.hero.tagline}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button className="bg-[#f43f5e] hover:bg-[#f43f5e]/90 text-white rounded-full h-14 px-10 text-lg font-bold shadow-2xl shadow-[#f43f5e]/30 group">
-              Aceitar Proposta <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Button>
+            <a href={`https://wa.me/${config.whatsapp}`}>
+              <Button className="bg-[#f43f5e] hover:bg-[#f43f5e]/90 text-white rounded-full h-14 px-10 text-lg font-bold shadow-2xl shadow-[#f43f5e]/30 group w-full">
+                Aceitar Proposta <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </a>
             <Button variant="outline" className="rounded-full h-14 px-10 border-white/10 bg-white/5 hover:bg-white/10 text-lg font-bold">
               Falar com Strategist
             </Button>
@@ -130,7 +150,7 @@ export default function SalesLP() {
           <p className="text-3xl font-bold tracking-tight">O que fazemos por você.</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {services.map((s, i) => (
+          {config.services.map((s, i) => (
             <motion.div 
               key={i}
               initial={{ opacity: 0, y: 20 }}
@@ -140,7 +160,7 @@ export default function SalesLP() {
               className="p-8 rounded-3xl bg-white/5 border border-white/10 hover:border-[#f43f5e]/30 transition-all group"
             >
               <div className="w-12 h-12 rounded-2xl bg-[#f43f5e]/10 flex items-center justify-center text-[#f43f5e] mb-6 group-hover:scale-110 transition-transform">
-                {s.icon}
+                {getIcon(s.icon)}
               </div>
               <h3 className="text-xl font-bold mb-3">{s.title}</h3>
               <p className="text-zinc-500 leading-relaxed text-sm">{s.desc}</p>
@@ -152,12 +172,12 @@ export default function SalesLP() {
       {/* Pricing / Proposal Section */}
       <section id="precos" className="max-w-7xl mx-auto px-6 py-32 bg-gradient-to-b from-transparent to-[#050505] rounded-[50px]">
         <div className="text-center mb-20">
-          <h2 className="text-5xl md:text-7xl font-black tracking-tight mb-4 italic">PLANOS E INVESTIMENTO</h2>
+          <h2 className="text-5xl md:text-7xl font-black tracking-tight mb-4 italic uppercase">Planos e Investimento</h2>
           <p className="text-zinc-500 font-medium">Estruturas modulares pensadas para o seu momento de escala.</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {plans.map((p, i) => (
+          {config.plans.map((p, i) => (
             <motion.div
               key={i}
               whileHover={{ y: -10 }}
@@ -169,7 +189,7 @@ export default function SalesLP() {
                 </div>
               )}
               <div className="mb-8">
-                <span className={`text-sm font-black uppercase tracking-widest ${p.accent}`}>{p.name}</span>
+                <span className={`text-sm font-black uppercase tracking-widest ${p.accent || 'text-zinc-400'}`}>{p.name}</span>
                 <div className="mt-4 flex items-baseline gap-1">
                   <span className="text-4xl font-black leading-none">R$ {p.price}</span>
                   <span className="text-zinc-500 font-bold">/mês</span>
@@ -180,15 +200,17 @@ export default function SalesLP() {
               <div className="space-y-4 mb-10 flex-1">
                 {p.features.map((f, j) => (
                   <div key={j} className="flex items-start gap-3">
-                    <CheckCircle2 className={`w-5 h-5 mt-0.5 shrink-0 ${p.accent}`} />
+                    <CheckCircle2 className={`w-5 h-5 mt-0.5 shrink-0 ${p.accent || 'text-[#f43f5e]'}`} />
                     <span className="text-zinc-300 text-sm font-medium">{f}</span>
                   </div>
                 ))}
               </div>
 
-              <Button className={`w-full h-14 rounded-2xl text-md font-bold transition-all ${p.popular ? 'bg-[#f43f5e] text-white hover:bg-[#f43f5e]/90 shadow-xl shadow-[#f43f5e]/20' : 'bg-white/10 text-white hover:bg-white/20 border border-white/5'}`}>
-                {p.popular ? 'Começar Agora' : 'Selecionar Plano'}
-              </Button>
+              <a href={`https://wa.me/${config.whatsapp}`}>
+                <Button className={`w-full h-14 rounded-2xl text-md font-bold transition-all ${p.popular ? 'bg-[#f43f5e] text-white hover:bg-[#f43f5e]/90 shadow-xl shadow-[#f43f5e]/20' : 'bg-white/10 text-white hover:bg-white/20 border border-white/5'}`}>
+                  {p.popular ? 'Começar Agora' : 'Selecionar Plano'}
+                </Button>
+              </a>
             </motion.div>
           ))}
         </div>
@@ -206,16 +228,18 @@ export default function SalesLP() {
                  <p className="text-zinc-600 uppercase text-[10px] font-black tracking-widest mb-1">Início em</p>
                  <p className="text-2xl font-bold">R$ 1.500</p>
               </div>
-              <Button variant="outline" className="rounded-2xl h-14 px-8 border-white/10 hover:bg-zinc-800">
-                Consultar Tabela
-              </Button>
+              <a href={`https://wa.me/${config.whatsapp}`}>
+                <Button variant="outline" className="rounded-2xl h-14 px-8 border-white/10 hover:bg-zinc-800">
+                  Consultar Tabela
+                </Button>
+              </a>
            </div>
         </div>
       </section>
 
       {/* Social Proof Placeholder with Glow */}
       <section className="max-w-4xl mx-auto px-6 py-32 text-center">
-        <h2 className="text-4xl md:text-6xl font-black mb-12 italic">QUEM CONFIA NA INOVA</h2>
+        <h2 className="text-4xl md:text-6xl font-black mb-12 italic uppercase">Quem confia na Inova</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 opacity-40 grayscale hover:grayscale-0 transition-all duration-700">
            <div className="flex items-center justify-center font-black text-2xl tracking-tighter">CLIENTE_01</div>
            <div className="flex items-center justify-center font-black text-2xl tracking-tighter">CLIENTE_02</div>
@@ -233,7 +257,7 @@ export default function SalesLP() {
         <p className="text-xl text-zinc-400 mb-12 max-w-xl mx-auto">Sua marca merece a estética do futuro. Clique no botão abaixo e fale diretamente com nosso time de atendimento.</p>
         
         <a 
-          href="https://wa.me/5562999999999" 
+          href={`https://wa.me/${config.whatsapp}`}
           target="_blank" 
           rel="noopener noreferrer"
         >

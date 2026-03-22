@@ -17,6 +17,7 @@ import {
   LayoutList,
   Bot,
   Sparkles,
+  Settings,
 } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
@@ -38,6 +39,7 @@ const allNavItems: NavItem[] = [
   { title: 'Whiteboard', url: '/whiteboard', icon: Palette },
   { title: 'Prospecção IA', url: '/prospeccao', icon: Bot, module: 'comercial' },
   { title: 'Proposta Comercial', url: '/proposta', icon: Sparkles, module: 'comercial' },
+  { title: 'Editar Proposta', url: '/proposta/editar', icon: Settings, module: 'comercial' },
 ];
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
