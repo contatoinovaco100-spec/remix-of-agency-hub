@@ -1,32 +1,25 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { 
-  Save, Plus, Trash2, Eye, Sparkles, MessageSquare, ListChecks, 
-  BarChart3, Image as ImageIcon, Settings
+  Save, Plus, Trash2, Eye, Sparkles, Settings, Check, 
+  ArrowRight, BarChart3, Target, Star, Video, Camera, Zap, 
+  Lightbulb, Globe, Shield, Play, ArrowUpRight, ChevronRight,
+  Edit3, X, MousePointer2, Pencil, GripVertical, Type, Image as ImageIcon,
+  Palette, Layout, Monitor
 } from 'lucide-react';
 import { toast } from 'sonner';
+import LogoInova from '@/assets/logo-inova.png';
 
-/* ═══════════ TEMPLATES COMPLETOS POR NICHO ═══════════ */
+/* ═══════════ TEMPLATES POR NICHO ═══════════ */
 const NICHE_TEMPLATES: Record<string, any> = {
   restaurant: {
     theme: 'restaurant',
-    hero: {
-      title: "Seu restaurante pode estar cheio… mas invisível no digital.",
-      tagline: "Transformamos restaurantes em marcas desejadas nas redes sociais.",
-      badge: "INOVA PRODUÇÕES • 2026",
-      cta: "BORÁ DIGITALIZAR 🚀"
-    },
-    strategy: {
-      problem: "Hoje a maioria das pessoas escolhe onde comer pelo Instagram. Se o seu restaurante não aparece com conteúdo profissional, ele simplesmente não entra na decisão do cliente.",
-      solution: "A Inova é uma produtora estratégica que cria conteúdos profissionais e posiciona seu restaurante para atrair mais clientes.",
-      results: "Visibilidade Máxima, Mais Reservas, Autoridade Gastro",
-      steps: "Diagnóstico, Planejamento, Captação, Edição, Entrega"
-    },
+    hero: { title: "Seu restaurante pode estar cheio… mas invisível no digital.", tagline: "Transformamos restaurantes em marcas desejadas nas redes sociais.", badge: "INOVA PRODUÇÕES • 2026", cta: "BORÁ DIGITALIZAR 🚀" },
+    strategy: { problem: "Hoje a maioria das pessoas escolhe onde comer pelo Instagram. Se o seu restaurante não aparece com conteúdo profissional, ele simplesmente não entra na decisão do cliente.", solution: "A Inova é uma produtora estratégica que cria conteúdos profissionais e posiciona seu restaurante para atrair mais clientes.", results: "Visibilidade Máxima, Mais Reservas, Autoridade Gastro", steps: "Diagnóstico, Planejamento, Captação, Edição, Entrega" },
     services: [
       { title: "Captação Gourmet", desc: "Filmagem 4K com foco em textura e experiência gastronômica." },
       { title: "Reels & Stories", desc: "Conteúdo otimizado para engajamento no Instagram." },
@@ -43,18 +36,8 @@ const NICHE_TEMPLATES: Record<string, any> = {
   },
   personal: {
     theme: 'personal',
-    hero: {
-      title: "Seu treino transforma corpos. Nosso conteúdo transforma carreiras.",
-      tagline: "Posicionamos personais como autoridade digital com vídeos que vendem.",
-      badge: "INOVA PRODUÇÕES • 2026",
-      cta: "ESCALAR MINHA MARCA 💪"
-    },
-    strategy: {
-      problem: "Você é um ótimo profissional, mas sem presença digital estratégica, continua dependendo de indicação e cobrando barato.",
-      solution: "A Inova cria conteúdo cinematográfico que posiciona você como referência e atrai alunos dispostos a pagar mais.",
-      results: "Autoridade Digital, Mais Alunos, Ticket Maior",
-      steps: "Diagnóstico, Planejamento, Set de Filmagem, Edição, Entrega"
-    },
+    hero: { title: "Seu treino transforma corpos. Nosso conteúdo transforma carreiras.", tagline: "Posicionamos personais como autoridade digital com vídeos que vendem.", badge: "INOVA PRODUÇÕES • 2026", cta: "ESCALAR MINHA MARCA 💪" },
+    strategy: { problem: "Você é um ótimo profissional, mas sem presença digital estratégica, continua dependendo de indicação e cobrando barato.", solution: "A Inova cria conteúdo cinematográfico que posiciona você como referência e atrai alunos dispostos a pagar mais.", results: "Autoridade Digital, Mais Alunos, Ticket Maior", steps: "Diagnóstico, Planejamento, Set de Filmagem, Edição, Entrega" },
     services: [
       { title: "Vídeos de Treino", desc: "Captação profissional de exercícios e dicas." },
       { title: "Conteúdo Educativo", desc: "Reels com dicas de treino e nutrição." },
@@ -71,18 +54,8 @@ const NICHE_TEMPLATES: Record<string, any> = {
   },
   clinica: {
     theme: 'clinica',
-    hero: {
-      title: "Sua clínica oferece o melhor. Mas o digital não mostra isso.",
-      tagline: "Posicionamos clínicas de estética como referência premium no digital.",
-      badge: "INOVA PRODUÇÕES • 2026",
-      cta: "POSICIONAR MINHA CLÍNICA ✨"
-    },
-    strategy: {
-      problem: "Pacientes escolhem clínicas pelo Instagram antes de ligar. Se sua presença digital não transmite confiança e sofisticação, você perde para quem comunica melhor.",
-      solution: "A Inova cria conteúdos de luxo que transmitem a sofisticação da sua clínica e atraem pacientes de alto padrão.",
-      results: "Posicionamento Premium, Mais Agendamentos, Ticket Elevado",
-      steps: "Diagnóstico, Planejamento, Captação, Edição, Entrega"
-    },
+    hero: { title: "Sua clínica oferece o melhor. Mas o digital não mostra isso.", tagline: "Posicionamos clínicas de estética como referência premium no digital.", badge: "INOVA PRODUÇÕES • 2026", cta: "POSICIONAR MINHA CLÍNICA ✨" },
+    strategy: { problem: "Pacientes escolhem clínicas pelo Instagram antes de ligar. Se sua presença digital não transmite confiança e sofisticação, você perde para quem comunica melhor.", solution: "A Inova cria conteúdos de luxo que transmitem a sofisticação da sua clínica e atraem pacientes de alto padrão.", results: "Posicionamento Premium, Mais Agendamentos, Ticket Elevado", steps: "Diagnóstico, Planejamento, Captação, Edição, Entrega" },
     services: [
       { title: "Vídeos de Procedimento", desc: "Captação elegante de antes e depois." },
       { title: "Branding da Clínica", desc: "Imagens que transmitem sofisticação." },
@@ -99,18 +72,8 @@ const NICHE_TEMPLATES: Record<string, any> = {
   },
   lawyer: {
     theme: 'lawyer',
-    hero: {
-      title: "Advocacia de excelência merece posicionamento de excelência.",
-      tagline: "Construímos autoridade digital para escritórios que querem dominar seu mercado.",
-      badge: "INOVA PRODUÇÕES • 2026",
-      cta: "CONSTRUIR AUTORIDADE ⚖️"
-    },
-    strategy: {
-      problem: "O mercado jurídico está saturado. Sem uma presença digital estratégica, seu escritório se torna apenas mais um na multidão.",
-      solution: "A Inova posiciona advogados como referência com conteúdo que educa, engaja e converte clientes de alto valor.",
-      results: "Prestígio Digital, Mais Clientes, Casos de Alto Valor",
-      steps: "Diagnóstico, Planejamento, Captação, Edição, Entrega"
-    },
+    hero: { title: "Advocacia de excelência merece posicionamento de excelência.", tagline: "Construímos autoridade digital para escritórios que querem dominar seu mercado.", badge: "INOVA PRODUÇÕES • 2026", cta: "CONSTRUIR AUTORIDADE ⚖️" },
+    strategy: { problem: "O mercado jurídico está saturado. Sem uma presença digital estratégica, seu escritório se torna apenas mais um na multidão.", solution: "A Inova posiciona advogados como referência com conteúdo que educa, engaja e converte clientes de alto valor.", results: "Prestígio Digital, Mais Clientes, Casos de Alto Valor", steps: "Diagnóstico, Planejamento, Captação, Edição, Entrega" },
     services: [
       { title: "Vídeos Educativos", desc: "Conteúdo sobre temas jurídicos relevantes." },
       { title: "Posicionamento", desc: "Branding do advogado como autoridade." },
@@ -127,18 +90,8 @@ const NICHE_TEMPLATES: Record<string, any> = {
   },
   realestate: {
     theme: 'realestate',
-    hero: {
-      title: "Imóveis extraordinários merecem uma apresentação à altura.",
-      tagline: "Vídeos e fotos que vendem antes mesmo da visita presencial.",
-      badge: "INOVA PRODUÇÕES • 2026",
-      cta: "VALORIZAR MEUS IMÓVEIS 🏠"
-    },
-    strategy: {
-      problem: "Fotos amadoras e vídeos de celular desvalorizam seus imóveis e afastam compradores qualificados.",
-      solution: "A Inova cria apresentações cinematográficas que valorizam cada imóvel e aceleram suas vendas.",
-      results: "Imóveis Valorizados, Vendas Aceleradas, Clientes Premium",
-      steps: "Diagnóstico, Planejamento, Captação, Edição, Entrega"
-    },
+    hero: { title: "Imóveis extraordinários merecem uma apresentação à altura.", tagline: "Vídeos e fotos que vendem antes mesmo da visita presencial.", badge: "INOVA PRODUÇÕES • 2026", cta: "VALORIZAR MEUS IMÓVEIS 🏠" },
+    strategy: { problem: "Fotos amadoras e vídeos de celular desvalorizam seus imóveis e afastam compradores qualificados.", solution: "A Inova cria apresentações cinematográficas que valorizam cada imóvel e aceleram suas vendas.", results: "Imóveis Valorizados, Vendas Aceleradas, Clientes Premium", steps: "Diagnóstico, Planejamento, Captação, Edição, Entrega" },
     services: [
       { title: "Tour Virtual", desc: "Vídeos imersivos de cada imóvel." },
       { title: "Fotos Profissionais", desc: "Imagens que valorizam cada ambiente." },
@@ -155,18 +108,8 @@ const NICHE_TEMPLATES: Record<string, any> = {
   },
   studio: {
     theme: 'studio',
-    hero: {
-      title: "Produção audiovisual de alto impacto para marcas ambiciosas.",
-      tagline: "Do conceito à entrega: narrativas que posicionam e vendem.",
-      badge: "INOVA PRODUÇÕES • 2026",
-      cta: "INICIAR PRODUÇÃO 🎬"
-    },
-    strategy: {
-      problem: "Sua marca precisa de conteúdo profissional, mas contratar freelancers gera inconsistência e perda de tempo.",
-      solution: "A Inova é seu departamento criativo completo: planejamento, captação, edição e distribuição em um só lugar.",
-      results: "Consistência, Qualidade Cinema, Escala de Marca",
-      steps: "Briefing, Planejamento, Produção, Pós-produção, Entrega"
-    },
+    hero: { title: "Produção audiovisual de alto impacto para marcas ambiciosas.", tagline: "Do conceito à entrega: narrativas que posicionam e vendem.", badge: "INOVA PRODUÇÕES • 2026", cta: "INICIAR PRODUÇÃO 🎬" },
+    strategy: { problem: "Sua marca precisa de conteúdo profissional, mas contratar freelancers gera inconsistência e perda de tempo.", solution: "A Inova é seu departamento criativo completo: planejamento, captação, edição e distribuição em um só lugar.", results: "Consistência, Qualidade Cinema, Escala de Marca", steps: "Briefing, Planejamento, Produção, Pós-produção, Entrega" },
     services: [
       { title: "Captação 4K", desc: "Filmagem profissional com equipamento cinema." },
       { title: "Edição Cinematográfica", desc: "Color grading e pós-produção de elite." },
@@ -191,31 +134,81 @@ const NICHE_IMAGES: Record<string, string> = {
   realestate: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=400",
   studio: "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&q=80&w=400",
 };
+const NICHE_LABELS: Record<string, string> = { restaurant: "Gastro", personal: "Fitness", clinica: "Clínica", lawyer: "Jurídico", realestate: "Imobiliária", studio: "Estúdio" };
 
-const NICHE_LABELS: Record<string, string> = {
-  restaurant: "Gastro",
-  personal: "Fitness",
-  clinica: "Clínica",
-  lawyer: "Jurídico",
-  realestate: "Imobiliária",
-  studio: "Estúdio",
+const ASSETS = {
+  hero: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&q=80&w=1200",
+  restaurant: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=80&w=1200",
+  personal: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&q=80&w=1200",
+  clinica: "https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&q=80&w=1200",
+  lawyer: "https://images.unsplash.com/photo-1505664194779-8beaceb93744?auto=format&fit=crop&q=80&w=1200",
+  realestate: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=1200",
+  studio: "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&q=80&w=1200",
+  team: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=800",
+  editing: "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&q=80&w=800",
+  testimonial: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400",
 };
 
-/* ═══════════ COMPONENTE PRINCIPAL ═══════════ */
+/* ═══════════ COMPONENTE EDITÁVEL INLINE ═══════════ */
+function Editable({ value, onChange, tag = 'p', className = '', style = {}, multiline = false }: {
+  value: string; onChange: (v: string) => void; tag?: string;
+  className?: string; style?: React.CSSProperties; multiline?: boolean;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [tempValue, setTempValue] = useState(value);
+  const inputRef = useRef<HTMLTextAreaElement | HTMLInputElement>(null);
+
+  useEffect(() => { setTempValue(value); }, [value]);
+  useEffect(() => { if (editing && inputRef.current) inputRef.current.focus(); }, [editing]);
+
+  if (editing) {
+    return (
+      <div className="relative inline-block w-full">
+        {multiline ? (
+          <textarea ref={inputRef as any} value={tempValue} onChange={(e) => setTempValue(e.target.value)}
+            onBlur={() => { onChange(tempValue); setEditing(false); }}
+            onKeyDown={(e) => { if (e.key === 'Escape') { setTempValue(value); setEditing(false); } }}
+            className={`${className} bg-blue-50 border-2 border-blue-400 rounded-lg p-3 outline-none w-full resize-none min-h-[80px]`} style={style} />
+        ) : (
+          <input ref={inputRef as any} value={tempValue} onChange={(e) => setTempValue(e.target.value)}
+            onBlur={() => { onChange(tempValue); setEditing(false); }}
+            onKeyDown={(e) => { if (e.key === 'Enter') { onChange(tempValue); setEditing(false); } if (e.key === 'Escape') { setTempValue(value); setEditing(false); } }}
+            className={`${className} bg-blue-50 border-2 border-blue-400 rounded-lg p-2 outline-none w-full`} style={style} />
+        )}
+        <div className="absolute -top-8 left-0 bg-blue-500 text-white text-[9px] font-bold px-3 py-1 rounded-t-lg uppercase tracking-wider flex items-center gap-1">
+          <Pencil size={10} /> Editando • Enter/Clique fora para salvar
+        </div>
+      </div>
+    );
+  }
+
+  const Tag = tag as any;
+  return (
+    <Tag className={`${className} cursor-pointer relative group/editable transition-all`} style={style}
+      onClick={() => setEditing(true)}>
+      {value}
+      <span className="absolute -top-2 -right-2 opacity-0 group-hover/editable:opacity-100 transition-all bg-blue-500 text-white w-6 h-6 rounded-full flex items-center justify-center shadow-lg z-20 pointer-events-none">
+        <Pencil size={10} />
+      </span>
+      <span className="absolute inset-0 border-2 border-transparent group-hover/editable:border-blue-400 group-hover/editable:border-dashed rounded-lg pointer-events-none transition-all" />
+    </Tag>
+  );
+}
+
+/* ═══════════ EDITOR PRINCIPAL ═══════════ */
 export default function SalesEditorPage() {
   const [config, setConfig] = useState<any>(null);
+  const [panelOpen, setPanelOpen] = useState(true);
 
   useEffect(() => {
     const saved = localStorage.getItem('agency_lp_config');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        // Garante que todos os campos existem
         const template = NICHE_TEMPLATES[parsed.theme] || NICHE_TEMPLATES.restaurant;
         setConfig({
-          ...template,
-          ...parsed,
-          styles: { heroTitleSize: "64", accentColor: "#bff720", ...(parsed.styles || {}) },
+          ...template, ...parsed,
+          styles: { heroTitleSize: "56", accentColor: "#2563eb", ...(parsed.styles || {}) },
           hero: { ...template.hero, ...(parsed.hero || {}) },
           strategy: { ...template.strategy, ...(parsed.strategy || {}) },
           services: parsed.services?.length ? parsed.services : template.services,
@@ -226,255 +219,309 @@ export default function SalesEditorPage() {
   }, []);
 
   const loadTemplate = (niche: string) => {
-    const t = NICHE_TEMPLATES[niche];
-    setConfig({ ...t, styles: { heroTitleSize: "64", accentColor: "#bff720" } });
+    setConfig({ ...NICHE_TEMPLATES[niche], styles: { heroTitleSize: "56", accentColor: "#2563eb" } });
   };
 
   const switchNiche = (niche: string) => {
-    const t = NICHE_TEMPLATES[niche];
-    setConfig({ ...t, styles: config?.styles || { heroTitleSize: "64", accentColor: "#bff720" } });
-    toast.success(`Template "${NICHE_LABELS[niche]}" carregado!`);
+    setConfig({ ...NICHE_TEMPLATES[niche], styles: config?.styles || { heroTitleSize: "56", accentColor: "#2563eb" } });
+    toast.success(`Template "${NICHE_LABELS[niche]}" aplicado!`);
   };
 
   const handleSave = () => {
     localStorage.setItem('agency_lp_config', JSON.stringify(config));
-    toast.success('Landing Page Atualizada! 🚀');
+    toast.success('Página Publicada com Sucesso! 🚀');
   };
 
   if (!config) return null;
-  const accent = config.styles?.accentColor || "#bff720";
+  const accent = config.styles?.accentColor || "#2563eb";
+  const heroSize = config.styles?.heroTitleSize || "56";
+  const themeImage = ASSETS[config.theme as keyof typeof ASSETS] || ASSETS.hero;
+  const h = config.hero || {};
+  const s = config.strategy || {};
+  const services = config.services || [];
+  const plans = (config.plans || []).slice(0, 2);
+  const results = (s.results || '').split(',').map((r: string) => r.trim());
+  const steps = (s.steps || '').split(',').map((r: string) => r.trim());
+  const whatsapp = config.whatsapp || "5562999999999";
 
   return (
-    <div className="flex h-screen bg-[#050508] text-white font-sans overflow-hidden">
-      {/* ═══════════ SIDEBAR ═══════════ */}
-      <aside className="w-[420px] h-full bg-[#0a0a0c] border-r border-white/[0.06] flex flex-col overflow-hidden">
-        {/* Header */}
-        <div className="p-6 border-b border-white/[0.06] flex items-center justify-between bg-black/40 backdrop-blur-xl shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="w-2.5 h-2.5 rounded-full animate-pulse" style={{ backgroundColor: accent, boxShadow: `0 0 12px ${accent}` }} />
-            <span className="text-[10px] font-black uppercase tracking-[0.4em] italic" style={{ color: accent }}>Estúdio Inova</span>
-          </div>
-          <Button onClick={handleSave} size="sm" className="h-10 rounded-full px-6 font-black uppercase text-[9px] gap-2 transition-all shadow-xl active:scale-95" style={{ backgroundColor: accent, color: '#000' }}>
-            <Save size={14}/> Publicar
+    <div className="flex h-screen bg-gray-100 overflow-hidden">
+      {/* ═══════════ FLOATING TOOLBAR ═══════════ */}
+      <div className="fixed top-0 left-0 right-0 z-[60] h-14 bg-white border-b border-gray-200 flex items-center justify-between px-6 shadow-sm">
+        <div className="flex items-center gap-4">
+          <img src={LogoInova} alt="Inova" className="h-6" />
+          <div className="h-6 w-px bg-gray-200" />
+          <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Editor Visual</span>
+          <Badge className="bg-green-50 text-green-600 border-green-200 text-[9px] font-bold">
+            <span className="w-1.5 h-1.5 bg-green-500 rounded-full mr-1.5 inline-block animate-pulse" />
+            Ao vivo
+          </Badge>
+        </div>
+        <div className="flex items-center gap-3">
+          <Button variant="outline" size="sm" className="h-9 rounded-lg text-[11px] font-bold gap-2 border-gray-200"
+            onClick={() => setPanelOpen(!panelOpen)}>
+            <Settings size={14} /> {panelOpen ? 'Fechar Painel' : 'Abrir Painel'}
+          </Button>
+          <a href="/proposta" target="_blank">
+            <Button variant="outline" size="sm" className="h-9 rounded-lg text-[11px] font-bold gap-2 border-gray-200">
+              <Eye size={14} /> Visualizar
+            </Button>
+          </a>
+          <Button size="sm" className="h-9 rounded-lg text-[11px] font-bold gap-2 shadow-lg active:scale-95 transition-all" style={{ backgroundColor: accent, color: '#fff' }}
+            onClick={handleSave}>
+            <Save size={14} /> Publicar
           </Button>
         </div>
+      </div>
 
-        {/* Tabs */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-8" style={{ scrollbarWidth: 'thin', scrollbarColor: '#222 transparent' }}>
-          <Tabs defaultValue="template" className="w-full">
-            <TabsList className="grid w-full grid-cols-4 h-12 bg-black/60 border border-white/[0.06] rounded-xl p-1 mb-8">
-              <TabsTrigger value="template" className="rounded-lg data-[state=active]:bg-white/10 font-black uppercase text-[7px] tracking-widest">Nicho</TabsTrigger>
-              <TabsTrigger value="capa" className="rounded-lg data-[state=active]:bg-white/10 font-black uppercase text-[7px] tracking-widest">Capa</TabsTrigger>
-              <TabsTrigger value="copy" className="rounded-lg data-[state=active]:bg-white/10 font-black uppercase text-[7px] tracking-widest">Copy</TabsTrigger>
-              <TabsTrigger value="ofertas" className="rounded-lg data-[state=active]:bg-white/10 font-black uppercase text-[7px] tracking-widest">Ofertas</TabsTrigger>
-            </TabsList>
-
-            {/* ── ABA NICHO (Templates) ── */}
-            <TabsContent value="template" className="space-y-6 animate-in fade-in duration-300">
-              <SectionTitle title="Selecione o Nicho" accent={accent} />
-              <p className="text-[10px] text-white/20 font-medium leading-relaxed">Ao selecionar um nicho, todo o conteúdo da página será preenchido automaticamente com a copy profissional daquele segmento.</p>
-              <div className="grid grid-cols-2 gap-3">
+      {/* ═══════════ SIDE PANEL (Colapsável) ═══════════ */}
+      {panelOpen && (
+        <aside className="w-[300px] h-full pt-14 bg-white border-r border-gray-200 flex flex-col z-40 shrink-0 shadow-lg">
+          <div className="flex-1 overflow-y-auto p-5 space-y-6" style={{ scrollbarWidth: 'thin' }}>
+            {/* Nicho Selector */}
+            <div>
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">Template do Nicho</p>
+              <div className="grid grid-cols-3 gap-2">
                 {Object.keys(NICHE_TEMPLATES).map((niche) => (
                   <button key={niche} onClick={() => switchNiche(niche)}
-                    className={`relative group w-full h-28 rounded-2xl overflow-hidden border-2 transition-all duration-300 ${config.theme === niche ? 'border-current ring-4 ring-current/10 scale-[1.03]' : 'border-white/[0.06] grayscale hover:grayscale-0 hover:scale-[1.02]'}`}
-                    style={{ borderColor: config.theme === niche ? accent : undefined, ringColor: config.theme === niche ? `${accent}20` : undefined }}>
-                    <img src={NICHE_IMAGES[niche]} alt={NICHE_LABELS[niche]} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-125" />
-                    <div className={`absolute inset-0 ${config.theme === niche ? 'bg-black/30' : 'bg-black/70 group-hover:bg-black/40'} transition-all`} />
-                    <div className="absolute bottom-3 left-4">
-                      <p className="text-[10px] font-black text-white italic uppercase drop-shadow-lg tracking-wide">{NICHE_LABELS[niche]}</p>
-                    </div>
-                    {config.theme === niche && (
-                      <div className="absolute top-3 right-3 w-5 h-5 rounded-full flex items-center justify-center" style={{ backgroundColor: accent }}>
-                        <span className="text-black text-[8px] font-black">✓</span>
-                      </div>
-                    )}
+                    className={`relative group w-full h-16 rounded-xl overflow-hidden border-2 transition-all ${config.theme === niche ? 'border-blue-500 ring-2 ring-blue-500/20' : 'border-gray-100 hover:border-gray-300'}`}>
+                    <img src={NICHE_IMAGES[niche]} alt={NICHE_LABELS[niche]} className="w-full h-full object-cover" />
+                    <div className={`absolute inset-0 ${config.theme === niche ? 'bg-blue-500/20' : 'bg-black/50'}`} />
+                    <p className="absolute bottom-1.5 inset-x-0 text-center text-[7px] font-bold text-white uppercase">{NICHE_LABELS[niche]}</p>
                   </button>
                 ))}
               </div>
-            </TabsContent>
+            </div>
 
-            {/* ── ABA CAPA ── */}
-            <TabsContent value="capa" className="space-y-6 animate-in fade-in duration-300">
-              <SectionTitle title="Abertura & Impacto" accent={accent} />
-              <Field label="Título Principal" val={config.hero?.title} set={(v: string) => setConfig({...config, hero: {...config.hero, title: v}})} isArea />
-              <Field label="Subtítulo (Promessa)" val={config.hero?.tagline} set={(v: string) => setConfig({...config, hero: {...config.hero, tagline: v}})} isArea />
-              <Field label="Texto do Botão" val={config.hero?.cta} set={(v: string) => setConfig({...config, hero: {...config.hero, cta: v}})} />
-              <Field label="Identificador Superior" val={config.hero?.badge} set={(v: string) => setConfig({...config, hero: {...config.hero, badge: v}})} />
-            </TabsContent>
+            <div className="h-px bg-gray-100" />
 
-            {/* ── ABA COPY ── */}
-            <TabsContent value="copy" className="space-y-6 animate-in fade-in duration-300">
-              <SectionTitle title="Narrativa de Vendas" accent={accent} />
-              <Field label="O Problema / Dor" val={config.strategy?.problem} set={(v: string) => setConfig({...config, strategy: {...config.strategy, problem: v}})} isArea />
-              <Field label="A Solução Inova" val={config.strategy?.solution} set={(v: string) => setConfig({...config, strategy: {...config.strategy, solution: v}})} isArea />
-              <Field label="Resultados (separar por vírgula)" val={config.strategy?.results} set={(v: string) => setConfig({...config, strategy: {...config.strategy, results: v}})} />
-              <Field label="Etapas do Processo (separar por vírgula)" val={config.strategy?.steps} set={(v: string) => setConfig({...config, strategy: {...config.strategy, steps: v}})} />
-              <Field label="WhatsApp" val={config.whatsapp} set={(v: string) => setConfig({...config, whatsapp: v})} />
-
-              <div className="pt-6 border-t border-white/[0.06]">
-                <SectionTitle title="Serviços / Arsenal" accent={accent} />
-                {(config.services || []).map((s: any, i: number) => (
-                  <div key={i} className="p-4 bg-white/[0.03] rounded-2xl border border-white/[0.06] mb-3 group relative">
-                    <Button variant="ghost" size="sm" className="absolute top-2 right-2 h-7 w-7 p-0 opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-300 transition-all"
-                      onClick={() => setConfig({...config, services: config.services.filter((_: any, idx: number) => idx !== i)})}>
-                      <Trash2 size={14} />
-                    </Button>
-                    <Input className="bg-transparent border-none p-0 font-black uppercase text-[11px] mb-2 h-8 focus-visible:ring-0" style={{ color: accent }}
-                      value={s.title} onChange={(e) => { const n = [...config.services]; n[i] = {...n[i], title: e.target.value}; setConfig({...config, services: n}); }} />
-                    <Textarea className="bg-transparent border-none p-0 text-[11px] font-medium text-white/40 min-h-[50px] focus-visible:ring-0"
-                      value={s.desc} onChange={(e) => { const n = [...config.services]; n[i] = {...n[i], desc: e.target.value}; setConfig({...config, services: n}); }} />
-                  </div>
-                ))}
-                <Button variant="outline" className="w-full rounded-xl border-white/[0.06] h-10 text-[9px] font-black uppercase tracking-widest gap-2 bg-white/[0.02] hover:bg-white/[0.06] transition-all"
-                  onClick={() => setConfig({...config, services: [...(config.services || []), {title: "Novo Serviço", desc: "Descrição aqui..."}]})}>
-                  <Plus size={14}/> Adicionar Serviço
-                </Button>
-              </div>
-            </TabsContent>
-
-            {/* ── ABA OFERTAS (2 planos fixos) ── */}
-            <TabsContent value="ofertas" className="space-y-6 animate-in fade-in duration-300">
-              <SectionTitle title="Planos & Investimento" accent={accent} />
-              <p className="text-[10px] text-white/20 font-medium leading-relaxed">Configure os 2 planos que aparecerão na sua proposta.</p>
-              {[0, 1].map((i) => {
-                const plan = config.plans?.[i] || { name: i === 0 ? "Plano Start" : "Plano Pro", price: "0", features: [], popular: i === 1 };
-                return (
-                  <div key={i} className="p-6 bg-white/[0.03] rounded-2xl border-2 space-y-4 transition-all" style={{ borderColor: plan.popular ? accent : 'rgba(255,255,255,0.06)' }}>
-                    <div className="flex items-center justify-between">
-                      <span className="text-[9px] font-black uppercase tracking-widest text-white/30 italic">Plano {i + 1}</span>
-                      <label className="flex items-center gap-2 cursor-pointer">
-                        <span className="text-[8px] font-black uppercase text-white/20">Destaque</span>
-                        <input type="checkbox" checked={plan.popular || false} className="accent-[#bff720] w-4 h-4"
-                          onChange={(e) => { const n = [...(config.plans || [])]; n[i] = {...plan, popular: e.target.checked}; setConfig({...config, plans: n}); }} />
-                      </label>
-                    </div>
-                    <Field label="Nome do Plano" val={plan.name} set={(v: string) => { const n = [...(config.plans || [])]; n[i] = {...plan, name: v}; setConfig({...config, plans: n}); }} />
-                    <Field label="Preço (R$)" val={plan.price} set={(v: string) => { const n = [...(config.plans || [])]; n[i] = {...plan, price: v}; setConfig({...config, plans: n}); }} />
-                    <Field label="Itens inclusos (um por linha)" val={(plan.features || []).join('\n')} isArea
-                      set={(v: string) => { const n = [...(config.plans || [])]; n[i] = {...plan, features: v.split('\n').filter((f: string) => f.trim())}; setConfig({...config, plans: n}); }} />
-                  </div>
-                );
-              })}
-
-              <div className="pt-6 border-t border-white/[0.06] space-y-4">
-                <SectionTitle title="Ajustes Visuais" accent={accent} />
-                <Field label="Tamanho da Headline (Padrão: 64)" val={config.styles?.heroTitleSize} set={(v: string) => setConfig({...config, styles: {...config.styles, heroTitleSize: v}})} />
-                <Field label="Cor de Destaque (HEX)" val={config.styles?.accentColor} set={(v: string) => setConfig({...config, styles: {...config.styles, accentColor: v}})} />
-              </div>
-            </TabsContent>
-          </Tabs>
-        </div>
-      </aside>
-
-      {/* ═══════════ PREVIEW AREA ═══════════ */}
-      <main className="flex-1 h-full bg-[#000] overflow-y-auto p-12" style={{ scrollbarWidth: 'thin', scrollbarColor: '#222 transparent' }}>
-        <div className="max-w-5xl mx-auto pb-40">
-          {/* Header */}
-          <header className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 border-b border-white/[0.06] pb-12 gap-8">
+            {/* Ajustes Rápidos */}
             <div>
-              <h2 className="text-4xl font-black italic uppercase tracking-tighter leading-tight">Prévia do <span style={{ color: accent }}>Projeto</span></h2>
-              <p className="text-white/15 text-[10px] font-bold uppercase tracking-[0.4em] mt-3">Nicho: {NICHE_LABELS[config.theme] || 'Personalizado'}</p>
-            </div>
-            <a href="/proposta" target="_blank">
-              <Button variant="outline" className="rounded-full border-white/[0.06] bg-white/[0.03] h-12 px-10 gap-2 font-black uppercase text-[9px] tracking-widest transition-all hover:bg-white hover:text-black active:scale-95">
-                <Eye size={16}/> Ver Página Pública
-              </Button>
-            </a>
-          </header>
-
-          {/* Preview Blocks */}
-          <div className="space-y-4">
-            {/* Hero Preview */}
-            <div className="bg-white/[0.03] border border-white/[0.06] rounded-[2rem] overflow-hidden relative min-h-[320px] group">
-              <img src={NICHE_IMAGES[config.theme] || NICHE_IMAGES.restaurant} alt="Nicho" className="w-full h-full object-cover opacity-20 absolute inset-0 group-hover:opacity-30 transition-opacity" />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#050508] via-[#050508]/60 to-transparent" />
-              <div className="relative z-10 p-12 flex flex-col justify-end h-full min-h-[320px]">
-                <p className="text-[8px] font-black uppercase tracking-[0.6em] text-white/20 mb-4 italic">CAPA // HEADLINE</p>
-                <h3 className="text-3xl font-black italic uppercase tracking-tighter leading-[1.1] mb-4">{config.hero?.title}</h3>
-                <p className="text-sm text-white/25 font-medium italic max-w-lg">{config.hero?.tagline}</p>
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">Ajustes Rápidos</p>
+              <div className="space-y-3">
+                <div className="space-y-1.5">
+                  <Label className="text-[9px] font-bold text-gray-400 uppercase">WhatsApp</Label>
+                  <Input className="h-9 text-[12px] rounded-lg border-gray-200" value={config.whatsapp || ''} onChange={(e) => setConfig({...config, whatsapp: e.target.value})} />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-[9px] font-bold text-gray-400 uppercase">Tamanho Título (px)</Label>
+                  <Input className="h-9 text-[12px] rounded-lg border-gray-200" value={heroSize} onChange={(e) => setConfig({...config, styles: {...config.styles, heroTitleSize: e.target.value}})} />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-[9px] font-bold text-gray-400 uppercase">Cor Principal (HEX)</Label>
+                  <div className="flex gap-2">
+                    <div className="w-9 h-9 rounded-lg border border-gray-200 shrink-0" style={{ backgroundColor: accent }} />
+                    <Input className="h-9 text-[12px] rounded-lg border-gray-200" value={accent} onChange={(e) => setConfig({...config, styles: {...config.styles, accentColor: e.target.value}})} />
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* Strategy Preview */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="bg-white/[0.03] border border-white/[0.06] rounded-[2rem] p-10">
-                <p className="text-[8px] font-black uppercase tracking-[0.6em] text-white/15 mb-6 italic">DIAGNÓSTICO // PROBLEMA</p>
-                <p className="text-xl font-black italic uppercase tracking-tighter leading-[1.15]">{config.strategy?.problem}</p>
-              </div>
-              <div className="bg-white/[0.03] border border-white/[0.06] rounded-[2rem] p-10">
-                <p className="text-[8px] font-black uppercase tracking-[0.6em] text-white/15 mb-6 italic">SOLUÇÃO // ESTRATÉGIA</p>
-                <p className="text-lg font-medium italic text-white/50 leading-relaxed">{config.strategy?.solution}</p>
-              </div>
-            </div>
+            <div className="h-px bg-gray-100" />
 
-            {/* Services Grid Preview */}
-            <div className="bg-white/[0.03] border border-white/[0.06] rounded-[2rem] p-10">
-              <p className="text-[8px] font-black uppercase tracking-[0.6em] text-white/15 mb-8 italic">ARSENAL // {(config.services || []).length} ENTREGAS</p>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {(config.services || []).map((s: any, i: number) => (
-                  <div key={i} className="p-6 bg-white/[0.03] border border-white/[0.04] rounded-2xl">
-                    <div className="w-8 h-8 rounded-lg flex items-center justify-center mb-4" style={{ backgroundColor: `${accent}15`, color: accent }}><Sparkles size={16} /></div>
-                    <p className="text-sm font-black italic uppercase tracking-tight">{s.title}</p>
-                    <p className="text-[10px] text-white/20 mt-1 font-medium">{s.desc}</p>
+            {/* Serviços */}
+            <div>
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">Serviços ({services.length})</p>
+              <div className="space-y-2">
+                {services.map((svc: any, i: number) => (
+                  <div key={i} className="flex items-center gap-2 p-2.5 bg-gray-50 rounded-lg group text-[11px]">
+                    <GripVertical size={12} className="text-gray-300" />
+                    <span className="font-bold text-gray-700 flex-1 truncate">{svc.title}</span>
+                    <button onClick={() => setConfig({...config, services: services.filter((_: any, idx: number) => idx !== i)})} className="opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-600 transition-all"><Trash2 size={12} /></button>
                   </div>
                 ))}
+                <button onClick={() => setConfig({...config, services: [...services, {title: "Novo Serviço", desc: "Descrição aqui..."}]})}
+                  className="flex items-center gap-2 p-2.5 w-full rounded-lg border border-dashed border-gray-200 text-[11px] font-bold text-gray-400 hover:text-blue-500 hover:border-blue-300 transition-all">
+                  <Plus size={12} /> Adicionar
+                </button>
               </div>
             </div>
 
-            {/* Plans Preview */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {(config.plans || []).slice(0, 2).map((p: any, i: number) => (
-                <div key={i} className="bg-white/[0.03] border-2 rounded-[2rem] p-10 flex flex-col justify-between"
-                  style={{ borderColor: p.popular ? accent : 'rgba(255,255,255,0.06)' }}>
-                  <div>
-                    <p className="text-[8px] font-black uppercase tracking-[0.5em] text-white/20 italic mb-4">{p.name}</p>
-                    <p className="text-5xl font-black italic tracking-tighter">R${p.price}<span className="text-lg text-white/15">/mês</span></p>
-                  </div>
-                  <div className="mt-8 space-y-3">
-                    {(p.features || []).map((f: string, j: number) => (
-                      <p key={j} className="text-[11px] font-bold text-white/30 uppercase tracking-widest border-b border-white/[0.04] pb-2">+ {f}</p>
-                    ))}
+            <div className="h-px bg-gray-100" />
+
+            {/* Planos */}
+            <div>
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">Planos (2)</p>
+              {plans.map((p: any, i: number) => (
+                <div key={i} className="p-3 bg-gray-50 rounded-lg mb-2 space-y-2">
+                  <Input className="h-8 text-[11px] rounded-md border-gray-200 font-bold" value={p.name} onChange={(e) => { const n = [...(config.plans || [])]; n[i] = {...p, name: e.target.value}; setConfig({...config, plans: n}); }} />
+                  <div className="flex gap-2">
+                    <Input className="h-8 text-[11px] rounded-md border-gray-200 font-bold flex-1" value={p.price} placeholder="Preço" onChange={(e) => { const n = [...(config.plans || [])]; n[i] = {...p, price: e.target.value}; setConfig({...config, plans: n}); }} />
+                    <label className="flex items-center gap-1.5 text-[9px] font-bold text-gray-400 shrink-0">
+                      <input type="checkbox" checked={p.popular} className="accent-blue-500" onChange={(e) => { const n = [...(config.plans || [])]; n[i] = {...p, popular: e.target.checked}; setConfig({...config, plans: n}); }} /> Destaque
+                    </label>
                   </div>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Footer Inspirational */}
-          <div className="mt-24 p-16 rounded-[3rem] border border-white/[0.06] bg-white/[0.02] flex flex-col items-center text-center relative overflow-hidden group">
-            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: `radial-gradient(circle at center, ${accent}08, transparent)` }} />
-            <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-8" style={{ backgroundColor: `${accent}15`, color: accent }}>
-              <Sparkles size={32}/>
+          {/* Dica */}
+          <div className="p-4 border-t border-gray-100 bg-blue-50/50">
+            <p className="text-[10px] text-blue-600 font-semibold flex items-center gap-2"><MousePointer2 size={12} /> Clique em qualquer texto para editar diretamente na página</p>
+          </div>
+        </aside>
+      )}
+
+      {/* ═══════════ CANVAS: LP RENDERIZADA COM EDIÇÃO INLINE ═══════════ */}
+      <main className="flex-1 h-full pt-14 overflow-y-auto bg-gray-100" style={{ scrollbarWidth: 'thin' }}>
+        <div className="max-w-[1400px] mx-auto py-8 px-8">
+          <div className="bg-white rounded-2xl shadow-2xl shadow-gray-200/50 overflow-hidden border border-gray-100">
+
+            {/* Nav Preview */}
+            <div className="bg-white border-b border-gray-100 px-8 h-14 flex items-center justify-between">
+              <img src={LogoInova} alt="Inova" className="h-6" />
+              <div className="flex items-center gap-8 text-[12px] font-semibold text-gray-400">
+                <span>Serviços</span><span>Processo</span><span>Investimento</span>
+              </div>
+              <Button size="sm" className="rounded-full h-9 px-6 text-[11px] font-bold" style={{ backgroundColor: accent, color: '#fff' }}>Falar Conosco</Button>
             </div>
-            <p className="text-2xl font-black italic uppercase tracking-tighter max-w-md leading-none">Esta proposta está sendo moldada pela Inova.</p>
-            <p className="text-[10px] text-white/[0.06] mt-8 uppercase font-black tracking-[1em] italic">Inova Productions Ecosystem v2.0</p>
+
+            {/* HERO INLINE */}
+            <section className="px-12 py-20 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full blur-[160px] opacity-[0.06]" style={{ backgroundColor: accent }} />
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10">
+                <div>
+                  <Editable value={h.badge || ''} onChange={(v) => setConfig({...config, hero: {...h, badge: v}})}
+                    className="inline-block bg-gray-50 text-gray-500 border border-gray-200 px-4 py-1.5 text-[11px] font-semibold rounded-full mb-8" />
+                  <Editable value={h.title || ''} onChange={(v) => setConfig({...config, hero: {...h, title: v}})} tag="h1" multiline
+                    className="text-gray-900 font-black tracking-tight leading-[1.1] mb-8" style={{ fontSize: `${heroSize}px` }} />
+                  <Editable value={h.tagline || ''} onChange={(v) => setConfig({...config, hero: {...h, tagline: v}})} multiline
+                    className="text-lg text-gray-500 leading-relaxed mb-10 max-w-lg" />
+                  <Editable value={h.cta || ''} onChange={(v) => setConfig({...config, hero: {...h, cta: v}})}
+                    className="inline-block rounded-full px-8 py-4 text-[15px] font-bold text-white" style={{ backgroundColor: accent }} />
+                </div>
+                <div className="relative">
+                  <div className="rounded-[2rem] overflow-hidden shadow-2xl border border-gray-100">
+                    <img src={themeImage} alt="Produção" className="w-full h-[400px] object-cover" />
+                  </div>
+                  <div className="absolute -bottom-4 -left-4 bg-white rounded-2xl shadow-xl border border-gray-100 p-4 flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: `${accent}15`, color: accent }}><BarChart3 size={20} /></div>
+                    <div><p className="text-xl font-black" style={{ color: accent }}>+340%</p><p className="text-[10px] text-gray-400 font-semibold">Engajamento</p></div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* STRATEGY INLINE */}
+            <section className="px-12 py-20">
+              <div className="text-center mb-16">
+                <p className="text-[12px] font-semibold uppercase tracking-[0.3em] mb-4" style={{ color: accent }}>Por que nos escolher</p>
+                <h2 className="text-4xl font-black tracking-tight">Potencialize sua <span className="italic" style={{ fontFamily: "'Georgia', serif", color: accent }}>jornada digital</span></h2>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="bg-gray-50 rounded-[1.5rem] p-10 border border-gray-100">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-gray-300 mb-4">O Desafio</p>
+                  <Editable value={s.problem || ''} onChange={(v) => setConfig({...config, strategy: {...s, problem: v}})} multiline
+                    className="text-xl font-bold text-gray-800 leading-relaxed" />
+                </div>
+                <div className="rounded-[1.5rem] p-10 border border-gray-100 text-white" style={{ backgroundColor: accent }}>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-white/40 mb-4">A Solução</p>
+                  <Editable value={s.solution || ''} onChange={(v) => setConfig({...config, strategy: {...s, solution: v}})} multiline
+                    className="text-xl font-bold text-white leading-relaxed" />
+                </div>
+              </div>
+            </section>
+
+            {/* SERVICES INLINE */}
+            <section className="px-12 py-20 bg-gray-50/50">
+              <div className="text-center mb-16">
+                <p className="text-[12px] font-semibold uppercase tracking-[0.3em] mb-4" style={{ color: accent }}>Arsenal Completo</p>
+                <h2 className="text-4xl font-black tracking-tight">Tudo que você precisa em <span className="italic" style={{ fontFamily: "'Georgia', serif", color: accent }}>um só lugar</span></h2>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {services.map((svc: any, i: number) => {
+                  const icons = [Video, Camera, Zap, Lightbulb, Globe, Shield];
+                  const Icon = icons[i % icons.length];
+                  return (
+                    <div key={i} className="flex items-start gap-5 p-6 rounded-2xl hover:bg-white hover:shadow-md transition-all group/svc border border-transparent hover:border-gray-100">
+                      <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: `${accent}10`, color: accent }}><Icon size={20} /></div>
+                      <div className="flex-1">
+                        <Editable value={svc.title} onChange={(v) => { const n = [...services]; n[i] = {...n[i], title: v}; setConfig({...config, services: n}); }}
+                          className="text-[14px] font-bold text-gray-900 mb-1" />
+                        <Editable value={svc.desc} onChange={(v) => { const n = [...services]; n[i] = {...n[i], desc: v}; setConfig({...config, services: n}); }}
+                          className="text-[12px] text-gray-400 leading-relaxed" />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+
+            {/* PROCESS INLINE */}
+            <section className="px-12 py-20">
+              <div className="text-center mb-16">
+                <p className="text-[12px] font-semibold uppercase tracking-[0.3em] mb-4" style={{ color: accent }}>Como Funciona</p>
+                <h2 className="text-4xl font-black tracking-tight">Processo <span className="italic" style={{ fontFamily: "'Georgia', serif", color: accent }}>simples e eficiente</span></h2>
+              </div>
+              <div className="grid grid-cols-5 gap-4">
+                {steps.map((step: string, i: number) => (
+                  <div key={i} className="bg-gray-50 rounded-2xl p-6 border border-gray-100 text-center relative">
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center mx-auto mb-4 text-white font-black text-sm" style={{ backgroundColor: accent }}>{i + 1}</div>
+                    <p className="text-[13px] font-bold text-gray-800">{step}</p>
+                    {i < steps.length - 1 && <ChevronRight className="absolute top-1/2 -right-3 text-gray-200 hidden md:block" size={16} />}
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* PRICING INLINE */}
+            <section className="px-12 py-20 bg-gray-50/50">
+              <div className="text-center mb-16">
+                <p className="text-[12px] font-semibold uppercase tracking-[0.3em] mb-4" style={{ color: accent }}>Investimento</p>
+                <h2 className="text-4xl font-black tracking-tight">Investimento <span className="italic" style={{ fontFamily: "'Georgia', serif", color: accent }}>transparente</span></h2>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+                {plans.map((p: any, i: number) => (
+                  <div key={i} className={`rounded-[2rem] p-10 flex flex-col min-h-[420px] border-2 ${p.popular ? 'bg-gray-900 text-white' : 'bg-white border-gray-100'}`} style={{ borderColor: p.popular ? 'transparent' : undefined }}>
+                    <div className="flex justify-between items-start mb-6">
+                      <Editable value={p.name} onChange={(v) => { const n = [...(config.plans || [])]; n[i] = {...p, name: v}; setConfig({...config, plans: n}); }}
+                        className={`text-[12px] font-bold uppercase tracking-widest ${p.popular ? 'text-white/40' : 'text-gray-300'}`} />
+                      {p.popular && <Badge className="text-[9px] font-bold px-3 py-1 rounded-full" style={{ backgroundColor: accent, color: '#fff' }}>Popular</Badge>}
+                    </div>
+                    <div className="mb-8">
+                      <span className={`text-sm font-bold ${p.popular ? 'text-white/30' : 'text-gray-300'}`}>R$</span>
+                      <Editable value={p.price} onChange={(v) => { const n = [...(config.plans || [])]; n[i] = {...p, price: v}; setConfig({...config, plans: n}); }}
+                        tag="span" className="text-5xl font-black tracking-tighter" />
+                      <span className={`text-sm font-semibold ${p.popular ? 'text-white/30' : 'text-gray-300'}`}>/mês</span>
+                    </div>
+                    <div className="space-y-3 flex-1">
+                      {(p.features || []).map((f: string, j: number) => (
+                        <div key={j} className={`flex items-center gap-3 text-[13px] font-medium ${p.popular ? 'text-white/60' : 'text-gray-500'}`}>
+                          <Check className="w-4 h-4 shrink-0" style={{ color: accent }} /> {f}
+                        </div>
+                      ))}
+                    </div>
+                    <Button className={`w-full h-12 rounded-full font-bold text-[14px] mt-8 ${p.popular ? '' : 'border-2 border-gray-200 bg-white text-gray-900 hover:bg-gray-50'}`}
+                      style={p.popular ? { backgroundColor: accent, color: '#fff' } : {}}>Iniciar Projeto</Button>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* CTA FINAL */}
+            <section className="px-12 py-24 text-center relative overflow-hidden">
+              <div className="absolute inset-0 opacity-[0.03]" style={{ background: `linear-gradient(135deg, ${accent}, #f59e0b)` }} />
+              <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-10" style={{ backgroundColor: `${accent}15`, color: accent }}><Sparkles size={32} /></div>
+              <h2 className="text-5xl font-black tracking-tight mb-6">Pronto para <span className="italic" style={{ fontFamily: "'Georgia', serif", color: accent }}>escalar?</span></h2>
+              <p className="text-gray-400 text-lg max-w-xl mx-auto mb-10">Entre em contato e descubra como podemos transformar a presença digital da sua marca.</p>
+              <Editable value={h.cta || 'Agendar Consultoria'} onChange={(v) => setConfig({...config, hero: {...h, cta: v}})}
+                className="inline-block rounded-full px-10 py-4 text-[16px] font-bold text-white" style={{ backgroundColor: accent }} />
+            </section>
+
+            {/* Footer */}
+            <div className="px-12 py-8 border-t border-gray-100 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <img src={LogoInova} alt="Inova" className="h-5" />
+                <span className="text-[11px] text-gray-300 font-semibold">© 2026 Inova Produções</span>
+              </div>
+              <div className="flex items-center gap-6 text-[12px] font-semibold text-gray-400">
+                <span>Serviços</span><span>Investimento</span><span>Contato</span>
+              </div>
+            </div>
           </div>
         </div>
       </main>
-    </div>
-  );
-}
-
-/* ═══════════ COMPONENTES AUXILIARES ═══════════ */
-function SectionTitle({ title, accent }: { title: string; accent: string }) {
-  return (
-    <h3 className="text-[10px] font-black uppercase tracking-[0.4em] italic flex items-center gap-3" style={{ color: accent }}>
-      <div className="h-[2px] w-5" style={{ backgroundColor: accent }} /> {title}
-    </h3>
-  );
-}
-
-function Field({ label, val, set, isArea }: { label: string; val: string; set: (v: string) => void; isArea?: boolean }) {
-  return (
-    <div className="space-y-2 group">
-      <Label className="text-[8px] font-black uppercase text-white/20 tracking-[0.15em] group-hover:text-white/40 transition-colors italic">{label}</Label>
-      {isArea ? (
-        <Textarea className="min-h-[100px] bg-black/60 border-white/[0.06] border rounded-xl p-4 font-medium text-[12px] leading-relaxed text-white/80 focus-visible:ring-1 focus-visible:ring-[#bff720] transition-all"
-          value={val || ''} onChange={(e) => set(e.target.value)} />
-      ) : (
-        <Input className="h-11 bg-black/60 border-white/[0.06] border rounded-xl px-4 font-bold text-[12px] text-white focus-visible:ring-1 focus-visible:ring-[#bff720] transition-all"
-          value={val || ''} onChange={(e) => set(e.target.value)} />
-      )}
     </div>
   );
 }
