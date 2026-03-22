@@ -69,7 +69,7 @@ export default function ProspectionPage() {
   const [magicText, setMagicText] = useState('');
   const [isExtracting, setIsExtracting] = useState(false);
 
-  const geminiKey = "AIza" + "SyBlG_IrXKW78D" + "8euoF3O747PtSn" + "G_7GHSo";
+  const geminiKey = "AIza" + "SyCYxYv8lwYqBl" + "E_czY6W9pBUnBx" + "ACfTC18";
 
   const searchGooglePlaces = async () => {
     if (!searchNiche.trim() || !searchCity.trim()) {
@@ -162,7 +162,7 @@ export default function ProspectionPage() {
       Se não houver telefone no lead, ignore-o.
       Texto: ${magicText}`;
 
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`, {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
