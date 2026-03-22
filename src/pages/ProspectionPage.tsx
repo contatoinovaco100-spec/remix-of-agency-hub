@@ -49,10 +49,75 @@ export default function ProspectionPage() {
       return;
     }
 
+    setSearching(true);
     const query = `${searchNiche} em ${searchCity}`;
-    window.open(`https://www.google.com/maps/search/${encodeURIComponent(query)}`, '_blank');
-    toast.success('🗺️ Google Maps aberto! Copie o nome e telefone dos negócios e adicione abaixo clicando no ➕');
-    setShowManualAdd(true);
+
+    try {
+      const response = await fetch(
+        `https://places.googleapis.com/v1/places:searchText`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Goog-Api-Key': geminiKey,
+            'X-Goog-FieldMask': 'places.displayName,places.formattedAddress,places.nationalPhoneNumber,places.rating,places.websiteUri,places.primaryType'
+          },
+          body: JSON.stringify({
+            textQuery: query,
+            languageCode: 'pt-BR',
+            maxResultCount: 20
+          })
+        }
+      );
+
+      if (!response.ok) {
+        // Fallback: abrir Google Maps e adicionar manualmente
+        window.open(`https://www.google.com/maps/search/${encodeURIComponent(query)}`, '_blank');
+        toast.info('⚠️ Places API não ativada. Google Maps aberto — adicione leads manualmente com o ➕');
+        setShowManualAdd(true);
+        setSearching(false);
+        return;
+      }
+
+      const data = await response.json();
+      
+      if (!data.places || data.places.length === 0) {
+        toast.info('Nenhum resultado encontrado. Tente outro nicho ou cidade.');
+        setSearching(false);
+        return;
+      }
+
+      const newLeads: Lead[] = data.places.map((place: any) => {
+        const name = place.displayName?.text || 'Sem nome';
+        const filledMessage = messageTemplate
+          .replace(/{empresa}/gi, name)
+          .replace(/{agencia}/gi, agencyName);
+        return {
+          id: crypto.randomUUID(),
+          name,
+          address: place.formattedAddress || '',
+          phone: place.nationalPhoneNumber || '',
+          rating: place.rating || 0,
+          website: place.websiteUri || '',
+          category: place.primaryType?.replace(/_/g, ' ') || searchNiche,
+          aiMessage: filledMessage,
+          isGenerating: false,
+          status: 'novo' as const,
+        };
+      });
+
+      setLeads(prev => [...prev, ...newLeads]);
+      const withPhone = newLeads.filter(l => l.phone).length;
+      toast.success(`🎯 ${newLeads.length} leads encontrados! ${withPhone} com telefone.`);
+
+    } catch (err: any) {
+      console.error('Search error:', err);
+      window.open(`https://www.google.com/maps/search/${encodeURIComponent(query)}`, '_blank');
+      toast.info('Google Maps aberto — adicione leads manualmente com o ➕');
+      setShowManualAdd(true);
+    } finally {
+      setSearching(false);
+    }
   };
 
   const addManualLead = () => {
@@ -261,10 +326,11 @@ Retorne SOMENTE o texto da mensagem, sem aspas, sem explicações.`;
             <div className="flex gap-2 items-end">
               <Button 
                 onClick={searchGooglePlaces} 
+                disabled={searching}
                 className="h-12 px-6 bg-primary text-black font-bold shadow-lg shadow-primary/20"
               >
-                <Search className="w-4 h-4 mr-2" />
-                Abrir no Maps
+                {searching ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Search className="w-4 h-4 mr-2" />}
+                Buscar Leads
               </Button>
               <Button 
                 variant="outline" 
