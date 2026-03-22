@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import LogoInova from '@/assets/logo-inova.png';
 
 // Helper to map icon names to components
 const IconMap: Record<string, any> = {
@@ -103,10 +104,7 @@ function renderMobbin(config: any, getIcon: any) {
       <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[95%] md:w-auto">
         <nav className="bg-white/70 backdrop-blur-xl border border-gray-200/50 rounded-full py-2.5 px-3 md:px-8 flex items-center justify-between gap-8 md:gap-16 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
           <div className="flex items-center gap-2.5 pl-2">
-            <div className="bg-black p-1.5 rounded-xl">
-              <ShieldCheck className="w-4 h-4 text-[#bff720]" />
-            </div>
-            <span className="text-sm font-black tracking-tighter italic">INOVA CO.</span>
+            <img src={LogoInova} alt="Inova Co." className="h-6 w-auto object-contain" />
           </div>
           <div className="hidden lg:flex items-center gap-10 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">
             <a href="#servicos" className="hover:text-black transition-colors">Produtos</a>
@@ -190,8 +188,7 @@ function renderOpenClaw(config: any, getIcon: any) {
 
       <nav className="max-w-7xl mx-auto px-6 py-12 flex justify-between items-center relative z-10">
         <div className="flex items-center gap-2">
-          <div className="bg-[#bff720] p-1.5 rounded-lg"><ShieldCheck className="w-6 h-6 text-black" /></div>
-          <span className="text-xl font-black tracking-tighter italic text-[#f8f8f8]">INOVA CO.</span>
+          <img src={LogoInova} alt="Inova Co." className="h-8 w-auto object-contain" />
         </div>
         <div className="hidden md:flex items-center gap-12 text-sm font-bold uppercase tracking-widest text-zinc-400">
           <a href="#servicos" className="hover:text-white transition-colors">Serviços</a>
