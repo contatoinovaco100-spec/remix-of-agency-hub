@@ -19,7 +19,8 @@ import {
 import { 
   Search, MapPin, Phone, Star, Globe, MessageCircle, 
   Loader2, Sparkles, Send, Building2, Plus, Trash2, 
-  Copy, ExternalLink, Bot, Zap, ArrowRight, CheckCircle, Wand2
+  Copy, ExternalLink, Bot, Zap, ArrowRight, CheckCircle, Wand2,
+  Instagram
 } from 'lucide-react';
 
 interface Lead {
@@ -29,6 +30,7 @@ interface Lead {
   phone: string;
   rating: number;
   website: string;
+  instagram?: string;
   category: string;
   aiMessage: string;
   isGenerating: boolean;
@@ -62,6 +64,8 @@ export default function ProspectionPage() {
   const [showManualAdd, setShowManualAdd] = useState(false);
   const [manualName, setManualName] = useState('');
   const [manualPhone, setManualPhone] = useState('');
+  const [manualWebsite, setManualWebsite] = useState('');
+  const [manualInstagram, setManualInstagram] = useState('');
   const [manualCategory, setManualCategory] = useState('');
 
   // Magic Import
@@ -157,9 +161,9 @@ export default function ProspectionPage() {
     setIsExtracting(true);
     try {
       const prompt = `Você é um extrator de dados de leads do Google Maps. 
-      Sua tarefa é extrair o Nome da Empresa e o Telefone de cada lead contido no texto abaixo.
-      Retorne APENAS um array JSON puro, no formato: [{"name": "Nome da Empresa", "phone": "Telefone"}].
-      Se não houver telefone no lead, ignore-o.
+      Sua tarefa é extrair o Nome da Empresa, Telefone, Website e Instagram de cada lead contido no texto abaixo.
+      Retorne APENAS um array JSON puro, no formato: [{"name": "Nome", "phone": "Telefone", "website": "URL", "instagram": "@perfil"}].
+      Se não houver telefone no lead, ignore-o. Se não houver website ou instagram, deixe como string vazia "".
       Texto: ${magicText}`;
 
       const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`, {
@@ -205,7 +209,8 @@ export default function ProspectionPage() {
           address: '',
           phone: item.phone,
           rating: 0,
-          website: '',
+          website: item.website || '',
+          instagram: item.instagram || '',
           category: searchNiche || 'Geral',
           aiMessage: filledMessage,
           isGenerating: false,
@@ -241,7 +246,8 @@ export default function ProspectionPage() {
       address: '',
       phone: manualPhone,
       rating: 0,
-      website: '',
+      website: manualWebsite,
+      instagram: manualInstagram,
       category: manualCategory || searchNiche || 'Geral',
       aiMessage: filledMessage,
       isGenerating: false,
@@ -251,6 +257,8 @@ export default function ProspectionPage() {
     setLeads(prev => [...prev, newLead]);
     setManualName('');
     setManualPhone('');
+    setManualWebsite('');
+    setManualInstagram('');
     setManualCategory('');
     setShowManualAdd(false);
     toast.success('Lead adicionado!');
@@ -507,22 +515,34 @@ Retorne SOMENTE o texto da mensagem, sem aspas, sem explicações.`;
 
           {/* Manual Add Form */}
           {showManualAdd && (
-            <div className="mt-4 p-4 bg-black/40 border border-white/10 rounded-xl flex flex-wrap gap-3 items-end animate-in fade-in">
-              <div className="flex-1 min-w-[200px] space-y-1">
-                <Label className="text-xs">Nome da Empresa</Label>
-                <Input value={manualName} onChange={e => setManualName(e.target.value)} placeholder="Ex: Clínica Sorriso" className="bg-black/60 border-white/10" />
+            <div className="mt-4 p-4 bg-black/40 border border-white/10 rounded-xl flex flex-col gap-3 animate-in fade-in">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="space-y-1">
+                  <Label className="text-xs">Empresa</Label>
+                  <Input value={manualName} onChange={e => setManualName(e.target.value)} placeholder="Ex: Academia X" className="bg-black/60 border-white/10" />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">WhatsApp</Label>
+                  <Input value={manualPhone} onChange={e => setManualPhone(e.target.value)} placeholder="Ex: 62999..." className="bg-black/60 border-white/10" />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">Website</Label>
+                  <Input value={manualWebsite} onChange={e => setManualWebsite(e.target.value)} placeholder="https://..." className="bg-black/60 border-white/10" />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">Instagram</Label>
+                  <Input value={manualInstagram} onChange={e => setManualInstagram(e.target.value)} placeholder="@perfil" className="bg-black/60 border-white/10" />
+                </div>
               </div>
-              <div className="w-[180px] space-y-1">
-                <Label className="text-xs">Telefone (com DDD)</Label>
-                <Input value={manualPhone} onChange={e => setManualPhone(e.target.value)} placeholder="62999999999" className="bg-black/60 border-white/10" />
+              <div className="flex items-end gap-3">
+                <div className="flex-1 space-y-1">
+                  <Label className="text-xs">Segmento</Label>
+                  <Input value={manualCategory} onChange={e => setManualCategory(e.target.value)} placeholder="Odontologia" className="bg-black/60 border-white/10" />
+                </div>
+                <Button onClick={addManualLead} variant="secondary" className="h-10">
+                  <Plus className="w-4 h-4 mr-1" /> Adicionar
+                </Button>
               </div>
-              <div className="w-[180px] space-y-1">
-                <Label className="text-xs">Segmento</Label>
-                <Input value={manualCategory} onChange={e => setManualCategory(e.target.value)} placeholder="Odontologia" className="bg-black/60 border-white/10" />
-              </div>
-              <Button onClick={addManualLead} variant="secondary" className="h-10">
-                <Plus className="w-4 h-4 mr-1" /> Adicionar
-              </Button>
             </div>
           )}
         </CardContent>
@@ -561,26 +581,19 @@ Retorne SOMENTE o texto da mensagem, sem aspas, sem explicações.`;
                   <div className="flex-1 min-w-0">
                     <h3 className="text-lg font-bold text-white truncate">{lead.name}</h3>
                     <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1 text-sm text-zinc-400">
-                      {lead.address && (
-                        <span className="flex items-center gap-1 truncate max-w-[300px]">
-                          <MapPin className="w-3 h-3 flex-shrink-0" /> {lead.address}
-                        </span>
-                      )}
-                      {lead.phone && (
-                        <span className="flex items-center gap-1">
-                          <Phone className="w-3 h-3" /> {lead.phone}
-                        </span>
-                      )}
-                      {lead.rating > 0 && (
-                        <span className="flex items-center gap-1 text-amber-400">
-                          <Star className="w-3 h-3 fill-current" /> {lead.rating}
-                        </span>
-                      )}
+                      <span className="flex items-center gap-1"><Phone className="w-3 h-3" /> {lead.phone || 'N/A'}</span>
                       {lead.website && (
-                        <a href={lead.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-primary/70 hover:text-primary">
-                          <Globe className="w-3 h-3" /> Site
+                        <a href={lead.website.startsWith('http') ? lead.website : `https://${lead.website}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-primary hover:underline">
+                          <Globe className="w-3 h-3" /> Website
                         </a>
                       )}
+                      {lead.instagram && (
+                        <a href={`https://instagram.com/${lead.instagram.replace('@', '')}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-pink-500 hover:underline">
+                          <Instagram className="w-3 h-3" /> Instagram
+                        </a>
+                      )}
+                      <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> {lead.address || 'Goiânia, GO'}</span>
+                      {lead.rating > 0 && <span className="flex items-center gap-1 text-amber-400"><Star className="w-3 h-3 fill-amber-400" /> {lead.rating}</span>}
                     </div>
                   </div>
                 </div>
