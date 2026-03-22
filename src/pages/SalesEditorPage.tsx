@@ -27,7 +27,7 @@ const DEFAULT_CONFIG = {
       price: "2.900",
       description: "Ideal para marcas que querem consistência e posicionamento nas redes sociais.",
       features: ["Gestão de Instagram & TikTok", "3 Postagens semanais (Reels/Feed)", "Design de alta performance", "Estratégia de Linhas Editoriais", "Relatório mensal de métricas"],
-      accent: "text-blue-400",
+      accent: "text-[#bff720]",
       popular: false
     },
     {
@@ -35,7 +35,7 @@ const DEFAULT_CONFIG = {
       price: "5.500",
       description: "Foco em escala, tráfego e produção de material visual de cinema.",
       features: ["Tudo do plano Essential", "Gestão de Tráfego Pago (Meta/Google)", "2 Visitas mensais para Filmagens", "Edição Premium com Storytelling", "Configuração de Funil de Vendas", "Suporte Prioritário via WhatsApp"],
-      accent: "text-[#f43f5e]",
+      accent: "text-[#bff720]",
       popular: true
     },
     {
@@ -43,7 +43,7 @@ const DEFAULT_CONFIG = {
       price: "12.000",
       description: "O braço direito completo para dominar o mercado com IA e Audiovisual.",
       features: ["Tudo do plano Growth", "Production Day: 4 Filmagens mensais", "Automação Inteligente (SDR & IA)", "Criação de Website / Landing Page", "Brand Consulting & Branding", "Diretoria de Criação Dedicada"],
-      accent: "text-purple-400",
+      accent: "text-[#bff720]",
       popular: false
     }
   ]
@@ -124,7 +124,7 @@ export default function SalesEditorPage() {
           <Button variant="outline" asChild>
             <a href="/proposta" target="_blank"><Globe className="mr-2 h-4 w-4" /> Ver Página</a>
           </Button>
-          <Button onClick={handleSave} className="bg-[#f43f5e] hover:bg-[#f43f5e]/90">
+          <Button onClick={handleSave} className="bg-[#bff720] hover:bg-[#bff720]/90 text-black font-bold">
             <Save className="mr-2 h-4 w-4" /> Salvar Edições
           </Button>
         </div>
@@ -201,7 +201,7 @@ export default function SalesEditorPage() {
                          type="checkbox" 
                          checked={p.popular} 
                          onChange={e => updatePlan(i, 'popular', e.target.checked)}
-                         className="h-4 w-4 accent-[#f43f5e]"
+                         className="h-4 w-4 accent-[#bff720]"
                        />
                     </div>
                   </div>

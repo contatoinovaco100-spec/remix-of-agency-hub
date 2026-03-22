@@ -44,7 +44,7 @@ const DEFAULT_CONFIG = {
       price: "2.900",
       description: "Ideal para marcas que querem consistência e posicionamento nas redes sociais.",
       features: ["Gestão de Instagram & TikTok", "3 Postagens semanais (Reels/Feed)", "Design de alta performance", "Estratégia de Linhas Editoriais", "Relatório mensal de métricas"],
-      accent: "text-blue-400",
+      accent: "text-[#bff720]",
       popular: false
     },
     {
@@ -52,7 +52,7 @@ const DEFAULT_CONFIG = {
       price: "5.500",
       description: "Foco em escala, tráfego e produção de material visual de cinema.",
       features: ["Tudo do plano Essential", "Gestão de Tráfego Pago (Meta/Google)", "2 Visitas mensais para Filmagens", "Edição Premium com Storytelling", "Configuração de Funil de Vendas", "Suporte Prioritário via WhatsApp"],
-      accent: "text-[#f43f5e]",
+      accent: "text-[#bff720]",
       popular: true
     },
     {
@@ -60,7 +60,7 @@ const DEFAULT_CONFIG = {
       price: "12.000",
       description: "O braço direito completo para dominar o mercado com IA e Audiovisual.",
       features: ["Tudo do plano Growth", "Production Day: 4 Filmagens mensais", "Automação Inteligente (SDR & IA)", "Criação de Website / Landing Page", "Brand Consulting & Branding", "Diretoria de Criação Dedicada"],
-      accent: "text-purple-400",
+      accent: "text-[#bff720]",
       popular: false
     }
   ]
@@ -86,11 +86,11 @@ export default function SalesLP() {
   };
 
   return (
-    <div className="min-h-screen bg-[#030712] text-white selection:bg-[#f43f5e]/30 font-sans selection:text-white overflow-x-hidden">
+    <div className="min-h-screen bg-[#000000] text-[#f8f8f8] selection:bg-[#bff720]/30 font-sans selection:text-white overflow-x-hidden">
       
       {/* Glow Effects */}
-      <div className="fixed top-0 left-1/4 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[120px] -z-10 pointer-events-none" />
-      <div className="fixed bottom-0 right-1/4 w-[500px] h-[500px] bg-[#f43f5e]/10 rounded-full blur-[120px] -z-10 pointer-events-none" />
+      <div className="fixed top-0 left-1/4 w-[500px] h-[500px] bg-[#015f57]/20 rounded-full blur-[120px] -z-10 pointer-events-none" />
+      <div className="fixed bottom-0 right-1/4 w-[500px] h-[500px] bg-[#370616]/20 rounded-full blur-[120px] -z-10 pointer-events-none" />
 
       {/* Admin Button (Visible only in dev or for logged in users) */}
       <div className="fixed bottom-6 left-6 z-50">
@@ -102,10 +102,10 @@ export default function SalesLP() {
       {/* Nav */}
       <nav className="max-w-7xl mx-auto px-6 py-8 flex justify-between items-center">
         <div className="flex items-center gap-2">
-          <div className="bg-[#f43f5e] p-1.5 rounded-lg">
-            <ShieldCheck className="w-6 h-6 text-white" />
+          <div className="bg-[#bff720] p-1.5 rounded-lg">
+            <ShieldCheck className="w-6 h-6 text-black" />
           </div>
-          <span className="text-xl font-black tracking-tighter italic">INOVA CO.</span>
+          <span className="text-xl font-black tracking-tighter italic text-[#f8f8f8]">INOVA CO.</span>
         </div>
         <div className="hidden md:flex items-center gap-8 text-sm font-bold uppercase tracking-widest text-zinc-400">
           <a href="#servicos" className="hover:text-white transition-colors">Serviços</a>
@@ -132,11 +132,11 @@ export default function SalesLP() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a href={`https://wa.me/${config.whatsapp}`}>
-              <Button className="bg-[#f43f5e] hover:bg-[#f43f5e]/90 text-white rounded-full h-14 px-10 text-lg font-bold shadow-2xl shadow-[#f43f5e]/30 group w-full">
+              <Button className="bg-[#bff720] hover:bg-[#bff720]/90 text-black rounded-full h-14 px-10 text-lg font-bold shadow-2xl shadow-[#bff720]/30 group w-full">
                 Aceitar Proposta <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Button>
             </a>
-            <Button variant="outline" className="rounded-full h-14 px-10 border-white/10 bg-white/5 hover:bg-white/10 text-lg font-bold">
+            <Button variant="outline" className="rounded-full h-14 px-10 border-white/10 bg-white/5 hover:bg-white/10 text-lg font-bold text-[#f8f8f8]">
               Falar com Strategist
             </Button>
           </div>
@@ -157,12 +157,12 @@ export default function SalesLP() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.1 }}
               viewport={{ once: true }}
-              className="p-8 rounded-3xl bg-white/5 border border-white/10 hover:border-[#f43f5e]/30 transition-all group"
+              className="p-8 rounded-3xl bg-white/5 border border-white/10 hover:border-[#bff720]/30 transition-all group"
             >
-              <div className="w-12 h-12 rounded-2xl bg-[#f43f5e]/10 flex items-center justify-center text-[#f43f5e] mb-6 group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 rounded-2xl bg-[#bff720]/10 flex items-center justify-center text-[#bff720] mb-6 group-hover:scale-110 transition-transform">
                 {getIcon(s.icon)}
               </div>
-              <h3 className="text-xl font-bold mb-3">{s.title}</h3>
+              <h3 className="text-xl font-bold mb-3 text-[#f8f8f8]">{s.title}</h3>
               <p className="text-zinc-500 leading-relaxed text-sm">{s.desc}</p>
             </motion.div>
           ))}
@@ -181,15 +181,15 @@ export default function SalesLP() {
             <motion.div
               key={i}
               whileHover={{ y: -10 }}
-              className={`relative p-10 rounded-[40px] border ${p.popular ? 'border-[#f43f5e]/40 bg-white/[0.03]' : 'border-white/10 bg-black/40'} flex flex-col`}
+              className={`relative p-10 rounded-[40px] border ${p.popular ? 'border-[#bff720]/40 bg-white/[0.03]' : 'border-white/10 bg-black/40'} flex flex-col`}
             >
               {p.popular && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-[#f43f5e] text-white text-[10px] font-black uppercase px-4 py-1.5 rounded-full tracking-widest shadow-lg shadow-[#f43f5e]/40">
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-[#bff720] text-black text-[10px] font-black uppercase px-4 py-1.5 rounded-full tracking-widest shadow-lg shadow-[#bff720]/40">
                   Mais Escolhido
                 </div>
               )}
               <div className="mb-8">
-                <span className={`text-sm font-black uppercase tracking-widest ${p.accent || 'text-zinc-400'}`}>{p.name}</span>
+                <span className={`text-sm font-black uppercase tracking-widest ${p.accent || 'text-[#bff720]'}`}>{p.name}</span>
                 <div className="mt-4 flex items-baseline gap-1">
                   <span className="text-4xl font-black leading-none">R$ {p.price}</span>
                   <span className="text-zinc-500 font-bold">/mês</span>
@@ -207,7 +207,7 @@ export default function SalesLP() {
               </div>
 
               <a href={`https://wa.me/${config.whatsapp}`}>
-                <Button className={`w-full h-14 rounded-2xl text-md font-bold transition-all ${p.popular ? 'bg-[#f43f5e] text-white hover:bg-[#f43f5e]/90 shadow-xl shadow-[#f43f5e]/20' : 'bg-white/10 text-white hover:bg-white/20 border border-white/5'}`}>
+                <Button className={`w-full h-14 rounded-2xl text-md font-bold transition-all ${p.popular ? 'bg-[#bff720] text-black hover:bg-[#bff720]/90 shadow-xl shadow-[#bff720]/20' : 'bg-white/10 text-white hover:bg-white/20 border border-white/5'}`}>
                   {p.popular ? 'Começar Agora' : 'Selecionar Plano'}
                 </Button>
               </a>
@@ -250,10 +250,10 @@ export default function SalesLP() {
 
       {/* Footer / Final CTA */}
       <section id="cta" className="max-w-7xl mx-auto px-6 py-40 text-center relative">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-[#f43f5e]/5 blur-[120px] rounded-full -z-10" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-[#015f57]/5 blur-[120px] rounded-full -z-10" />
         
-        <Sparkles className="w-12 h-12 text-[#f43f5e] mx-auto mb-8 animate-pulse" />
-        <h2 className="text-5xl md:text-8xl font-black mb-10 tracking-tighter uppercase italic">VAMOS ESCALAR?</h2>
+        <Sparkles className="w-12 h-12 text-[#bff720] mx-auto mb-8 animate-pulse" />
+        <h2 className="text-5xl md:text-8xl font-black mb-10 tracking-tighter uppercase italic text-[#f8f8f8]">VAMOS ESCALAR?</h2>
         <p className="text-xl text-zinc-400 mb-12 max-w-xl mx-auto">Sua marca merece a estética do futuro. Clique no botão abaixo e fale diretamente com nosso time de atendimento.</p>
         
         <a 
@@ -261,8 +261,8 @@ export default function SalesLP() {
           target="_blank" 
           rel="noopener noreferrer"
         >
-          <Button className="bg-white text-black hover:bg-zinc-200 rounded-full h-16 px-12 text-xl font-black uppercase tracking-widest shadow-2xl shadow-white/10">
-            <MessageCircle className="w-6 h-6 mr-3 fill-black" /> Falar no WhatsApp
+          <Button className="bg-[#bff720] text-black hover:bg-[#bff720]/90 rounded-full h-16 px-12 text-xl font-black uppercase tracking-widest shadow-2xl shadow-[#bff720]/20">
+            <MessageCircle className="w-6 h-6 mr-3 fill-black font-bold" /> Falar no WhatsApp
           </Button>
         </a>
 
