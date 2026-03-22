@@ -12,13 +12,13 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import LogoInova from '@/assets/logo-inova.png';
 
-// Assets Gerados via IA
+// Assets Robustos (Fallbacks Online)
 const ASSETS = {
-  restaurant: "file:///Users/lucassoares/.gemini/antigravity/brain/70a0d96f-4a74-42d0-b5c4-b4af4b35c6d6/luxury_restaurant_hero_v1774133230214_1774147543501.png",
-  personal: "file:///Users/lucassoares/.gemini/antigravity/brain/70a0d96f-4a74-42d0-b5c4-b4af4b35c6d6/futuristic_gym_hero_v1774133230214_1774147559627.png",
-  clinica: "file:///Users/lucassoares/.gemini/antigravity/brain/70a0d96f-4a74-42d0-b5c4-b4af4b35c6d6/luxury_clinic_hero_v1774133230214_1774147578064.png",
-  lawyer: "file:///Users/lucassoares/.gemini/antigravity/brain/70a0d96f-4a74-42d0-b5c4-b4af4b35c6d6/luxury_lawyer_hero_v1774133230214_1774147696964.png",
-  realestate: "file:///Users/lucassoares/.gemini/antigravity/brain/70a0d96f-4a74-42d0-b5c4-b4af4b35c6d6/luxury_realestate_hero_v1774133230214_1774147714444.png",
+  restaurant: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=80&w=1200",
+  personal: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&q=80&w=1200",
+  clinica: "https://images.unsplash.com/photo-1512290923902-8a9f81dc2069?auto=format&fit=crop&q=80&w=1200",
+  lawyer: "https://images.unsplash.com/photo-1505664194779-8beaceb93744?auto=format&fit=crop&q=80&w=1200",
+  realestate: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=1200",
 };
 
 const THEMES: Record<string, any> = {
@@ -34,17 +34,9 @@ const THEMES: Record<string, any> = {
   realestate: { bg: 'bg-zinc-50', text: 'text-zinc-900', accent: 'text-amber-600', secondary: 'text-zinc-400', button: 'bg-amber-600 text-white hover:shadow-[0_0_30px_rgba(217,119,6,0.2)]', card: 'bg-white/80 backdrop-blur-xl border-zinc-200', name: 'Imobiliária High-End', image: ASSETS.realestate },
 };
 
-const THEME_CONTENT_DEFAULTS: Record<string, any> = {
-  restaurant: {
-    heroTitle: "Seu restaurante pode estar cheio… mas invisível no digital.",
-    heroTagline: "Transformamos restaurantes em marcas desejadas nas redes sociais.",
-    problem: "Hoje a maioria das pessoas escolhe onde comer pelo Instagram. Se o seu restaurante não aparece com conteúdo profissional, ele simplesmente não entra na decisão.",
-    solution: "A Inova cria conteúdos cinematográficos que despertam o desejo imediato e posicionam seu restaurante como autoridade.",
-    results: ["Visibilidade", "Reservas", "Autoridade"],
-    cta: "DIGITALIZAR MEU SABOR",
-    steps: ["Briefing", "Captação", "Edição", "Entrega"]
-  },
-  // ... outros temas seriam similares se não editados
+const THEME_DEFAULTS: Record<string, any> = {
+  hero: { title: "ALÉM DA LENTE. CONSTRUÍMOS NARRATIVAS.", tagline: "Ser visto é fácil. Ser lembrado é estratégia.", badge: "O ESTRATEGISTA • 2026", cta: "INICIAR POSICIONAMENTO" },
+  strategy: { problem: "Sua marca é invisível no digital.", solution: "A Inova reconstrói sua autoridade com narrativa cinematográfica.", results: "Autoridade, Escala, Faturamento", steps: "Diagnóstico, Planejamento, Captação, Elite" }
 };
 
 export default function SalesLP() {
@@ -52,59 +44,48 @@ export default function SalesLP() {
 
   useEffect(() => {
     const saved = localStorage.getItem('agency_lp_config');
-    const defaultData = {
-      theme: 'restaurant',
-      hero: { title: "ALÉM DA LENTE. CONSTRUÍMOS NARRATIVAS.", tagline: "Ser visto é fácil. Ser lembrado é estratégia.", badge: "O ESTRATEGISTA • 2026", cta: "INICIAR POSICIONAMENTO" },
-      strategy: { problem: "Sua marca é invisível.", solution: "Nós criamos sua autoridade.", results: "Visibilidade, Vendas, Fama", steps: "Brief, Film, Cut, Sale" },
-      whatsapp: "5562999999999",
-      services: [],
-      plans: [{ name: "Plano Start", price: "1500", features: ["Editável"] }]
-    };
-
     if (saved) {
-      try { setConfig({ ...defaultData, ...JSON.parse(saved) }); } 
-      catch (e) { setConfig(defaultData); }
-    } else { setConfig(defaultData); }
+      try { 
+        const parsed = JSON.parse(saved);
+        setConfig(parsed); 
+      } catch (e) { setConfig({}); }
+    } else { setConfig({}); }
   }, []);
 
   if (!config) return null;
   const theme = THEMES[config.theme] || THEMES.mobbin;
-  const themeDefaults = THEME_CONTENT_DEFAULTS[config.theme] || THEME_CONTENT_DEFAULTS.restaurant;
-
-  // Lógica de Prioridade: Config do Usuário (Local) > Tema Default
-  const content = {
-    heroTitle: config.hero?.title || themeDefaults.heroTitle,
-    heroTagline: config.hero?.tagline || themeDefaults.heroTagline,
-    heroBadge: config.hero?.badge || "NARRATIVA ESTRATÉGICA",
-    heroCTA: config.hero?.cta || themeDefaults.cta,
-    problem: config.strategy?.problem || themeDefaults.problem,
-    solution: config.strategy?.solution || themeDefaults.solution,
-    results: (config.strategy?.results || "Autoridade, Escala, Faturamento").split(',').map((s:string)=>s.trim()),
-    steps: (config.strategy?.steps || "Diagnóstico, Planejamento, Set, Elite").split(',').map((s:string)=>s.trim()),
-    deliverables: config.services.length > 0 ? config.services : [{title: "Estratégia", desc: "Plano de conteúdo"}]
-  };
+  
+  // Safety Guards Absolutos para cada campo
+  const heroT = config.hero?.title || THEME_DEFAULTS.hero.title;
+  const heroTag = config.hero?.tagline || THEME_DEFAULTS.hero.tagline;
+  const heroB = config.hero?.badge || THEME_DEFAULTS.hero.badge;
+  const heroC = config.hero?.cta || THEME_DEFAULTS.hero.cta;
+  const prob = config.strategy?.problem || THEME_DEFAULTS.strategy.problem;
+  const sol = config.strategy?.solution || THEME_DEFAULTS.strategy.solution;
+  const results = (config.strategy?.results || THEME_DEFAULTS.strategy.results).split(',').map((s:string)=>s.trim());
+  const steps = (config.strategy?.steps || THEME_DEFAULTS.strategy.steps).split(',').map((s:string)=>s.trim());
+  const services = (config.services && config.services.length > 0) ? config.services : [{title: "Expertise Inova", desc: "Consultoria Premium"}];
+  const plans = (config.plans && config.plans.length > 0) ? config.plans : [{name: "Plano Start", price: "Sob Consulta", features: ["Solicitar Orçamento"]}];
 
   return (
     <div className={`min-h-screen ${theme.bg} ${theme.text} font-sans selection:bg-[#bff720]/20 overflow-x-hidden transition-colors duration-1000`}>
       <Nav theme={theme} />
 
-      <section className="relative min-h-[95vh] flex items-center justify-center pt-20 px-6 overflow-hidden">
+      <section className="relative min-h-[92vh] flex items-center justify-center pt-20 px-6 overflow-hidden">
         {theme.image && (
           <div className="absolute inset-0 z-0">
-             <img src={theme.image} alt="Background" className="w-full h-full object-cover opacity-30 blur-[2px] transition-transform duration-[10s] hover:scale-110" />
+             <img src={theme.image} alt="Nicho" className="w-full h-full object-cover opacity-30 blur-[2px] transition-transform duration-[15s] hover:scale-110" />
              <div className={`absolute inset-0 bg-gradient-to-b ${theme.isDark ? 'from-transparent via-black/80 to-black' : 'from-transparent via-white/80 to-white'}`} />
           </div>
         )}
         <div className="relative z-10 max-w-7xl mx-auto text-center">
-          <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
-            <Badge className={`${theme.isDark ? 'bg-white/5 text-white/40' : 'bg-black/5 text-zinc-400'} border-none mb-6 px-8 py-2 uppercase font-black tracking-[0.4em] text-[8px] rounded-full`}>{content.heroBadge}</Badge>
-            <h1 className="text-5xl md:text-[110px] font-black tracking-tighter mb-6 leading-[0.85] uppercase italic transition-all drop-shadow-2xl">{content.heroTitle}</h1>
-            <p className={`text-xl md:text-2xl ${theme.secondary} max-w-3xl mx-auto mb-12 font-medium italic leading-relaxed`}>{content.heroTagline}</p>
-            <div className="flex flex-col md:flex-row gap-6 justify-center items-center">
-              <Button className={`${theme.button} rounded-full h-16 md:h-20 px-12 md:px-16 text-xl font-black uppercase italic shadow-2xl transition-all hover:scale-105 active:scale-95`}>
-                {content.heroCTA} <ArrowRight className="ml-4 w-6 h-6" />
-              </Button>
-            </div>
+          <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
+            <Badge className={`${theme.isDark ? 'bg-white/5 text-white/40' : 'bg-black/5 text-zinc-400'} border-none mb-6 px-8 py-2 uppercase font-black tracking-[0.4em] text-[8px] rounded-full`}>{heroB}</Badge>
+            <h1 className="text-5xl md:text-[100px] font-black tracking-tighter mb-6 leading-[0.85] uppercase italic drop-shadow-2xl">{heroT}</h1>
+            <p className={`text-xl md:text-2xl ${theme.secondary} max-w-3xl mx-auto mb-12 font-medium italic leading-relaxed`}>{heroTag}</p>
+            <Button className={`${theme.button} rounded-full h-16 md:h-20 px-12 md:px-16 text-xl font-black uppercase italic shadow-2xl transition-all hover:scale-105 active:scale-95`}>
+              {heroC} <ArrowRight className="ml-4 w-6 h-6" />
+            </Button>
           </motion.div>
         </div>
       </section>
@@ -117,36 +98,36 @@ export default function SalesLP() {
 
       <section className="py-20 max-w-7xl mx-auto px-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <motion.div whileInView={{ opacity: 1, x: 0 }} initial={{ opacity: 0, x: -50 }} className={`${theme.card} p-10 rounded-[3rem] relative overflow-hidden transition-all border border-current/10 shadow-xl`}>
-             <h3 className={`text-[10px] font-black uppercase tracking-[0.6em] mb-8 ${theme.accent}`}>Diagnosis // 01</h3>
-             <p className="text-3xl md:text-4xl font-black italic tracking-tighter leading-[0.9] uppercase">{content.problem}</p>
+          <motion.div whileInView={{ opacity: 1, x: 0 }} initial={{ opacity: 0, x: -50 }} className={`${theme.card} p-10 rounded-[3rem] border border-current/10 shadow-xl`}>
+             <h3 className={`text-[10px] font-black uppercase tracking-[0.6em] mb-8 ${theme.accent}`}>Problem // Case</h3>
+             <p className="text-3xl md:text-4xl font-black italic tracking-tighter leading-[0.9] uppercase">{prob}</p>
           </motion.div>
           <motion.div whileInView={{ opacity: 1, x: 0 }} initial={{ opacity: 0, x: 50 }} className="space-y-8">
              <h3 className={`text-[10px] font-black uppercase tracking-[0.6em] opacity-20`}>Strategy // Inova</h3>
-             <p className={`text-xl opacity-60 font-medium italic leading-relaxed`}>{content.solution}</p>
+             <p className={`text-xl opacity-60 font-medium italic leading-relaxed`}>{sol}</p>
           </motion.div>
         </div>
       </section>
 
       <section id="services" className="py-20 max-w-[1600px] mx-auto px-6">
-        <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-8 text-center md:text-left">
+        <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
            <h2 className="text-4xl md:text-7xl font-black italic uppercase tracking-tighter leading-none">ARSENAL DE <br /> <span className={theme.accent}>ENTREGAS.</span></h2>
            <p className={`max-w-xs text-[10px] font-black uppercase tracking-widest leading-relaxed italic ${theme.secondary}`}>Cada elemento é uma peça na construção da sua autoridade digital.</p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-          {content.deliverables.map((d: any, i: number) => (
+          {services.map((d: any, i: number) => (
             <motion.div whileHover={{ y: -8 }} key={i} className={`${theme.card} p-6 rounded-[2rem] flex flex-col justify-between group transition-all border border-current/5 h-[280px] shadow-lg`}>
-               <div className={`${theme.accent} mb-6 w-10 h-10 bg-current/5 rounded-full flex items-center justify-center`}><Sparkles size={20} /></div>
+               <div className={`${theme.accent} mb-6 w-10 h-10 bg-current/10 rounded-full flex items-center justify-center`}><Sparkles size={20} /></div>
                <div><h3 className="text-lg font-black italic uppercase leading-tight mb-3">{d.title}</h3><p className="text-[9px] opacity-40 uppercase tracking-tighter leading-[1.2]">{d.desc}</p></div>
             </motion.div>
           ))}
         </div>
       </section>
 
-      <section className="py-20 max-w-7xl mx-auto px-6">
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-          {content.steps.map((step: string, i: number) => (
-            <div key={i} className={`${theme.card} p-6 rounded-2xl border border-current/5 flex flex-col items-center text-center gap-4 group hover:bg-current/[0.04]`}>
+      <section className="py-16 max-w-7xl mx-auto px-6 whitespace-nowrap overflow-x-auto custom-scrollbar">
+        <div className="flex gap-4">
+          {steps.map((step: string, i: number) => (
+            <div key={i} className={`${theme.card} min-w-[200px] p-6 rounded-2xl border border-current/5 flex flex-col items-center text-center gap-4 group hover:bg-current/[0.04] transition-all`}>
                <span className="text-3xl font-black italic opacity-5 group-hover:opacity-100 transition-opacity">0{i+1}</span>
                <p className="text-[9px] font-black uppercase tracking-widest leading-relaxed italic opacity-40 group-hover:opacity-100">{step}</p>
             </div>
@@ -155,13 +136,13 @@ export default function SalesLP() {
       </section>
 
       <section id="pricing" className="py-24 max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {config.plans.map((p: any, i: number) => (
+        {plans.map((p: any, i: number) => (
           <div key={i} className={`${theme.card} p-10 rounded-[3rem] border-2 ${p.popular ? 'border-primary shadow-2xl scale-[1.02]' : 'border-current/5 opacity-80'}`}>
             <div className="flex-1 space-y-8">
                <h4 className="text-[8px] font-black uppercase tracking-[0.4em] opacity-30">{p.name} escala</h4>
-               <div className="text-5xl md:text-7xl font-black italic tracking-tighter underline decoration-current/10 decoration-[6px] underline-offset-8">R${p.price}</div>
+               <div className="text-4xl md:text-6xl font-black italic tracking-tighter underline decoration-current/10 decoration-[6px] underline-offset-8">R${p.price}</div>
                <div className="space-y-3">
-                  {p.features?.map((f: string, j: number) => (
+                  {(p.features || []).map((f: string, j: number) => (
                     <div key={j} className="flex items-center gap-3 text-[9px] font-bold uppercase tracking-widest opacity-40 italic border-b border-current/5 pb-2"><CheckCircle2 className={`w-3 h-3 ${theme.accent}`} /> {f}</div>
                   ))}
                </div>
@@ -171,7 +152,7 @@ export default function SalesLP() {
         ))}
       </section>
 
-      <Footer whatsapp={config.whatsapp} theme={theme} cta={content.heroCTA} />
+      <Footer whatsapp={config.whatsapp || "5562999999999"} theme={theme} cta={heroC} />
     </div>
   );
 }
@@ -192,7 +173,7 @@ function Footer({ whatsapp, theme, cta }: any) {
     <section className="py-32 text-center relative overflow-hidden">
       <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[250px] rounded-full blur-[100px] -z-10 ${theme.isDark ? 'bg-zinc-800/40' : 'bg-zinc-200/50'}`} />
       <div className="space-y-12">
-        <h2 className="text-5xl md:text-[100px] font-black tracking-tighter uppercase italic leading-[0.8]">VAMOS ESCALAR?</h2>
+        <h2 className="text-5xl md:text-[80px] font-black tracking-tighter uppercase italic leading-[0.8]">VAMOS ESCALAR?</h2>
         <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noopener noreferrer">
           <Button className={`${theme.button} h-20 px-16 text-2xl font-black uppercase italic shadow-2xl`}>{cta}</Button>
         </a>
