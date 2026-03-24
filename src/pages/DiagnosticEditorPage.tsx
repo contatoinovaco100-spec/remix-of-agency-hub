@@ -62,10 +62,15 @@ export default function DiagnosticEditorPage() {
         if (stored) {
             try { 
               const data = JSON.parse(stored);
-              setConfig(data); 
-              setClientInfo(data.cliente);
-              setStep('preview');
-              return; 
+              if (data.cliente) {
+                setConfig(data); 
+                setClientInfo({
+                  ...clientInfo,
+                  ...data.cliente,
+                  tipo: data.cliente.tipo || 'servico'
+                });
+                setStep('preview');
+              }
             } catch (e) { console.error(e); }
         }
     };
@@ -91,7 +96,6 @@ export default function DiagnosticEditorPage() {
       }
     });
 
-    // Normalize Scores (assuming max possible for each cat is ~100 in our rules)
     const newConfig = {
       cliente: clientInfo,
       intro: { 
@@ -160,57 +164,63 @@ export default function DiagnosticEditorPage() {
   };
 
   const renderSetup = () => (
-    <div className="flex-1 flex flex-col items-center justify-center p-8 bg-[#0a0a0a] animate-in fade-in zoom-in duration-500">
-        <div className="max-w-md w-full space-y-10 text-center">
+    <div className="w-full min-h-screen flex flex-col items-center justify-center p-6 lg:p-12 animate-in fade-in zoom-in duration-500 overflow-y-auto bg-[#0a0a0a]">
+        <div className="max-w-xl w-full py-12 space-y-12 text-center">
             <div className="relative inline-block">
-                <div className="absolute -inset-4 bg-[#bff720]/20 blur-xl rounded-full" />
-                <div className="relative p-6 rounded-3xl bg-white/5 border border-white/10 text-[#bff720]">
-                    <Target size={48} />
+                <div className="absolute -inset-6 bg-[#bff720]/20 blur-2xl rounded-full" />
+                <div className="relative p-8 rounded-[40px] bg-white/5 border border-white/10 text-[#bff720]">
+                    <Target size={64} />
                 </div>
             </div>
 
-            <div className="space-y-2">
-                <h1 className="text-3xl font-black uppercase tracking-tighter text-white">Configuração Inicial</h1>
-                <p className="text-white/40 text-sm">Personalize o diagnóstico com base no modelo de negócio.</p>
+            <div className="space-y-4">
+                <h1 className="text-4xl lg:text-5xl font-black uppercase tracking-tighter text-white">Configuração Inicial</h1>
+                <p className="text-white/40 text-lg">Personalize o diagnóstico com base no modelo de negócio do seu cliente.</p>
             </div>
 
-            <div className="space-y-6 text-left">
-                <div className="space-y-3">
-                    <Label className="text-[10px] font-black uppercase tracking-[3px] text-white/40 ml-1">Tipo de Negócio</Label>
-                    <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-10 text-left">
+                <div className="space-y-5">
+                    <Label className="text-[12px] font-black uppercase tracking-[4px] text-white/40 ml-1">Tipo de Negócio</Label>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <button 
                             onClick={() => setClientInfo({...clientInfo, tipo: 'servico'})}
-                            className={`flex flex-col items-center justify-center p-6 rounded-2xl border-2 transition-all gap-3 ${clientInfo.tipo === 'servico' ? 'border-[#bff720] bg-[#bff720]/10 text-white' : 'border-white/5 bg-white/5 text-white/40 hover:border-white/20'}`}
+                            className={`flex flex-col items-center justify-center p-8 rounded-[32px] border-2 transition-all gap-4 group ${clientInfo.tipo === 'servico' ? 'border-[#bff720] bg-[#bff720]/10 text-white' : 'border-white/5 bg-white/5 text-white/40 hover:border-white/20'}`}
                         >
-                            <Briefcase size={24} />
-                            <span className="font-bold text-xs uppercase tracking-widest">Serviço</span>
+                            <div className={`p-4 rounded-2xl transition-all ${clientInfo.tipo === 'servico' ? 'bg-[#bff720] text-black' : 'bg-white/5 group-hover:bg-white/10'}`}>
+                                <Briefcase size={28} />
+                            </div>
+                            <span className="font-black text-xs uppercase tracking-widest">Serviços / Especialista</span>
                         </button>
                         <button 
                             onClick={() => setClientInfo({...clientInfo, tipo: 'varejo'})}
-                            className={`flex flex-col items-center justify-center p-6 rounded-2xl border-2 transition-all gap-3 ${clientInfo.tipo === 'varejo' ? 'border-[#bff720] bg-[#bff720]/10 text-white' : 'border-white/5 bg-white/5 text-white/40 hover:border-white/20'}`}
+                            className={`flex flex-col items-center justify-center p-8 rounded-[32px] border-2 transition-all gap-4 group ${clientInfo.tipo === 'varejo' ? 'border-[#bff720] bg-[#bff720]/10 text-white' : 'border-white/5 bg-white/5 text-white/40 hover:border-white/20'}`}
                         >
-                            <ShoppingBag size={24} />
-                            <span className="font-bold text-xs uppercase tracking-widest">Varejo</span>
+                            <div className={`p-4 rounded-2xl transition-all ${clientInfo.tipo === 'varejo' ? 'bg-[#bff720] text-black' : 'bg-white/5 group-hover:bg-white/10'}`}>
+                                <ShoppingBag size={28} />
+                            </div>
+                            <span className="font-black text-xs uppercase tracking-widest">Varejo / Loja Física</span>
                         </button>
                     </div>
                 </div>
 
-                <div className="space-y-1.5">
-                    <Label className="text-[10px] font-black uppercase tracking-[3px] text-white/40 ml-1">Nome do Cliente (@)</Label>
-                    <Input className="h-14 bg-white/5 border-white/10 text-white rounded-2xl focus:border-[#bff720]/50 transition-all text-lg" placeholder="@perfil.exemplo" value={clientInfo.nome} onChange={e => setClientInfo({...clientInfo, nome: e.target.value})} />
-                </div>
-                <div className="space-y-1.5">
-                    <Label className="text-[10px] font-black uppercase tracking-[3px] text-white/40 ml-1">Nicho / Especialidade</Label>
-                    <Input className="h-14 bg-white/5 border-white/10 text-white rounded-2xl focus:border-[#bff720]/50 transition-all text-lg" placeholder="Ex: Estética Avançada" value={clientInfo.nicho} onChange={e => setClientInfo({...clientInfo, nicho: e.target.value})} />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                        <Label className="text-[10px] font-black uppercase tracking-[3px] text-white/40 ml-1">Nome do Cliente (@)</Label>
+                        <Input className="h-16 bg-white/5 border-white/10 text-white rounded-[20px] focus:border-[#bff720]/50 transition-all text-xl" placeholder="@perfil.exemplo" value={clientInfo.nome} onChange={e => setClientInfo({...clientInfo, nome: e.target.value})} />
+                    </div>
+                    <div className="space-y-2">
+                        <Label className="text-[10px] font-black uppercase tracking-[3px] text-white/40 ml-1">Nicho / Especialidade</Label>
+                        <Input className="h-16 bg-white/5 border-white/10 text-white rounded-[20px] focus:border-[#bff720]/50 transition-all text-xl" placeholder="Ex: Estética Avançada" value={clientInfo.nicho} onChange={e => setClientInfo({...clientInfo, nicho: e.target.value})} />
+                    </div>
                 </div>
             </div>
 
             <Button 
                 disabled={!clientInfo.nome || !clientInfo.nicho}
                 onClick={() => setStep('wizard')}
-                className="w-full h-16 bg-[#bff720] hover:bg-[#aee61d] text-black font-black uppercase tracking-[3px] rounded-2xl shadow-2xl shadow-[#bff720]/10 text-md"
+                className="w-full h-20 bg-[#bff720] hover:bg-[#aee61d] text-black font-black uppercase tracking-[5px] rounded-[30px] shadow-2xl shadow-[#bff720]/20 text-lg transition-transform active:scale-95"
             >
-                Começar Análise <ArrowRight size={20} className="ml-2" />
+                Começar Análise <ArrowRight size={24} className="ml-3" />
             </Button>
         </div>
     </div>
@@ -220,32 +230,38 @@ export default function DiagnosticEditorPage() {
     const currentRule = filteredRules[wizardStep];
     const progress = ((wizardStep + 1) / filteredRules.length) * 100;
 
-    if (!currentRule) return null;
+    if (!currentRule) return (
+      <div className="w-full min-h-screen bg-[#0a0a0a] flex items-center justify-center">
+         <Spinner className="animate-spin text-[#bff720]" size={48} />
+      </div>
+    );
 
     return (
-      <div className="flex-1 flex flex-col items-center justify-center p-8 bg-[#0a0a0a] animate-in slide-in-from-right duration-500">
-        <div className="max-w-xl w-full space-y-12">
+      <div className="w-full min-h-screen flex flex-col items-center justify-center p-6 lg:p-12 bg-[#0a0a0a] animate-in slide-in-from-right duration-500 overflow-y-auto">
+        <div className="max-w-2xl w-full py-12 space-y-12">
           {/* Progress Header */}
-          <div className="space-y-4">
+          <div className="space-y-6">
             <div className="flex justify-between items-end">
-                <div className="space-y-1">
-                    <span className="text-[10px] font-black uppercase tracking-[4px] text-[#bff720]">Fase de Coleta</span>
-                    <h3 className="text-xs font-bold text-white/40 uppercase tracking-widest">{currentRule.category}</h3>
+                <div className="space-y-2">
+                    <span className="text-[12px] font-black uppercase tracking-[5px] text-[#bff720]">Diagnóstico em Curso</span>
+                    <h3 className="text-sm font-black text-white/40 uppercase tracking-[3px]">{currentRule.category}</h3>
                 </div>
-                <span className="text-2xl font-black text-white/80">{Math.round(progress)}%</span>
+                <div className="text-right">
+                    <span className="text-4xl font-black text-white">{Math.round(progress)}%</span>
+                </div>
             </div>
-            <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
-              <div className="h-full bg-[#bff720] transition-all duration-700 shadow-[0_0_20px_rgba(191,247,32,0.3)]" style={{ width: `${progress}%` }} />
+            <div className="h-3 w-full bg-white/5 rounded-full overflow-hidden border border-white/5">
+              <div className="h-full bg-[#bff720] transition-all duration-700 shadow-[0_0_30px_rgba(191,247,32,0.4)]" style={{ width: `${progress}%` }} />
             </div>
           </div>
 
           {/* Question card */}
-          <div className="space-y-8 bg-white/5 p-10 rounded-[40px] border border-white/5 shadow-2xl">
-            <h2 className="text-2xl lg:text-3xl font-bold text-white leading-tight tracking-tight">
+          <div className="space-y-10 bg-white/5 p-8 lg:p-16 rounded-[50px] border border-white/10 shadow-3xl backdrop-blur-3xl">
+            <h2 className="text-3xl lg:text-4xl font-black text-white leading-[1.1] tracking-tighter">
               {currentRule.question}
             </h2>
 
-            <div className="grid gap-4">
+            <div className="grid gap-5">
               {currentRule.options.map((opt) => (
                 <button
                   key={opt}
@@ -258,42 +274,42 @@ export default function DiagnosticEditorPage() {
                         generateReport(newAnswers);
                     }
                   }}
-                  className={`flex items-center justify-between p-6 rounded-2xl border-2 transition-all duration-300 text-left group ${
+                  className={`flex items-center justify-between p-8 rounded-[30px] border-2 transition-all duration-300 text-left group ${
                     answers[currentRule.id] === opt 
-                      ? 'border-[#bff720] bg-[#bff720]/10 text-white' 
-                      : 'border-white/5 bg-white/5 text-white/40 hover:border-white/20 hover:text-white'
+                      ? 'border-[#bff720] bg-[#bff720]/10 text-white shadow-[0_10px_40px_-10px_rgba(191,247,32,0.2)]' 
+                      : 'border-white/5 bg-white/5 text-white/40 hover:border-white/20 hover:text-white hover:bg-white/10'
                   }`}
                 >
-                  <span className="font-bold text-lg">{opt}</span>
-                  <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
-                      answers[currentRule.id] === opt ? 'bg-[#bff720] border-[#bff720]' : 'border-white/10 group-hover:border-white/30'
+                  <span className="font-extrabold text-xl tracking-tight">{opt}</span>
+                  <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all duration-500 ${
+                      answers[currentRule.id] === opt ? 'bg-[#bff720] border-[#bff720] scale-110' : 'border-white/10 group-hover:border-white/30'
                   }`}>
-                      {answers[currentRule.id] === opt && <CheckCircle2 size={14} className="text-black" />}
+                      {answers[currentRule.id] === opt && <CheckCircle2 size={18} className="text-black" />}
                   </div>
                 </button>
               ))}
             </div>
           </div>
 
-          <div className="flex justify-between items-center px-4">
+          <div className="flex justify-between items-center px-6">
             <Button 
                 variant="ghost" 
-                className="text-white/20 hover:text-white transition-colors uppercase font-black tracking-[2px] text-[10px]" 
+                className="text-white/20 hover:text-white hover:bg-white/5 transition-all uppercase font-black tracking-[3px] text-xs h-12 px-8 rounded-2xl" 
                 disabled={wizardStep === 0}
                 onClick={() => setWizardStep(wizardStep - 1)}
             >
-              <ArrowLeft size={14} className="mr-2" /> Anterior
+              <ArrowLeft size={18} className="mr-3" /> Voltar
             </Button>
             {answers[currentRule.id] && (
                <Button 
                 variant="ghost" 
-                className="text-[#bff720] hover:text-[#bff720]/80 uppercase font-black tracking-[2px] text-[10px]"
+                className="text-[#bff720] hover:text-[#bff720]/80 hover:bg-[#bff720]/5 uppercase font-black tracking-[3px] text-xs h-12 px-8 rounded-2xl"
                 onClick={() => {
                     if (wizardStep < filteredRules.length - 1) setWizardStep(wizardStep + 1);
                     else generateReport();
                 }}
                >
-                 Próximo <ArrowRight size={14} className="ml-2" />
+                 Próximo <ArrowRight size={18} className="ml-3" />
                </Button>
             )}
           </div>
@@ -305,12 +321,11 @@ export default function DiagnosticEditorPage() {
   if (step === 'setup') return renderSetup();
   if (step === 'wizard') return renderWizard();
 
-  // PREVIEW MODE
+  // PREVIEW MODE — Mantido com flex h-screen original pois ele tem sidebar
   const theme = THEMES[clientInfo.tema] || THEMES.teal;
-  const t = (val: string, placeholder: string) => val ? val : <span className="opacity-20 italic">{placeholder}</span>;
-
+  
   return (
-    <div className="flex h-screen bg-[#111] overflow-hidden w-full">
+    <div className="flex h-screen bg-[#111] overflow-hidden w-full no-scrollbar">
       {/* SIDEBAR EDITOR */}
       <aside className="w-[350px] h-full flex flex-col border-r border-[#2a2a2a] bg-[#111] no-print z-20 shrink-0">
         <header className="bg-[#0D6E5E] p-6 flex justify-between items-center shrink-0">
@@ -383,8 +398,8 @@ export default function DiagnosticEditorPage() {
       </aside>
 
       {/* PREVIEW MAIN VIEW */}
-      <main className="flex-1 h-full overflow-y-auto bg-[#F5F3EE] relative">
-        <div className={`mx-auto transition-all duration-700 overflow-x-hidden ${viewMode === 'mobile' ? 'max-w-[375px] my-10 border-[12px] border-black rounded-[50px] h-[812px] overflow-y-auto shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] bg-[#F5F3EE]' : 'w-full'}`}
+      <main className="flex-1 h-full overflow-y-auto bg-[#F5F3EE] relative scroll-smooth no-scrollbar">
+        <div className={`mx-auto transition-all duration-700 ${viewMode === 'mobile' ? 'max-w-[375px] my-10 border-[12px] border-black rounded-[50px] h-[812px] overflow-y-auto shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] bg-[#F5F3EE] no-scrollbar' : 'w-full'}`}
           style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
           
           {/* PAGE 1 — HERO COVER */}
@@ -396,7 +411,7 @@ export default function DiagnosticEditorPage() {
               <div className="absolute -left-12 -top-12 text-[#bff720] text-7xl font-black select-none opacity-80 animate-pulse" style={{ transform: 'rotate(-15deg)' }}>✳</div>
               
               <div className="bg-black px-12 py-10 inline-block w-full shadow-2xl">
-                <h1 className="text-white text-[clamp(3.5rem,10vw,8rem)] font-black tracking-[-3px] leading-none uppercase">
+                <h1 className="text-white text-[clamp(2.5rem,8vw,6rem)] font-black tracking-[-3px] leading-none uppercase">
                   DIAGNÓSTICO
                 </h1>
               </div>
@@ -491,7 +506,7 @@ export default function DiagnosticEditorPage() {
             <div className="max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-20 relative z-10">
                 
                 <div className="lg:col-span-12 mb-10 text-center">
-                     <h2 className="text-[clamp(3.5rem,10vw,8rem)] font-black text-white/10 uppercase tracking-tighter leading-none absolute -top-10 left-1/2 -translate-x-1/2 w-full select-none">ANALYSIS</h2>
+                     <h2 className="text-[clamp(2.5rem,8vw,6rem)] font-black text-white/10 uppercase tracking-tighter leading-none absolute -top-10 left-1/2 -translate-x-1/2 w-full select-none">ANALYSIS</h2>
                      <h3 className="text-5xl lg:text-7xl font-black text-white uppercase tracking-tighter relative z-10">Diagnóstico Estratégico</h3>
                 </div>
 
@@ -503,10 +518,10 @@ export default function DiagnosticEditorPage() {
                     </div>
                     <div className="grid gap-4">
                         {config.positivos.map((p: string, i: number) => (
-                            <div key={i} className="bg-white/5 border border-white/5 p-8 rounded-[32px] group hover:bg-white/10 transition-all duration-500">
+                            <div key={i} className="bg-white/5 border border-white/5 p-8 rounded-[32px] group hover:bg-white/10 transition-all duration-500 text-left">
                                 <div className="flex gap-6">
                                     <div className="w-10 h-10 rounded-2xl bg-[#bff720]/10 flex items-center justify-center text-[#bff720] shrink-0"><CheckCircle2 size={20} /></div>
-                                    <p className="text-lg font-bold text-white/90 leading-tight pt-1 text-left">{p}</p>
+                                    <p className="text-lg font-bold text-white/90 leading-tight pt-1">{p}</p>
                                 </div>
                             </div>
                         ))}
@@ -521,10 +536,10 @@ export default function DiagnosticEditorPage() {
                     </div>
                     <div className="grid gap-4">
                         {config.negativos.map((n: string, i: number) => (
-                            <div key={i} className="bg-black/20 border border-white/5 p-8 rounded-[32px] group hover:bg-black/40 transition-all duration-500">
+                            <div key={i} className="bg-black/20 border border-white/5 p-8 rounded-[32px] group hover:bg-black/40 transition-all duration-500 text-left">
                                 <div className="flex gap-6">
                                     <div className="w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center text-white/20 shrink-0"><AlertCircle size={20} /></div>
-                                    <p className="text-lg font-bold text-white/60 leading-tight pt-1 text-left">{n}</p>
+                                    <p className="text-lg font-bold text-white/60 leading-tight pt-1">{n}</p>
                                 </div>
                             </div>
                         ))}
@@ -590,8 +605,8 @@ export default function DiagnosticEditorPage() {
 
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
                                 {s.cards.map((c: any, ci: number) => (
-                                    <div key={ci} className="group bg-white rounded-[50px] p-12 shadow-2xl border border-[#e8e4dc] space-y-10 hover:border-[#bff720] transition-colors duration-500 flex flex-col justify-between">
-                                        <div className="space-y-8 text-left">
+                                    <div key={ci} className="group bg-white rounded-[50px] p-12 shadow-2xl border border-[#e8e4dc] space-y-10 hover:border-[#bff720] transition-colors duration-500 flex flex-col justify-between text-left">
+                                        <div className="space-y-8">
                                             <div className="flex justify-between items-start">
                                                 <div className="inline-block px-5 py-2 bg-black rounded-full">
                                                     <span className="text-[10px] font-black text-white uppercase tracking-widest">{c.tipo}</span>
