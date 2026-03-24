@@ -50,11 +50,12 @@ export default function DiagnosticLP() {
     </div>
   );
   if (!config) return (
-    <div className="flex h-screen w-full items-center justify-center bg-[#F5F3EE] text-center p-6 text-gray-800">
-      <div>
-        <h1 className="text-2xl font-bold text-[#3A0A1E] mb-4">Diagnóstico não encontrado</h1>
-        <p className="opacity-50">O link que você seguiu pode estar quebrado ou o diagnóstico foi removido.</p>
-      </div>
+    <div className="flex h-screen w-full flex-col items-center justify-center bg-[#F5F3EE] text-center p-6 text-gray-800">
+      <h1 className="text-2xl font-bold text-[#3A0A1E] mb-4">Diagnóstico não encontrado</h1>
+      <p className="opacity-50 mb-8">O link que você seguiu pode estar quebrado ou o diagnóstico foi removido.</p>
+      <a href="/diagnostico/editar" className="bg-[#0D6E5E] text-white px-6 py-2 rounded-lg font-bold uppercase tracking-widest text-xs hover:bg-[#095045] transition-colors">
+        Ir para o Editor
+      </a>
     </div>
   );
 

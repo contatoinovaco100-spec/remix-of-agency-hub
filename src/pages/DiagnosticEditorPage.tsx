@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { 
   Save, Eye, Trash2, Plus, 
-  Download, Loader2 as Spinner, ChevronDown, ChevronRight, X
+  Download, Loader2 as Spinner, ChevronDown, ChevronRight, X, Link as LinkIcon
 } from 'lucide-react';
 import { toast } from 'sonner';
 import LogoInova from '@/assets/logo-inova.png';
@@ -111,6 +111,15 @@ export default function DiagnosticEditorPage() {
           <h1 className="text-[#bff720] text-xl tracking-[4px] font-black">iNØVA Co.</h1>
           <span className="text-[10px] text-white/50 font-bold uppercase tracking-widest">Editor Premium</span>
         </header>
+
+        {slug && (
+          <div className="bg-[#bff720]/10 border-b border-[#bff720]/20 p-2 flex items-center justify-center gap-2">
+            <span className="text-[9px] font-black uppercase tracking-widest text-[#bff720]">Live:</span>
+            <a href={`/diagnostico/${slug}`} target="_blank" rel="noreferrer" className="text-[9px] text-white hover:underline flex items-center gap-1 font-bold">
+              /diagnostico/{slug} <LinkIcon size={10} />
+            </a>
+          </div>
+        )}
 
         <div className="p-4 bg-[#1a1a1a] border-b border-[#2a2a2a] flex items-center gap-3 shrink-0 flex-wrap">
           <Button variant="outline" size="sm" className="bg-transparent border-[#333] text-white text-[10px] font-bold h-9 uppercase tracking-widest hover:bg-[#222]" onClick={() => setViewMode(viewMode === 'desktop' ? 'mobile' : 'desktop')}>
