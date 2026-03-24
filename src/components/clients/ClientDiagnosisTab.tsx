@@ -57,10 +57,10 @@ export function ClientDiagnosisTab({ clientId }: Props) {
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-black uppercase tracking-widest text-primary flex items-center gap-2">
+        <h3 className="text-caption font-semibold uppercase tracking-widest text-primary flex items-center gap-2">
           <Star className="h-4 w-4 fill-primary" /> Diagnóstico Estratégico
         </h3>
-        <span className="text-[10px] font-bold text-muted-foreground bg-secondary/50 px-2 py-1 rounded">
+        <span className="text-[10px] font-medium text-muted-foreground bg-secondary/50 px-2 py-1 rounded">
           Enviado em {new Date(briefing.created_at).toLocaleDateString('pt-BR')}
         </span>
       </div>
@@ -77,8 +77,8 @@ export function ClientDiagnosisTab({ clientId }: Props) {
       </div>
 
       <div className="rounded-xl bg-primary/5 border border-primary/20 p-4">
-        <p className="text-xs font-bold text-primary uppercase tracking-widest mb-2">Percepção Desejada</p>
-        <p className="text-sm text-foreground leading-relaxed italic">"{briefing.desired_perception}"</p>
+        <p className="text-caption font-semibold text-primary uppercase tracking-widest mb-2">Percepção Desejada</p>
+        <p className="text-body text-foreground leading-relaxed italic">"{briefing.desired_perception}"</p>
       </div>
     </div>
   );
@@ -102,9 +102,9 @@ function DiagnosisSection({ icon: Icon, label, value, accent }: { icon: any, lab
         <div className="flex items-center gap-2 mb-2">
           <div className={`w-1.5 h-1.5 rounded-full ${colors[accent] || 'bg-primary'}`} />
           <Icon className="h-3.5 w-3.5 text-muted-foreground" />
-          <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{label}</span>
+          <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">{label}</span>
         </div>
-        <p className="text-sm text-foreground leading-relaxed pl-3.5">{value || '—'}</p>
+        <p className="text-body text-foreground leading-relaxed pl-3.5">{value || '—'}</p>
       </CardContent>
     </Card>
   );
