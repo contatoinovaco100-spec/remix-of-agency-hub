@@ -1,17 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { 
   Save, Eye, Trash2, Plus, 
   Download, Loader2 as Spinner, ChevronDown, ChevronRight, X, Link as LinkIcon,
-  CheckCircle2, AlertCircle, ArrowRight, ArrowLeft, Sparkles, Target, Zap, TrendingUp
+  CheckCircle2, AlertCircle, ArrowRight, ArrowLeft, Sparkles, Target, Zap, TrendingUp,
+  ShoppingBag, Briefcase
 } from 'lucide-react';
 import { toast } from 'sonner';
 import LogoInova from '@/assets/logo-inova.png';
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from '@/contexts/AuthContext';
-import { DIAGNOSTIC_RULES, DiagnosticRule } from '@/data/diagnosticRules';
+import { DIAGNOSTIC_RULES, DiagnosticRule, BusinessType } from '@/data/diagnosticRules';
 
 /* ═══════ THEME COLORS ═══════ */
 const THEMES: Record<string, { primary: string; primaryDark: string }> = {
@@ -42,15 +43,22 @@ export default function DiagnosticEditorPage() {
   const [step, setStep] = useState<'setup' | 'wizard' | 'preview'>('setup');
   const [wizardStep, setWizardStep] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [clientInfo, setClientInfo] = useState({ nome: '', nicho: '', subtitulo: 'Diagnóstico de Maturidade Estratégica', tema: 'teal' });
+  const [clientInfo, setClientInfo] = useState<{nome: string; nicho: string; subtitulo: string; tema: string; tipo: BusinessType}>({ 
+    nome: '', nicho: '', subtitulo: 'Diagnóstico de Maturidade Estratégica', tema: 'teal', tipo: 'servico' 
+  });
   const [slug, setSlug] = useState('');
   const [config, setConfig] = useState<any>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [viewMode, setViewMode] = useState<'desktop' | 'mobile'>('desktop');
 
+  // Filtra as regras baseado no tipo de negócio
+  const filteredRules = useMemo(() => {
+    return DIAGNOSTIC_RULES.filter(rule => !rule.onlyFor || rule.onlyFor === clientInfo.tipo);
+  }, [clientInfo.tipo]);
+
   useEffect(() => {
     const fetchExisting = async () => {
-        const stored = localStorage.getItem('agency_diagnostic_config_v4');
+        const stored = localStorage.getItem('agency_diagnostic_config_v5');
         if (stored) {
             try { 
               const data = JSON.parse(stored);
@@ -70,7 +78,7 @@ export default function DiagnosticEditorPage() {
     let actions: string[] = [];
     let catScores: Record<string, number> = { posicionamento: 0, presenca: 0, autoridade: 0, conversao: 0 };
     
-    DIAGNOSTIC_RULES.forEach(rule => {
+    filteredRules.forEach(rule => {
       const answer = currentAnswers[rule.id];
       const l = rule.logic[answer];
       if (l) {
@@ -83,11 +91,12 @@ export default function DiagnosticEditorPage() {
       }
     });
 
+    // Normalize Scores (assuming max possible for each cat is ~100 in our rules)
     const newConfig = {
       cliente: clientInfo,
       intro: { 
         titulo: 'Diagnóstico de Maturidade Estratégica', 
-        texto: `Este diagnóstico detalha a maturidade atual da marca @${clientInfo.nome.replace('@','')} no ecossistema digital, identificando gargalos e oportunidades de escala imediata.` 
+        texto: `Este diagnóstico detalha a maturidade atual da marca @${clientInfo.nome.replace('@','')} no ecossistema digital, identificando gargalos e oportunidades de escala imediata para o segmento de ${clientInfo.tipo === 'varejo' ? 'Varejo' : 'Serviços'}.` 
       },
       positivos,
       negativos,
@@ -102,7 +111,7 @@ export default function DiagnosticEditorPage() {
         acao5: actions[4] || 'Refinar CTA e Oferta única.'
       },
       semanas: [
-        { label: 'Semana 1', titulo: 'Autoridade e Alcance', cards: [{tipo:'Autoridade', titulo:'Prova Social Extraordinária', gancho:'Resultados REAIS', estrutura:'Storytelling + Print do Resultado', cta:'Mande "EU QUERO" no direct'}, {tipo:'Alcance', titulo:'Topo de Funil Viral', gancho:'Desejo Instantâneo', estrutura:'Vídeo Curto + Música Trend', cta:'Curta e segue para mais'}] },
+        { label: 'Semana 1', titulo: clientInfo.tipo === 'varejo' ? 'Desejo & Vitrine' : 'Autoridade & Alcance', cards: [{tipo: clientInfo.tipo === 'varejo' ? 'Desejo' : 'Autoridade', titulo: clientInfo.tipo === 'varejo' ? 'Curadoria de Desejo' : 'Prova Social Extraordinária', gancho: 'Destaque o Produto', estrutura: 'Close no Produto + Música Trend', cta: 'Clique no link'}, {tipo: 'Alcance', titulo: 'Topo de Funil Viral', gancho: 'Desejo Instantâneo', estrutura: 'Vídeo Curto + Música Trend', cta: 'Curta e segue para mais'}] },
         { label: 'Semana 2', titulo: 'Engajamento e Conexão', cards: [{tipo:'Engajamento', titulo:'Bastidores e Narrativa', gancho:'Vulnerabilidade Controlada', estrutura:'Relato Pessoal + Aprendizado', cta:'Qual sua opinião?'}, {tipo:'Conversão', titulo:'Exposição da Oferta', gancho:'Problema vs Solução', estrutura:'Apresentação do Produto + Garantia', cta:'Link na Bio'}] },
         { label: 'Semana 3', titulo: 'Conversão e Vendas', cards: [{tipo:'Vendas', titulo:'Chamada Direta', gancho:'Últimas Vagas', estrutura:'Checklist de Benefícios', cta:'Clique agora'}, {tipo:'Alcance', titulo:'Transbordagem', gancho:'Collab ou Mídia Paga', estrutura:'Anúncio de Convite', cta:'Saiba Mais'}] }
       ]
@@ -110,7 +119,7 @@ export default function DiagnosticEditorPage() {
 
     setConfig(newConfig);
     setStep('preview');
-    localStorage.setItem('agency_diagnostic_config_v4', JSON.stringify(newConfig));
+    localStorage.setItem('agency_diagnostic_config_v5', JSON.stringify(newConfig));
     if (!slug) setSlug(clientInfo.nome.toLowerCase().replace(/\s+/g, '-').replace('@',''));
   };
 
@@ -125,7 +134,7 @@ export default function DiagnosticEditorPage() {
   const generateFinalSummary = (s: Record<string, number>, a: any) => {
     if (s.posicionamento < 50) return "Atualmente o perfil apresenta falhas graves de posicionamento, o que impede a comunicação de atrair o público correto e cobrar o valor justo.";
     if (s.conversao < 50) return "O perfil tem um bom conteúdo e autoridade, mas falha no momento crucial da conversão, perdendo muitas vendas acumuladas no direct.";
-    return "Marca com excelente maturidade estratégica, pronta para investir em tráfego pago e escalar o faturamento através de otimização de funil.";
+    return `Marca de ${clientInfo.tipo} com excelente maturidade estratégica, pronta para investir em tráfego pago e escalar o faturamento através de otimização de funil.`;
   };
 
   const handleSave = async () => {
@@ -161,11 +170,31 @@ export default function DiagnosticEditorPage() {
             </div>
 
             <div className="space-y-2">
-                <h1 className="text-3xl font-black uppercase tracking-tighter text-white">Novo Diagnóstico</h1>
-                <p className="text-white/40 text-sm">A IA da Inova vai gerar uma estratégia personalizada em minutos.</p>
+                <h1 className="text-3xl font-black uppercase tracking-tighter text-white">Configuração Inicial</h1>
+                <p className="text-white/40 text-sm">Personalize o diagnóstico com base no modelo de negócio.</p>
             </div>
 
-            <div className="space-y-4 text-left">
+            <div className="space-y-6 text-left">
+                <div className="space-y-3">
+                    <Label className="text-[10px] font-black uppercase tracking-[3px] text-white/40 ml-1">Tipo de Negócio</Label>
+                    <div className="grid grid-cols-2 gap-4">
+                        <button 
+                            onClick={() => setClientInfo({...clientInfo, tipo: 'servico'})}
+                            className={`flex flex-col items-center justify-center p-6 rounded-2xl border-2 transition-all gap-3 ${clientInfo.tipo === 'servico' ? 'border-[#bff720] bg-[#bff720]/10 text-white' : 'border-white/5 bg-white/5 text-white/40 hover:border-white/20'}`}
+                        >
+                            <Briefcase size={24} />
+                            <span className="font-bold text-xs uppercase tracking-widest">Serviço</span>
+                        </button>
+                        <button 
+                            onClick={() => setClientInfo({...clientInfo, tipo: 'varejo'})}
+                            className={`flex flex-col items-center justify-center p-6 rounded-2xl border-2 transition-all gap-3 ${clientInfo.tipo === 'varejo' ? 'border-[#bff720] bg-[#bff720]/10 text-white' : 'border-white/5 bg-white/5 text-white/40 hover:border-white/20'}`}
+                        >
+                            <ShoppingBag size={24} />
+                            <span className="font-bold text-xs uppercase tracking-widest">Varejo</span>
+                        </button>
+                    </div>
+                </div>
+
                 <div className="space-y-1.5">
                     <Label className="text-[10px] font-black uppercase tracking-[3px] text-white/40 ml-1">Nome do Cliente (@)</Label>
                     <Input className="h-14 bg-white/5 border-white/10 text-white rounded-2xl focus:border-[#bff720]/50 transition-all text-lg" placeholder="@perfil.exemplo" value={clientInfo.nome} onChange={e => setClientInfo({...clientInfo, nome: e.target.value})} />
@@ -188,8 +217,10 @@ export default function DiagnosticEditorPage() {
   );
 
   const renderWizard = () => {
-    const currentRule = DIAGNOSTIC_RULES[wizardStep];
-    const progress = ((wizardStep + 1) / DIAGNOSTIC_RULES.length) * 100;
+    const currentRule = filteredRules[wizardStep];
+    const progress = ((wizardStep + 1) / filteredRules.length) * 100;
+
+    if (!currentRule) return null;
 
     return (
       <div className="flex-1 flex flex-col items-center justify-center p-8 bg-[#0a0a0a] animate-in slide-in-from-right duration-500">
@@ -221,7 +252,7 @@ export default function DiagnosticEditorPage() {
                   onClick={() => {
                     const newAnswers = { ...answers, [currentRule.id]: opt };
                     setAnswers(newAnswers);
-                    if (wizardStep < DIAGNOSTIC_RULES.length - 1) {
+                    if (wizardStep < filteredRules.length - 1) {
                         setWizardStep(wizardStep + 1);
                     } else {
                         generateReport(newAnswers);
@@ -258,7 +289,7 @@ export default function DiagnosticEditorPage() {
                 variant="ghost" 
                 className="text-[#bff720] hover:text-[#bff720]/80 uppercase font-black tracking-[2px] text-[10px]"
                 onClick={() => {
-                    if (wizardStep < DIAGNOSTIC_RULES.length - 1) setWizardStep(wizardStep + 1);
+                    if (wizardStep < filteredRules.length - 1) setWizardStep(wizardStep + 1);
                     else generateReport();
                 }}
                >
@@ -303,7 +334,7 @@ export default function DiagnosticEditorPage() {
                <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <h3 className="text-[10px] font-black uppercase tracking-[4px] text-white/40">Controle</h3>
-                    <Button variant="ghost" size="sm" className="h-6 text-[9px] uppercase font-bold text-[#bff720]" onClick={() => setStep('wizard')}>Reiniciar</Button>
+                    <Button variant="ghost" size="sm" className="h-6 text-[9px] uppercase font-bold text-[#bff720]" onClick={() => setStep('setup')}>Reiniciar</Button>
                   </div>
                   <div className="grid gap-2">
                     <Button className="bg-[#bff720] hover:bg-[#aee61d] text-black text-[10px] font-black h-12 uppercase tracking-widest rounded-xl transition-all active:scale-95" onClick={handleSave} disabled={isSaving}>
@@ -381,7 +412,7 @@ export default function DiagnosticEditorPage() {
                   </p>
               </div>
               <p className="text-sm text-white/50 tracking-[0.3em] font-medium uppercase">
-                Maturidade Estratégica de Marca
+                Maturidade Estratégica de {clientInfo.tipo === 'varejo' ? 'Varejo' : 'Marca/Serviço'}
               </p>
             </div>
 
@@ -475,7 +506,7 @@ export default function DiagnosticEditorPage() {
                             <div key={i} className="bg-white/5 border border-white/5 p-8 rounded-[32px] group hover:bg-white/10 transition-all duration-500">
                                 <div className="flex gap-6">
                                     <div className="w-10 h-10 rounded-2xl bg-[#bff720]/10 flex items-center justify-center text-[#bff720] shrink-0"><CheckCircle2 size={20} /></div>
-                                    <p className="text-lg font-bold text-white/90 leading-tight pt-1">{p}</p>
+                                    <p className="text-lg font-bold text-white/90 leading-tight pt-1 text-left">{p}</p>
                                 </div>
                             </div>
                         ))}
@@ -493,7 +524,7 @@ export default function DiagnosticEditorPage() {
                             <div key={i} className="bg-black/20 border border-white/5 p-8 rounded-[32px] group hover:bg-black/40 transition-all duration-500">
                                 <div className="flex gap-6">
                                     <div className="w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center text-white/20 shrink-0"><AlertCircle size={20} /></div>
-                                    <p className="text-lg font-bold text-white/60 leading-tight pt-1">{n}</p>
+                                    <p className="text-lg font-bold text-white/60 leading-tight pt-1 text-left">{n}</p>
                                 </div>
                             </div>
                         ))}
@@ -540,7 +571,7 @@ export default function DiagnosticEditorPage() {
                 {config.semanas.map((s: any, i: number) => (
                     <section key={i} className="min-h-[80vh] px-8 lg:px-24 py-32 border-t border-[#e8e4dc]">
                         <div className="max-w-6xl mx-auto space-y-20">
-                            <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-10">
+                            <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-10 text-left">
                                 <div className="space-y-4">
                                     <div className="flex items-center gap-4">
                                         <div className="w-10 h-[2px] bg-[#0D6E5E]" />
@@ -560,7 +591,7 @@ export default function DiagnosticEditorPage() {
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
                                 {s.cards.map((c: any, ci: number) => (
                                     <div key={ci} className="group bg-white rounded-[50px] p-12 shadow-2xl border border-[#e8e4dc] space-y-10 hover:border-[#bff720] transition-colors duration-500 flex flex-col justify-between">
-                                        <div className="space-y-8">
+                                        <div className="space-y-8 text-left">
                                             <div className="flex justify-between items-start">
                                                 <div className="inline-block px-5 py-2 bg-black rounded-full">
                                                     <span className="text-[10px] font-black text-white uppercase tracking-widest">{c.tipo}</span>
