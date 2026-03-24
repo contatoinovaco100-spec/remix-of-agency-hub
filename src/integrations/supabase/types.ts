@@ -14,6 +14,44 @@ export type Database = {
   }
   public: {
     Tables: {
+      diagnostics: {
+        Row: {
+          config: Json | null
+          created_at: string
+          id: string
+          slug: string
+          title: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          config?: Json | null
+          created_at?: string
+          id?: string
+          slug: string
+          title?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          config?: Json | null
+          created_at?: string
+          id?: string
+          slug?: string
+          title?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "diagnostics_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      },
       content_editorial_lines: {
         Row: {
           id: string
