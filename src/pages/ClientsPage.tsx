@@ -12,6 +12,10 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { motion, AnimatePresence } from 'framer-motion';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { ClientDiagnosisTab } from '@/components/clients/ClientDiagnosisTab';
+import { Shield, Lock, Mail, Key, Loader2, Link as LinkIcon, Target, Sparkles } from 'lucide-react';
 
 const serviceOptions: ServiceType[] = ['Tráfego Pago', 'Social Media', 'Design', 'Copy', 'SEO', 'Landing Page', 'Branding', 'Email Marketing'];
 const statusOptions: ClientStatus[] = ['Ativo', 'Pausado', 'Cancelado'];
@@ -120,12 +124,18 @@ export default function ClientsPage() {
                 >
                    <div className="border-t border-border px-4 py-4 sm:px-5">
                      <Tabs defaultValue="info">
-                       <TabsList className="mb-4 w-full justify-start overflow-x-auto scroller-hide">
-                         <TabsTrigger value="info">Informações</TabsTrigger>
-                         <TabsTrigger value="insights" className="gap-1.5 flex-shrink-0">
-                           <BarChart3 className="h-3.5 w-3.5" /> Insights Meta
-                         </TabsTrigger>
-                       </TabsList>
+                        <TabsList className="mb-4 w-full justify-start overflow-x-auto scroller-hide">
+                          <TabsTrigger value="info">Informações</TabsTrigger>
+                          <TabsTrigger value="diagnostico" className="gap-1.5 flex-shrink-0">
+                            <Target className="h-3.5 w-3.5" /> Diagnóstico
+                          </TabsTrigger>
+                          <TabsTrigger value="insights" className="gap-1.5 flex-shrink-0">
+                            <BarChart3 className="h-3.5 w-3.5" /> Insights Meta
+                          </TabsTrigger>
+                          <TabsTrigger value="portal" className="gap-1.5 flex-shrink-0">
+                            <Shield className="h-3.5 w-3.5" /> Portal do Cliente
+                          </TabsTrigger>
+                        </TabsList>
 
                        <TabsContent value="info" className="space-y-4">
                          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -188,10 +198,18 @@ export default function ClientsPage() {
                          </div>
                        </TabsContent>
 
-                       <TabsContent value="insights">
-                         <MetaInsightsPanel clientId={client.id} />
-                       </TabsContent>
-                     </Tabs>
+                        <TabsContent value="insights">
+                          <MetaInsightsPanel clientId={client.id} />
+                        </TabsContent>
+
+                        <TabsContent value="diagnostico">
+                          <ClientDiagnosisTab clientId={client.id} />
+                        </TabsContent>
+
+                        <TabsContent value="portal">
+                          <ClientPortalTab client={client} />
+                        </TabsContent>
+                      </Tabs>
                    </div>
                 </motion.div>
               )}
@@ -262,6 +280,103 @@ export default function ClientsPage() {
           </div>
         </DialogContent>
       </Dialog>
+    </div>
+  );
+}
+
+function ClientPortalTab({ client }: { client: Client }) {
+  const [email, setEmail] = useState(client.email || '');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  async function handleGenerateAccess() {
+    if (!email || !password) {
+      toast.error('Preencha email e senha para gerar o acesso.');
+      return;
+    }
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            role: 'client',
+            client_id: client.id,
+            company_name: client.companyName
+          }
+        }
+      });
+
+      if (error) throw error;
+      toast.success('Acesso do cliente gerado com sucesso!');
+      setPassword('');
+    } catch (err: any) {
+      toast.error('Erro ao gerar acesso: ' + err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
+      <div className="flex items-center gap-3 border-b border-border pb-4">
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary shadow-sm ring-1 ring-primary/20">
+          <Lock className="h-5 w-5" />
+        </div>
+        <div>
+          <h3 className="text-sm font-bold text-foreground">Acesso ao Portal</h3>
+          <p className="text-[10px] sm:text-xs text-muted-foreground">Crie ou gerencie as credenciais exclusivas para este cliente.</p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="space-y-2">
+          <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-60">E-mail de Acesso</Label>
+          <div className="relative">
+            <Mail className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground opacity-50" />
+            <Input 
+              type="email" 
+              placeholder="email@cliente.com" 
+              value={email} 
+              onChange={e => setEmail(e.target.value)}
+              className="pl-9 h-11 bg-secondary/20 border-border/40 focus:border-primary/50 transition-all rounded-xl shadow-sm"
+            />
+          </div>
+        </div>
+        <div className="space-y-2">
+          <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-60">Senha Provisória</Label>
+          <div className="relative">
+            <Key className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground opacity-50" />
+            <Input 
+              type="password" 
+              placeholder="••••••••" 
+              value={password} 
+              onChange={e => setPassword(e.target.value)}
+              className="pl-9 h-11 bg-secondary/20 border-border/40 focus:border-primary/50 transition-all rounded-xl shadow-sm"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="rounded-xl bg-amber-500/5 border border-amber-500/10 p-4 space-y-2">
+        <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-amber-500">
+          <Shield className="h-3 w-3" /> Atenção
+        </div>
+        <p className="text-xs text-amber-500/80 leading-relaxed font-medium">
+          Ao gerar o acesso, o cliente receberá permissão para visualizar exclusivamente o seu próprio Portal de Conteúdo. 
+          Certifique-se de salvar estas credenciais antes de fechar.
+        </p>
+      </div>
+
+      <Button 
+        onClick={handleGenerateAccess} 
+        disabled={loading}
+        className="w-full h-11 rounded-xl shadow-lg shadow-primary/10 hover:shadow-primary/20 transition-all font-bold uppercase tracking-widest text-xs gap-2"
+      >
+        {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+        Liberar Acesso Estratégico
+      </Button>
     </div>
   );
 }
