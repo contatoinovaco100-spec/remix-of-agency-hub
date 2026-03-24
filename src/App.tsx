@@ -44,7 +44,7 @@ function AppRoutes() {
                        location.pathname.startsWith('/vitrine') || 
                        location.pathname.startsWith('/briefing') ||
                        location.pathname.startsWith('/proposta') ||
-                       location.pathname.startsWith('/diagnostico');
+                       (location.pathname.startsWith('/diagnostico') && !location.pathname.startsWith('/diagnostico/editar'));
 
   if (isPublicPage) {
     return (
