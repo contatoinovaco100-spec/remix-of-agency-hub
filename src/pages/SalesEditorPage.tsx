@@ -1,16 +1,25 @@
 import { useState, useEffect, useRef } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { 
   Save, Plus, Trash2, Eye, Sparkles, Settings, Check, 
   ArrowRight, BarChart3, Target, Star, Video, Camera, Zap, 
   Lightbulb, Globe, Shield, Play, ArrowUpRight, ChevronRight,
   Edit3, X, MousePointer2, Pencil, GripVertical, Type, Image as ImageIcon,
   Palette, Layout, Monitor, Copy, Layers, PaintBucket, Sun, Moon, Blend,
-  Grid3X3, LayoutGrid, LayoutList, Columns, Square, Circle, Triangle
+  Grid3X3, LayoutGrid, LayoutList, Columns, Square, Circle, Triangle,
+  Loader2, Link as LinkIcon
 } from 'lucide-react';
 import { toast } from 'sonner';
 import LogoInova from '@/assets/logo-inova.png';
@@ -203,6 +212,10 @@ export default function SalesEditorPage() {
   const [config, setConfig] = useState<any>(null);
   const [panelTab, setPanelTab] = useState<'template' | 'design' | 'blocks'>('template');
   const [panelOpen, setPanelOpen] = useState(true);
+  const [leads, setLeads] = useState<any[]>([]);
+  const [selectedLeadId, setSelectedLeadId] = useState<string>('');
+  const [slug, setSlug] = useState<string>('');
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem('agency_lp_config');
@@ -213,11 +226,44 @@ export default function SalesEditorPage() {
         setConfig({ ...t, ...parsed, styles: { heroTitleSize: "56", accentColor: "#2563eb", layoutTheme: "light", heroImage: "", ...(parsed.styles || {}) }, hero: { ...t.hero, ...(parsed.hero || {}) }, strategy: { ...t.strategy, ...(parsed.strategy || {}) }, services: parsed.services?.length ? parsed.services : t.services, plans: parsed.plans?.length ? parsed.plans : t.plans, extraBlocks: parsed.extraBlocks || [] });
       } catch { loadTemplate('restaurant'); }
     } else { loadTemplate('restaurant'); }
+
+    async function fetchLeads() {
+      const { data } = await supabase.from('leads').select('id, name, company').order('name');
+      if (data) setLeads(data);
+    }
+    fetchLeads();
   }, []);
 
   const loadTemplate = (niche: string) => { setConfig({ ...NICHE_TEMPLATES[niche], styles: { heroTitleSize: "56", accentColor: "#2563eb", layoutTheme: "light", heroImage: "" }, extraBlocks: [] }); };
   const switchNiche = (niche: string) => { setConfig({ ...NICHE_TEMPLATES[niche], styles: config?.styles || { heroTitleSize: "56", accentColor: "#2563eb", layoutTheme: "light" }, extraBlocks: config?.extraBlocks || [] }); toast.success(`Template "${NICHE_LABELS[niche]}" aplicado!`); };
-  const handleSave = () => { localStorage.setItem('agency_lp_config', JSON.stringify(config)); toast.success('Página Publicada! 🚀'); };
+  
+  const handleSave = async () => {
+    if (!slug) {
+      toast.error('Por favor, defina um slug para a URL.');
+      setPanelTab('template');
+      return;
+    }
+    
+    setIsSaving(true);
+    try {
+      const { error } = await (supabase as any).from('sales_proposals').upsert({
+        slug: slug.toLowerCase().replace(/\s+/g, '-'),
+        lead_id: selectedLeadId || null,
+        config,
+        updated_at: new Date().toISOString(),
+      }, { onConflict: 'slug' });
+
+      if (error) throw error;
+
+      localStorage.setItem('agency_lp_config', JSON.stringify(config));
+      toast.success('Proposta publicada com sucesso! 🚀');
+    } catch (error: any) {
+      toast.error('Erro ao salvar: ' + error.message);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const addTextBlock = () => { setConfig({ ...config, extraBlocks: [...(config.extraBlocks || []), { type: 'text', title: 'Novo Título', body: 'Escreva seu texto aqui. Clique para editar.' }] }); toast.success('Bloco de texto adicionado!'); };
   const addImageBlock = () => { setConfig({ ...config, extraBlocks: [...(config.extraBlocks || []), { type: 'image', url: PHOTO_GALLERY[0].url, caption: 'Legenda da imagem' }] }); toast.success('Bloco de imagem adicionado!'); };
   const duplicateExtra = (i: number) => { const blocks = [...(config.extraBlocks || [])]; blocks.splice(i + 1, 0, { ...blocks[i] }); setConfig({ ...config, extraBlocks: blocks }); toast.success('Bloco duplicado!'); };
@@ -250,7 +296,13 @@ export default function SalesEditorPage() {
             <Settings size={12} /> {panelOpen ? 'Fechar' : 'Painel'}
           </Button>
           <a href="/proposta" target="_blank"><Button variant="outline" size="sm" className="h-8 rounded-lg text-[10px] font-bold gap-1.5 border-gray-200"><Eye size={12} /> Ver Site</Button></a>
-          <Button size="sm" className="h-8 rounded-lg text-[10px] font-bold gap-1.5 shadow-md active:scale-95" style={{ backgroundColor: accent, color: isDark && accent === '#bff720' ? '#000' : '#fff' }} onClick={handleSave}><Save size={12} /> Publicar</Button>
+          <Button size="sm" className="h-8 rounded-lg text-[10px] font-bold gap-1.5 shadow-md active:scale-95 min-w-[100px]" 
+            disabled={isSaving}
+            style={{ backgroundColor: accent, color: isDark && accent === '#bff720' ? '#000' : '#fff' }} 
+            onClick={handleSave}>
+            {isSaving ? <Loader2 size={12} className="animate-spin" /> : <Save size={12} />}
+            {isSaving ? 'Salvando...' : 'Publicar'}
+          </Button>
         </div>
       </div>
 
@@ -280,6 +332,33 @@ export default function SalesEditorPage() {
                     <p className="absolute bottom-1 inset-x-0 text-center text-[6px] font-bold text-white uppercase">{NICHE_LABELS[niche]}</p>
                   </button>
                 ))}
+              </div>
+              <div className="h-px bg-gray-100" />
+              <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Publicação</p>
+              <div className="space-y-3">
+                <div className="space-y-1">
+                  <Label className="text-[8px] font-bold text-gray-400 uppercase">Slug da URL (ex: cliente-x)</Label>
+                  <div className="relative">
+                    <Input className="h-8 text-[11px] rounded-lg border-gray-200 pl-7" value={slug} onChange={(e) => setSlug(e.target.value)} placeholder="minha-proposta" />
+                    <LinkIcon size={10} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" />
+                  </div>
+                  {slug && <p className="text-[8px] text-blue-500 font-medium truncate">/proposta/{slug.toLowerCase().replace(/\s+/g, '-')}</p>}
+                </div>
+
+                <div className="space-y-1">
+                  <Label className="text-[8px] font-bold text-gray-400 uppercase">Associar Lead</Label>
+                  <Select value={selectedLeadId} onValueChange={(v) => setSelectedLeadId(v)}>
+                    <SelectTrigger className="h-8 text-[11px] rounded-lg border-gray-200">
+                      <SelectValue placeholder="Selecione..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">Nenhum</SelectItem>
+                      {leads.map(lead => (
+                        <SelectItem key={lead.id} value={lead.id}>{lead.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
               <div className="h-px bg-gray-100" />
               <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Ajustes Rápidos</p>

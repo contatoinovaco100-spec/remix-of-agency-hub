@@ -52,6 +52,7 @@ function AppRoutes() {
         <Route path="/vitrine" element={<PublicPortfolioPage />} />
         <Route path="/briefing" element={<BriefingFormPage />} />
         <Route path="/proposta" element={<SalesLP />} />
+        <Route path="/proposta/:slug" element={<SalesLP />} />
         <Route path="/proposta/editar" element={<SalesEditorPage />} />
       </Routes>
     );

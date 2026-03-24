@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { useParams } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ArrowRight, Target, Sparkles, Plus, Video, Camera, BarChart3, 
   Zap, Shield, Users, Monitor, Mic, Lightbulb, Play, Share2,
   CheckCircle2, Star, Globe, Smartphone, Layers, Heart, Crown,
   Trophy, Flame, Activity, Clock, MapPin, Check, ArrowUpRight,
-  Quote, ChevronRight
+  Quote, ChevronRight, Loader2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -33,14 +35,44 @@ const DEFAULTS = {
 };
 
 export default function SalesLP() {
+  const { slug } = useParams();
   const [config, setConfig] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const saved = localStorage.getItem('agency_lp_config');
-    if (saved) { try { setConfig(JSON.parse(saved)); } catch { setConfig({}); } }
-    else { setConfig({}); }
-  }, []);
+        async function loadConfig() {
+          if (slug) {
+            setLoading(true);
+            const { data, error } = await (supabase as any)
+              .from('sales_proposals')
+              .select('config')
+              .eq('slug', slug)
+              .maybeSingle();
+            
+            if (data) {
+              setConfig(data.config);
+            } else {
+              // Fallback to localStorage for editor preview IF no slug
+              const saved = localStorage.getItem('agency_lp_config');
+              if (saved) { try { setConfig(JSON.parse(saved)); } catch { setConfig({}); } }
+              else { setConfig({}); }
+            }
+            setLoading(false);
+          } else {
+            const saved = localStorage.getItem('agency_lp_config');
+            if (saved) { try { setConfig(JSON.parse(saved)); } catch { setConfig({}); } }
+            else { setConfig({}); }
+            setLoading(false);
+          }
+        }
+    loadConfig();
+  }, [slug]);
 
+  if (loading) return (
+    <div className="min-h-screen flex items-center justify-center bg-[#050508]">
+      <Loader2 className="w-10 h-10 animate-spin text-primary" />
+    </div>
+  );
   if (!config) return null;
 
   const accent = config.styles?.accentColor || DEFAULTS.styles.accentColor;
@@ -80,9 +112,9 @@ export default function SalesLP() {
     <div className={`min-h-screen ${bgClass} overflow-x-hidden`} style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
 
       {/* ═══════════ NAVBAR ═══════════ */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 ${navBg} border-b`}>
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <img src={LogoInova} alt="Inova" className={`h-7 w-auto ${isDark ? 'brightness-200' : ''}`} />
+      <nav className={`fixed top-0 left-0 right-0 z-50 ${navBg} border-b transition-all duration-300`}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between">
+          <img src={LogoInova} alt="Inova" className={`h-6 sm:h-7 w-auto ${isDark ? 'brightness-200' : ''}`} />
           <div className={`hidden md:flex items-center gap-10 text-[13px] font-semibold ${textMuted}`}>
             <a href="#services" className="hover:opacity-80 transition-colors">Serviços</a>
             <a href="#process" className="hover:opacity-80 transition-colors">Processo</a>
@@ -97,60 +129,59 @@ export default function SalesLP() {
       </nav>
 
       {/* ═══════════ HERO ═══════════ */}
-      <section className="pt-32 pb-20 px-6 relative overflow-hidden">
-        {/* Gradient bg */}
-        <div className="absolute top-0 right-0 w-[800px] h-[800px] rounded-full blur-[200px] opacity-[0.08]" style={{ backgroundColor: accent }} />
-        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] rounded-full blur-[200px] opacity-[0.05] bg-amber-400" />
+      <section className="pt-24 sm:pt-32 pb-16 sm:pb-24 px-4 sm:px-6 relative overflow-hidden">
+        {/* Gradient bg - Adjusted for mobile */}
+        <div className="absolute top-0 right-0 w-[400px] sm:w-[800px] h-[400px] sm:h-[800px] rounded-full blur-[100px] sm:blur-[200px] opacity-[0.08]" style={{ backgroundColor: accent }} />
+        <div className="absolute bottom-0 left-0 w-[300px] sm:w-[600px] h-[300px] sm:h-[600px] rounded-full blur-[100px] sm:blur-[200px] opacity-[0.05] bg-amber-400" />
         
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <motion.div initial="hidden" animate="visible" variants={fadeUp} transition={{ duration: 0.7 }}>
-              <Badge className="bg-gray-50 text-gray-500 border-gray-200 mb-8 px-4 py-1.5 text-[11px] font-semibold rounded-full">{h.badge}</Badge>
-              <h1 className="font-black tracking-tight leading-[1.1] mb-8 text-gray-900" style={{ fontSize: `${heroSize}px` }}>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 sm:gap-16 items-center">
+            <motion.div initial="hidden" animate="visible" variants={fadeUp} transition={{ duration: 0.7 }} className="text-center lg:text-left">
+              <Badge className="bg-gray-50 text-gray-500 border-gray-200 mb-6 sm:mb-8 px-4 py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-full mx-auto lg:mx-0">{h.badge}</Badge>
+              <h1 className="font-black tracking-tighter leading-[1.05] mb-6 sm:mb-8 text-gray-900" style={{ fontSize: `clamp(38px, 8vw, ${heroSize}px)` }}>
                 {h.title.split(' ').map((word: string, i: number) => (
-                  <span key={i}>
-                    {i > 0 && ' '}
+                  <span key={i} className="inline-block">
+                    {i > 0 && '\u00A0'}
                     {(i === 2 || i === 3) ? <span className="italic" style={{ fontFamily: "'Georgia', serif", color: accent }}>{word}</span> : word}
                   </span>
                 ))}
               </h1>
-              <p className={`text-lg ${textMuted} leading-relaxed mb-12 max-w-lg`}>{h.tagline}</p>
-              <div className="flex flex-wrap gap-4">
-                <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noopener noreferrer">
-                  <Button className="rounded-full h-14 px-8 text-[15px] font-bold shadow-lg shadow-blue-500/25 transition-all hover:shadow-xl active:scale-95 group" style={{ backgroundColor: accent, color: '#fff' }}>
+              <p className={`text-base sm:text-lg ${textMuted} leading-relaxed mb-8 sm:mb-12 max-w-lg mx-auto lg:mx-0`}>{h.tagline}</p>
+              <div className="flex flex-col sm:flex-row flex-wrap justify-center lg:justify-start gap-4">
+                <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
+                  <Button className="w-full sm:w-auto rounded-full h-14 px-8 text-[15px] font-bold shadow-lg shadow-blue-500/25 transition-all hover:shadow-xl active:scale-95 group" style={{ backgroundColor: accent, color: '#fff' }}>
                     {h.cta} <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </a>
-                <Button variant="outline" className={`rounded-full h-14 px-8 text-[15px] font-bold transition-all ${isDark ? 'border-white/10 text-white/60 hover:bg-white/5' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
+                <Button variant="outline" className={`w-full sm:w-auto rounded-full h-14 px-8 text-[15px] font-bold transition-all ${isDark ? 'border-white/10 text-white/60 hover:bg-white/5' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
                   <Play className="mr-2 w-4 h-4" /> Ver Portfólio
                 </Button>
               </div>
             </motion.div>
 
-            {/* Hero Image Block */}
-            <motion.div initial={{ opacity: 0, x: 60 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.9, delay: 0.3 }}>
-              <div className="relative">
-                <div className={`rounded-[2rem] overflow-hidden shadow-2xl ${isDark ? 'shadow-black/40 border-white/5' : 'shadow-black/10 border-gray-100'} border`}>
-                  <img src={themeImage} alt="Produção" className="w-full h-[460px] object-cover" />
+            <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, delay: 0.3 }} className="relative mt-10 lg:mt-0">
+              <div className="relative mx-auto max-w-[500px] lg:max-w-none">
+                <div className={`rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden shadow-2xl ${isDark ? 'shadow-black/40 border-white/5' : 'shadow-black/10 border-gray-100'} border`}>
+                  <img src={themeImage} alt="Produção" className="w-full h-[300px] sm:h-[460px] object-cover" />
                 </div>
                 {/* Floating Stats Card */}
-                <div className={`absolute -bottom-6 -left-6 ${isDark ? 'bg-gray-900 border-white/10' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border p-5 flex items-center gap-4`}>
-                  <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ backgroundColor: `${accent}15`, color: accent }}><BarChart3 size={24} /></div>
+                <div className={`absolute -bottom-4 -left-4 sm:-bottom-6 sm:-left-6 ${isDark ? 'bg-gray-900 border-white/10' : 'bg-white border-gray-100'} rounded-xl sm:rounded-2xl shadow-xl border p-3 sm:p-5 flex items-center gap-3 sm:gap-4 scale-90 sm:scale-100`}>
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${accent}15`, color: accent }}><BarChart3 size={20} className="sm:w-6 sm:h-6" /></div>
                   <div>
-                    <p className="text-2xl font-black" style={{ color: accent }}>+340%</p>
-                    <p className={`text-[11px] ${textMuted} font-semibold`}>Engajamento médio</p>
+                    <p className="text-xl sm:text-2xl font-black" style={{ color: accent }}>+340%</p>
+                    <p className={`text-[10px] sm:text-[11px] ${textMuted} font-semibold`}>Engajamento médio</p>
                   </div>
                 </div>
                 {/* Floating Badge */}
-                <div className={`absolute -top-4 -right-4 ${isDark ? 'bg-gray-900 border-white/10' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border p-4 flex items-center gap-3`}>
+                <div className={`absolute -top-4 -right-4 ${isDark ? 'bg-gray-900 border-white/10' : 'bg-white border-gray-100'} rounded-xl sm:rounded-2xl shadow-xl border p-3 sm:p-4 flex items-center gap-3 scale-90 sm:scale-100`}>
                   <div className="flex -space-x-2">
-                    <div className={`w-8 h-8 rounded-full ${isDark ? 'bg-gray-700' : 'bg-gray-200'} border-2 ${isDark ? 'border-gray-900' : 'border-white'}`} />
-                    <div className={`w-8 h-8 rounded-full ${isDark ? 'bg-gray-600' : 'bg-gray-300'} border-2 ${isDark ? 'border-gray-900' : 'border-white'}`} />
-                    <div className={`w-8 h-8 rounded-full ${isDark ? 'bg-gray-500' : 'bg-gray-400'} border-2 ${isDark ? 'border-gray-900' : 'border-white'}`} />
+                    <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full ${isDark ? 'bg-gray-700' : 'bg-gray-200'} border-2 ${isDark ? 'border-gray-900' : 'border-white'}`} />
+                    <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full ${isDark ? 'bg-gray-600' : 'bg-gray-300'} border-2 ${isDark ? 'border-gray-900' : 'border-white'}`} />
+                    <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full ${isDark ? 'bg-gray-500' : 'bg-gray-400'} border-2 ${isDark ? 'border-gray-900' : 'border-white'}`} />
                   </div>
                   <div>
-                    <p className="text-sm font-bold">+50 marcas</p>
-                    <p className={`text-[10px] ${textMuted}`}>confiam na Inova</p>
+                    <p className="text-xs sm:text-sm font-bold">+50 marcas</p>
+                    <p className={`text-[9px] sm:text-[10px] ${textMuted}`}>confiam na Inova</p>
                   </div>
                 </div>
               </div>
@@ -160,11 +191,11 @@ export default function SalesLP() {
       </section>
 
       {/* ═══════════ TRUST BAR ═══════════ */}
-      <section className={`py-10 border-y ${isDark ? 'border-white/5' : 'border-gray-100'}`}>
-        <div className="max-w-7xl mx-auto px-6">
-          <p className={`text-center text-[11px] font-semibold uppercase tracking-[0.3em] mb-6 ${textFaint}`}>Confiado por mais de 50 empresas</p>
-          <div className={`flex items-center justify-center gap-16 text-sm font-bold uppercase tracking-widest opacity-40 ${textFaint}`}>
-            <span>Restaurante XYZ</span><span>•</span><span>Clínica Premium</span><span>•</span><span>Studio Pro</span><span>•</span><span>Fitness Hub</span><span>•</span><span>Advocacia Elite</span>
+      <section className={`py-8 sm:py-10 border-y ${isDark ? 'border-white/5' : 'border-gray-100'}`}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <p className={`text-center text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.2em] sm:tracking-[0.3em] mb-6 ${textFaint}`}>Confiado por mais de 50 empresas</p>
+          <div className={`flex flex-wrap items-center justify-center gap-6 sm:gap-16 text-[10px] sm:text-sm font-bold uppercase tracking-widest opacity-40 ${textFaint}`}>
+            <span>Restaurante XYZ</span><span className="hidden sm:inline">•</span><span>Clínica Premium</span><span className="hidden sm:inline">•</span><span>Studio Pro</span><span className="hidden sm:inline">•</span><span>Fitness Hub</span><span className="hidden sm:inline">•</span><span>Advocacia Elite</span>
           </div>
         </div>
       </section>
@@ -172,9 +203,9 @@ export default function SalesLP() {
       {/* ═══════════ BENTO GRID: PROBLEMA + SOLUÇÃO ═══════════ */}
       <section className="py-24 px-6">
         <div className="max-w-7xl mx-auto">
-          <motion.div initial="hidden" whileInView="visible" variants={fadeUp} className="text-center mb-20">
-            <p className="text-[12px] font-semibold uppercase tracking-[0.3em] mb-4" style={{ color: accent }}>Por que nos escolher</p>
-            <h2 className="text-4xl md:text-5xl font-black tracking-tight leading-[1.1]">
+          <motion.div initial="hidden" whileInView="visible" variants={fadeUp} className="text-center mb-12 sm:20 px-4">
+            <p className="text-[11px] sm:text-[12px] font-semibold uppercase tracking-[0.2em] sm:tracking-[0.3em] mb-4" style={{ color: accent }}>Por que nos escolher</p>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-[1.1]">
               Potencialize sua <span className="italic" style={{ fontFamily: "'Georgia', serif", color: accent }}>jornada digital</span> com a Inova
             </h2>
           </motion.div>
@@ -300,13 +331,13 @@ export default function SalesLP() {
       {/* ═══════════ PROCESSO ═══════════ */}
       <section id="process" className="py-24 px-6">
         <div className="max-w-7xl mx-auto">
-          <motion.div initial="hidden" whileInView="visible" variants={fadeUp} className="text-center mb-20">
+          <motion.div initial="hidden" whileInView="visible" variants={fadeUp} className="text-center mb-12 sm:20">
             <p className="text-[12px] font-semibold uppercase tracking-[0.3em] mb-4" style={{ color: accent }}>Como Funciona</p>
-            <h2 className="text-4xl md:text-5xl font-black tracking-tight">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight">
               Processo <span className="italic" style={{ fontFamily: "'Georgia', serif", color: accent }}>simples e eficiente</span>
             </h2>
           </motion.div>
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
             {steps.map((step: string, i: number) => (
               <motion.div initial="hidden" whileInView="visible" variants={fadeUp} transition={{ delay: i * 0.1 }} key={i}
                 className="bg-gray-50 rounded-2xl p-8 border border-gray-100 text-center group hover:shadow-lg hover:shadow-gray-100 hover:bg-white transition-all relative">
