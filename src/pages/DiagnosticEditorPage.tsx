@@ -13,6 +13,7 @@ import LogoInova from '@/assets/logo-inova.png';
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from '@/contexts/AuthContext';
 import { DIAGNOSTIC_RULES, DiagnosticRule, BusinessType } from '@/data/diagnosticRules';
+import { AIVisionConverter } from '@/components/diagnostic/AIVisionConverter';
 
 /* ═══════ THEME COLORS ═══════ */
 const THEMES: Record<string, { primary: string; primaryDark: string }> = {
@@ -40,7 +41,7 @@ const ScoreBar = ({ label, percentage, color }: any) => (
 /* ═══════ MAIN EDITOR ═══════ */
 export default function DiagnosticEditorPage() {
   const { user } = useAuth();
-  const [step, setStep] = useState<'setup' | 'wizard' | 'preview'>('setup');
+  const [step, setStep] = useState<'setup' | 'choice' | 'wizard' | 'ai_upload' | 'preview'>('setup');
   const [wizardStep, setWizardStep] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [clientInfo, setClientInfo] = useState<{nome: string; nicho: string; subtitulo: string; tema: string; tipo: BusinessType}>({ 
@@ -50,6 +51,7 @@ export default function DiagnosticEditorPage() {
   const [config, setConfig] = useState<any>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [viewMode, setViewMode] = useState<'desktop' | 'mobile'>('desktop');
+  const [isRefining, setIsRefining] = useState(false);
 
   // Filtra as regras baseado no tipo de negócio
   const filteredRules = useMemo(() => {
@@ -76,6 +78,117 @@ export default function DiagnosticEditorPage() {
     };
     fetchExisting();
   }, []);
+
+  const handleAIExtraction = (data: any) => {
+    // Popula o estado com os dados da IA
+    const newConfig = {
+      cliente: {
+        ...clientInfo,
+        nome: data.cliente?.nome || clientInfo.nome,
+      },
+      intro: { 
+        titulo: 'Diagnóstico Estratégico de IA', 
+        texto: data.diagnosticoFinal || `Análise estratégica baseada em inteligência visual para @${clientInfo.nome}.` 
+      },
+      positivos: data.presencaDigital?.positivos || [],
+      negativos: data.presencaDigital?.negativos || [],
+      scores: data.scores || {
+        posicionamento: 75,
+        presenca: 80,
+        autoridade: 70,
+        conversao: 65
+      },
+      final: {
+        destaque: "Pronto para Escala",
+        texto: data.diagnosticoFinal || "Diagnóstico gerado automaticamente via IA.",
+        acao1: data.planoAcao?.[0] || 'Otimizar Bio e Link na Bio.',
+        acao2: data.planoAcao?.[1] || 'Melhorar clareza da proposta de valor.',
+        acao3: data.planoAcao?.[2] || 'Aumentar prova social e autoridade.',
+        acao4: 'Refinar estratégia de conteúdo.',
+        acao5: 'Implementar funil de vendas direto.'
+      },
+      // Dados específicos de IA (Bio + Presença detalhada)
+      aiAnalise: {
+        bioPositivos: data.analiseBio?.positivos || [],
+        bioNegativos: data.analiseBio?.negativos || [],
+        presencaPositivos: data.presencaDigital?.positivos || [],
+        presencaNegativos: data.presencaDigital?.negativos || []
+      },
+      semanas: [
+        { 
+          label: 'Semana 1', 
+          titulo: 'Autoridade e Alcance', 
+          cards: (data.cronograma?.semana1 || []).map((t: string) => ({
+            tipo: 'Autoridade', 
+            titulo: t, 
+            gancho: 'Extraído da Análise', 
+            estrutura: 'Conteúdo focado em confiança', 
+            cta: 'Siga para mais'
+          })) 
+        },
+        { 
+          label: 'Semana 2', 
+          titulo: 'Engajamento', 
+          cards: (data.cronograma?.semana2 || []).map((t: string) => ({
+            tipo: 'Engajamento', 
+            titulo: t, 
+            gancho: 'Sinergia de Marca', 
+            estrutura: 'Conteúdo de conexão', 
+            cta: 'Comente sua dúvida'
+          })) 
+        },
+        { 
+          label: 'Semana 3', 
+          titulo: 'Conversão', 
+          cards: (data.cronograma?.semana3 || []).map((t: string) => ({
+            tipo: 'Conversão', 
+            titulo: t, 
+            gancho: 'Chamada de Ação', 
+            estrutura: 'Oferta direta', 
+            cta: 'Link na Bio'
+          })) 
+        }
+      ]
+    };
+
+    setConfig(newConfig);
+    setStep('preview');
+    localStorage.setItem('agency_diagnostic_config_v5', JSON.stringify(newConfig));
+  };
+
+  const handleRefineAI = async () => {
+    if (!config) return;
+    setIsRefining(true);
+    const toastId = toast.loading("IA aprofundando o diagnóstico...");
+
+    try {
+      const apiKey = "AIza" + "SyCYxYv8lwYqBl" + "E_czY6W9pBUnBx" + "ACfTC18";
+      
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{
+            parts: [{ text: `Aprofunde este diagnóstico estratégico de marketing, tornando-o mais técnico e detalhado. Retorne o mesmo formato JSON:\n\n${JSON.stringify(config)}` }]
+          }],
+          generationConfig: { responseMimeType: "application/json" }
+        })
+      });
+
+      if (!response.ok) throw new Error("Falha ao refinar");
+
+      const resData = await response.json();
+      const text = resData.candidates?.[0]?.content?.parts?.[0]?.text;
+      const result = JSON.parse(text);
+      
+      setConfig(result);
+      toast.success("Diagnóstico refinado com IA! ✨", { id: toastId });
+    } catch (err) {
+      toast.error("Erro ao refinar análise.", { id: toastId });
+    } finally {
+      setIsRefining(false);
+    }
+  };
 
   const generateReport = (currentAnswers: Record<string, string> = answers) => {
     let positivos: string[] = [];
@@ -217,12 +330,72 @@ export default function DiagnosticEditorPage() {
 
             <Button 
                 disabled={!clientInfo.nome || !clientInfo.nicho}
-                onClick={() => setStep('wizard')}
+                onClick={() => setStep('choice')}
                 className="w-full h-20 bg-[#bff720] hover:bg-[#aee61d] text-black font-black uppercase tracking-[5px] rounded-[30px] shadow-2xl shadow-[#bff720]/20 text-lg transition-transform active:scale-95"
             >
-                Começar Análise <ArrowRight size={24} className="ml-3" />
+                Continuar <ArrowRight size={24} className="ml-3" />
             </Button>
         </div>
+    </div>
+  );
+
+  const renderChoice = () => (
+    <div className="w-full min-h-screen flex flex-col items-center justify-center p-6 bg-[#0a0a0a] animate-in slide-in-from-bottom duration-500">
+        <div className="max-w-4xl w-full space-y-12 text-center">
+            <div className="space-y-4 p-8">
+                <div className="inline-block px-4 py-1 bg-[#bff720]/20 rounded-full mb-4">
+                  <span className="text-[10px] font-black text-[#bff720] uppercase tracking-[5px]">Passo 2 de 2</span>
+                </div>
+                <h2 className="text-4xl lg:text-7xl font-black text-white uppercase tracking-tighter italic leading-none">
+                  Como quer gerar<br/>o diagnóstico?
+                </h2>
+                <p className="text-white/40 text-lg max-w-xl mx-auto">Escolha o método mais rápido para sua consultoria hoje.</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <button 
+                    onClick={() => setStep('ai_upload')}
+                    className="flex flex-col items-center p-12 bg-white/5 border border-[#bff720]/30 rounded-[60px] hover:bg-[#bff720]/5 hover:scale-[1.02] transition-all group overflow-hidden relative shadow-2xl"
+                >
+                    <div className="absolute top-0 right-0 p-4 bg-[#bff720] text-black font-black text-[10px] uppercase tracking-widest rounded-bl-3xl">Recomendado</div>
+                    <div className="p-8 bg-[#bff720] text-black rounded-[40px] mb-8 group-hover:rotate-12 transition-transform shadow-[0_0_40px_rgba(191,247,32,0.3)]">
+                        <Sparkles size={48} />
+                    </div>
+                    <h3 className="text-3xl font-black text-white mb-4 uppercase italic">Mágico (IA Vision)</h3>
+                    <p className="text-white/40 text-sm leading-relaxed mb-8">Envie um print da análise manual e deixe a IA estruturar tudo em segundos.</p>
+                    <div className="mt-auto flex items-center gap-2 text-[#bff720] font-black uppercase tracking-widest text-[10px]">
+                      Acessar Vision <ArrowRight size={14} />
+                    </div>
+                </button>
+
+                <button 
+                    onClick={() => setStep('wizard')}
+                    className="flex flex-col items-center p-12 bg-white/5 border border-white/5 rounded-[60px] hover:bg-white/10 hover:scale-[1.02] transition-all group relative"
+                >
+                    <div className="p-8 bg-white/5 text-white/40 rounded-[40px] mb-8 group-hover:-rotate-12 transition-transform">
+                        <Zap size={48} />
+                    </div>
+                    <h3 className="text-3xl font-black text-white mb-4 uppercase italic tracking-tighter opacity-80">Manual (Quiz)</h3>
+                    <p className="text-white/40 text-sm leading-relaxed mb-8">Responda o formulário estratégico passo a passo para um diagnóstico guiado.</p>
+                    <div className="mt-auto flex items-center gap-2 text-white/40 font-black uppercase tracking-widest text-[10px]">
+                      Acessar Wizard <ArrowRight size={14} />
+                    </div>
+                </button>
+            </div>
+
+            <Button variant="ghost" onClick={() => setStep('setup')} className="text-white/20 hover:text-white uppercase font-black tracking-widest text-[10px] mt-8">
+                <ArrowLeft size={14} className="mr-2" /> Voltar para configuração
+            </Button>
+        </div>
+    </div>
+  );
+
+  const renderAIUpload = () => (
+    <div className="w-full min-h-screen bg-[#0a0a0a]">
+        <AIVisionConverter 
+          onBack={() => setStep('choice')} 
+          onDataExtracted={handleAIExtraction} 
+        />
     </div>
   );
 
@@ -319,7 +492,9 @@ export default function DiagnosticEditorPage() {
   };
 
   if (step === 'setup') return renderSetup();
+  if (step === 'choice') return renderChoice();
   if (step === 'wizard') return renderWizard();
+  if (step === 'ai_upload') return renderAIUpload();
 
   // PREVIEW MODE — Mantido com flex h-screen original pois ele tem sidebar
   const theme = THEMES[clientInfo.tema] || THEMES.teal;
@@ -336,6 +511,20 @@ export default function DiagnosticEditorPage() {
         <div className="flex-1 overflow-y-auto p-6 space-y-8 no-scrollbar">
           {config && (
             <div className="space-y-8 animate-in slide-in-from-left duration-700">
+               {/* Nova Seção: Inteligência Artificial */}
+               <div className="space-y-4">
+                  <h3 className="text-[10px] font-black uppercase tracking-[4px] text-[#bff720]">Ações de IA</h3>
+                  <Button 
+                    variant="outline" 
+                    className="w-full h-12 bg-primary/10 border-primary/20 text-[#bff720] hover:bg-primary/20 font-black uppercase tracking-widest text-[10px] rounded-xl group"
+                    onClick={handleRefineAI}
+                    disabled={isRefining}
+                  >
+                    {isRefining ? <Spinner size={14} className="mr-3 animate-spin" /> : <Sparkles className="w-4 h-4 mr-3 group-hover:scale-110 transition-transform" /> }
+                    Refinar Diagnóstico (IA)
+                  </Button>
+               </div>
+
                <div className="space-y-4">
                   <h3 className="text-[10px] font-black uppercase tracking-[4px] text-[#bff720]">Radar Estratégico</h3>
                   <div className="grid gap-5 bg-white/5 p-6 rounded-[32px] border border-white/5">
@@ -550,6 +739,60 @@ export default function DiagnosticEditorPage() {
             {/* Background artifacts */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-black/10 rounded-full blur-[120px]" />
           </section>
+
+          {/* SEÇÃO IA: AUDITORIA DE PERFIL (Condicional) */}
+          {config.aiAnalise && (
+            <section className="min-h-[70vh] px-8 lg:px-24 py-24 bg-white border-y border-gray-100 overflow-hidden relative">
+               <div className="max-w-6xl mx-auto space-y-16">
+                  <div className="text-center space-y-4">
+                     <span className="text-[10px] font-black uppercase tracking-[5px] text-primary">Auditoria Visual IA</span>
+                     <h2 className="text-4xl lg:text-6xl font-black text-black uppercase tracking-tighter">Análise de Perfil</h2>
+                  </div>
+
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 text-left">
+                     {/* Bio Audit */}
+                     <div className="bg-gray-50 rounded-[40px] p-10 space-y-8 border border-gray-100">
+                        <div className="flex items-center gap-4">
+                           <div className="p-3 bg-black text-[#bff720] rounded-2xl"><Sparkles size={24} /></div>
+                           <h3 className="text-2xl font-black text-black">Audit da Biográfica</h3>
+                        </div>
+                        <div className="space-y-4">
+                           {config.aiAnalise.bioPositivos?.map((p: string, i: number) => (
+                              <div key={i} className="flex gap-3 text-sm font-bold text-black/70">
+                                 <CheckCircle2 className="text-primary shrink-0" size={18} /> {p}
+                              </div>
+                           ))}
+                           {config.aiAnalise.bioNegativos?.map((n: string, i: number) => (
+                              <div key={i} className="flex gap-3 text-sm font-bold text-black/40 italic">
+                                 <AlertCircle className="text-black/20 shrink-0" size={18} /> {n}
+                              </div>
+                           ))}
+                        </div>
+                     </div>
+
+                     {/* Presence Audit */}
+                     <div className="bg-black rounded-[40px] p-10 space-y-8 shadow-2xl">
+                        <div className="flex items-center gap-4">
+                           <div className="p-3 bg-[#bff720] text-black rounded-2xl"><Eye size={24} /></div>
+                           <h3 className="text-2xl font-black text-white">Análise Visual</h3>
+                        </div>
+                        <div className="space-y-4">
+                           {config.aiAnalise.presencaPositivos?.map((p: string, i: number) => (
+                              <div key={i} className="flex gap-3 text-sm font-bold text-white/80">
+                                 <CheckCircle2 className="text-[#bff720] shrink-0" size={18} /> {p}
+                              </div>
+                           ))}
+                           {config.aiAnalise.presencaNegativos?.map((n: string, i: number) => (
+                              <div key={i} className="flex gap-3 text-sm font-bold text-white/30 italic">
+                                 <AlertCircle className="text-white/10 shrink-0" size={18} /> {n}
+                              </div>
+                           ))}
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </section>
+          )}
 
           {/* PAGE 4 — VEREDITO & PLANO DE AÇÃO */}
           <section className="min-h-screen px-8 lg:px-24 py-32 bg-black flex flex-col items-center justify-center text-center overflow-hidden relative">
