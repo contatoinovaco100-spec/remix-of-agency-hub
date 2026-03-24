@@ -64,31 +64,24 @@ export default function DiagnosticEditorPage() {
     fetchExisting();
   }, []);
 
-  const generateReport = () => {
-    let positives: string[] = [];
-    let negatives: string[] = [];
+  const generateReport = (currentAnswers: Record<string, string> = answers) => {
+    let positivos: string[] = [];
+    let negativos: string[] = [];
     let actions: string[] = [];
     let catScores: Record<string, number> = { posicionamento: 0, presenca: 0, autoridade: 0, conversao: 0 };
     
     DIAGNOSTIC_RULES.forEach(rule => {
-      const answer = answers[rule.id];
+      const answer = currentAnswers[rule.id];
       const l = rule.logic[answer];
       if (l) {
         catScores[rule.category] += l.score;
         if (l.insight) {
-          if (l.isPositive) positives.push(l.insight);
-          else negatives.push(l.insight);
+          if (l.isPositive) positivos.push(l.insight);
+          else negativos.push(l.insight);
         }
         if (l.action) actions.push(l.action);
       }
     });
-
-    // Normalize Scores (assuming max possible for each cat is 100)
-    // Actually our rules define maxes per rule.
-    // Posicionamento: 25(nicho) + 25(promessa) + 50(perfil) = 100
-    // Presença: 40(frequencia) + 30(padrao) + 30(estrategico) = 100
-    // Autoridade: 40(resultados) + 30(depoimentos) + 30(storytelling) = 100
-    // Conversão: 30(cta) + 30(link) + 40(oferta) = 100
 
     const newConfig = {
       cliente: clientInfo,
@@ -101,7 +94,7 @@ export default function DiagnosticEditorPage() {
       scores: catScores,
       final: {
         destaque: generateDestaque(catScores),
-        texto: generateFinalSummary(catScores, answers),
+        texto: generateFinalSummary(catScores, currentAnswers),
         acao1: actions[0] || 'Estruturar posicionamento único.',
         acao2: actions[1] || 'Otimizar linha editorial para conversão.',
         acao3: actions[2] || 'Implementar prova social constante.',
@@ -226,11 +219,12 @@ export default function DiagnosticEditorPage() {
                 <button
                   key={opt}
                   onClick={() => {
-                    setAnswers({ ...answers, [currentRule.id]: opt });
+                    const newAnswers = { ...answers, [currentRule.id]: opt };
+                    setAnswers(newAnswers);
                     if (wizardStep < DIAGNOSTIC_RULES.length - 1) {
                         setWizardStep(wizardStep + 1);
                     } else {
-                        generateReport();
+                        generateReport(newAnswers);
                     }
                   }}
                   className={`flex items-center justify-between p-6 rounded-2xl border-2 transition-all duration-300 text-left group ${
