@@ -1,4 +1,5 @@
 import { useState } from 'react';
+
 import { useAgency } from '@/contexts/AgencyContext';
 import { Client, ServiceType, ClientStatus, ScopeDetails } from '@/types/agency';
 import { Plus, Search, X, ChevronDown, ChevronUp, BarChart3 } from 'lucide-react';
