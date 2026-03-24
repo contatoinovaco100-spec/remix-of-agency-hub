@@ -38,7 +38,7 @@ const allNavItems: NavItem[] = [
   { title: 'Gravações', url: '/gravacoes', icon: Clapperboard, module: 'operacional' },
   { title: 'Whiteboard', url: '/whiteboard', icon: Palette },
   { title: 'Prospecção IA', url: '/prospeccao', icon: Bot, module: 'comercial' },
-  { title: 'Diagnóstico', url: '/briefings', icon: Target, module: 'operacional' },
+  { title: 'Diagnóstico', url: '/diagnostico/editar', icon: Target, module: 'operacional' },
   { title: 'Proposta Comercial', url: '/proposta', icon: Sparkles, module: 'comercial' },
   { title: 'Editar Proposta', url: '/proposta/editar', icon: Settings, module: 'comercial' },
 ];

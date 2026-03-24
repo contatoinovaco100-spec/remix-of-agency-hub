@@ -25,6 +25,8 @@ import ContentPlanningPage from "@/pages/ContentPlanningPage";
 import ProspectionPage from "@/pages/ProspectionPage";
 import SalesLP from "@/pages/SalesLP";
 import SalesEditorPage from "@/pages/SalesEditorPage";
+import DiagnosticEditorPage from "@/pages/DiagnosticEditorPage";
+import DiagnosticLP from "@/pages/DiagnosticLP";
 
 import PublicPortfolioPage from "./pages/PublicPortfolioPage";
 import ClientPortalPage from "./pages/ClientPortalPage";
@@ -41,7 +43,8 @@ function AppRoutes() {
                        location.pathname.startsWith('/contrato/') || 
                        location.pathname.startsWith('/vitrine') || 
                        location.pathname.startsWith('/briefing') ||
-                       location.pathname.startsWith('/proposta');
+                       location.pathname.startsWith('/proposta') ||
+                       location.pathname.startsWith('/diagnostico');
 
   if (isPublicPage) {
     return (
@@ -54,6 +57,8 @@ function AppRoutes() {
         <Route path="/proposta" element={<SalesLP />} />
         <Route path="/proposta/:slug" element={<SalesLP />} />
         <Route path="/proposta/editar" element={<SalesEditorPage />} />
+        <Route path="/diagnostico" element={<DiagnosticLP />} />
+        <Route path="/diagnostico/:slug" element={<DiagnosticLP />} />
       </Routes>
     );
   }
@@ -81,6 +86,7 @@ function AppRoutes() {
                 <Route path="/whiteboard" element={<WhiteboardPage />} />
                 <Route path="/prospeccao" element={<ProspectionPage />} />
                 <Route path="/proposta/editar" element={<SalesEditorPage />} />
+                <Route path="/diagnostico/editar" element={<DiagnosticEditorPage />} />
                 
                 <Route path="*" element={<NotFound />} />
               </Routes>
