@@ -13,6 +13,7 @@ export const AIVisionConverter: React.FC<AIVisionConverterProps> = ({ onDataExtr
   const [image, setImage] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [notes, setNotes] = useState("");
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -53,6 +54,7 @@ REGRAS DE OURO:
 3. Se houver uma Bio no print, analise-a especificamente.
 4. Gere um Plano de Ação prático de 3 semanas.
 5. Use linguagem de agência premium, focada em conversão e crescimento.
+6. CONSIDERE ESTAS OBSERVAÇÕES DO USUÁRIO: ${notes || 'Nenhuma observação extra.'}
 
 O SEU RESULTADO DEVE SER UM JSON NO SEGUINTE FORMATO:
 {
@@ -158,6 +160,16 @@ IMPORTANTE: Retorne APENAS o JSON puro. Não explique nada fora do JSON.`;
               </motion.div>
             </AnimatePresence>
           )}
+        </div>
+
+        <div className="mt-6 text-left">
+           <label className="text-[10px] font-black uppercase text-primary tracking-widest mb-2 block ml-1">Observações Adicionais (Contexto)</label>
+           <textarea 
+             value={notes} 
+             onChange={e => setNotes(e.target.value)}
+             placeholder="Ex: Focar em branding, o cliente reclamou que não está vendendo no direct..."
+             className="w-full h-24 bg-white/5 border border-white/10 rounded-2xl p-4 text-sm text-white outline-none focus:border-primary/50 transition-all resize-none"
+           />
         </div>
 
         <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">

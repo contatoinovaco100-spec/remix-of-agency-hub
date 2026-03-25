@@ -154,6 +154,8 @@ export default function DiagnosticEditorPage() {
     setConfig(newConfig);
     setStep('preview');
     localStorage.setItem('agency_diagnostic_config_v5', JSON.stringify(newConfig));
+    const suggestedSlug = clientInfo.nome.toLowerCase().replace(/\s+/g, '-').replace('@','');
+    if (!slug) setSlug(suggestedSlug);
   };
 
   const handleRefineAI = async () => {
@@ -270,6 +272,7 @@ export default function DiagnosticEditorPage() {
         }, { onConflict: 'slug' });
 
       if (error) throw error;
+      setSlug(currentSlug);
       toast.success('Diagnóstico Publicado! 🚀');
     } catch (err: any) {
       toast.error('Erro ao salvar: ' + err.message);
