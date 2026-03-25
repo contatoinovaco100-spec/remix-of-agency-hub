@@ -223,6 +223,62 @@ export default function DiagnosticLP() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-black/10 rounded-full blur-[120px]" />
       </section>
 
+      {/* SEÇÃO IA: AUDITORIA DE PERFIL (Condicional) */}
+      {config.aiAnalise && (
+        <section className="min-h-[70vh] px-8 lg:px-24 py-24 bg-white border-y border-gray-100 overflow-hidden relative">
+            <div className="max-w-6xl mx-auto space-y-16">
+                <div className="text-center space-y-4">
+                    <span className="text-[10px] font-black uppercase tracking-[5px] text-[#0D6E5E]">Auditoria Visual IA</span>
+                    <h2 className="text-4xl lg:text-6xl font-black text-black uppercase tracking-tighter">Análise de Perfil</h2>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 text-left">
+                    {/* Bio Audit */}
+                    <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+                        className="bg-gray-50 rounded-[40px] p-10 space-y-8 border border-gray-100">
+                        <div className="flex items-center gap-4">
+                            <div className="p-3 bg-black text-[#bff720] rounded-2xl"><Sparkles size={24} /></div>
+                            <h3 className="text-2xl font-black text-black">Audit da Biografia</h3>
+                        </div>
+                        <div className="space-y-4">
+                            {config.aiAnalise.bioPositivos?.map((p: string, i: number) => (
+                                <div key={i} className="flex gap-3 text-sm font-bold text-black/70">
+                                    <CheckCircle2 className="text-[#0D6E5E] shrink-0" size={18} /> {p}
+                                </div>
+                            ))}
+                            {config.aiAnalise.bioNegativos?.map((n: string, i: number) => (
+                                <div key={i} className="flex gap-3 text-sm font-bold text-black/40 italic">
+                                    <AlertCircle className="text-black/20 shrink-0" size={18} /> {n}
+                                </div>
+                            ))}
+                        </div>
+                    </motion.div>
+
+                    {/* Presence Audit */}
+                    <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }}
+                        className="bg-black rounded-[40px] p-10 space-y-8 shadow-2xl">
+                        <div className="flex items-center gap-4">
+                            <div className="p-3 bg-[#bff720] text-black rounded-2xl"><Sparkles size={24} /></div>
+                            <h3 className="text-2xl font-black text-white">Análise Visual</h3>
+                        </div>
+                        <div className="space-y-4">
+                            {config.aiAnalise.presencaPositivos?.map((p: string, i: number) => (
+                                <div key={i} className="flex gap-3 text-sm font-bold text-white/80">
+                                    <CheckCircle2 className="text-[#bff720] shrink-0" size={18} /> {p}
+                                </div>
+                            ))}
+                            {config.aiAnalise.presencaNegativos?.map((n: string, i: number) => (
+                                <div key={i} className="flex gap-3 text-sm font-bold text-white/30 italic">
+                                    <AlertCircle className="text-white/10 shrink-0" size={18} /> {n}
+                                </div>
+                            ))}
+                        </div>
+                    </motion.div>
+                </div>
+            </div>
+        </section>
+      )}
+
       {/* PAGE 4 — VEREDITO & PLANO DE AÇÃO */}
       <section className="min-h-screen px-8 lg:px-24 py-32 bg-black flex flex-col items-center justify-center text-center overflow-hidden relative">
             <div className="max-w-4xl space-y-16 relative z-10">
