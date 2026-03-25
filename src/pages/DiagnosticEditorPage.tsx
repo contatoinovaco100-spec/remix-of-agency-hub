@@ -171,7 +171,7 @@ export default function DiagnosticEditorPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           contents: [{
-            parts: [{ text: `Aprofunde este diagnóstico estratégico de marketing, tornando-o mais técnico e detalhado. Retorne o mesmo formato JSON:\n\n${JSON.stringify(config)}` }]
+            parts: [{ text: `Aprofunde este diagnóstico estratégico de marketing, tornando-o mais técnico e detalhado, mas MANTENHA A CONCISÃO. Evite textos longos, foque em insights de alto impacto. Retorne o mesmo formato JSON:\n\n${JSON.stringify(config)}` }]
           }],
           generationConfig: { responseMimeType: "application/json" }
         })

@@ -55,6 +55,7 @@ REGRAS DE OURO:
 4. Gere um Plano de Ação prático de 3 semanas.
 5. Use linguagem de agência premium, focada em conversão e crescimento.
 6. CONSIDERE ESTAS OBSERVAÇÕES DO USUÁRIO: ${notes || 'Nenhuma observação extra.'}
+7. SEJA CONCISO E DIRETO. Evite parágrafos longos. Foco em impacto imediato.
 
 O SEU RESULTADO DEVE SER UM JSON NO SEGUINTE FORMATO:
 {
