@@ -119,11 +119,11 @@ export default function DiagnosticEditorPage() {
           label: 'Semana 1', 
           titulo: 'Autoridade e Alcance', 
           cards: (data.cronograma?.semana1 || []).map((t: string) => ({
-            tipo: 'Autoridade', 
+            tipo: 'Sugestão de Vídeo', 
             titulo: t, 
             gancho: 'Extraído da Análise', 
-            estrutura: 'Conteúdo focado em confiança', 
-            cta: 'Siga para mais'
+            estrutura: 'Foco: Autoridade e Alcance (Reels/Shorts)', 
+            cta: 'Postar agora'
           })) 
         },
         { 

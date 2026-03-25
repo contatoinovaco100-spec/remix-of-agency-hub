@@ -77,7 +77,7 @@ O SEU RESULTADO DEVE SER UM JSON NO SEGUINTE FORMATO:
   },
   "planoAcao": ["recomendação 1", "recomendação 2", "recomendação 3"],
   "cronograma": {
-    "semana1": ["Autoridade e alcance: item 1", "item 2"],
+    "semana1": ["Sugestão de vídeo 1: [Título/Gancho]", "Sugestão de vídeo 2: [Título/Gancho]", "Sugestão de vídeo 3: [Título/Gancho]"],
     "semana2": ["Engajamento: item 1", "item 2"],
     "semana3": ["Conversão: item 1", "item 2"]
   }
