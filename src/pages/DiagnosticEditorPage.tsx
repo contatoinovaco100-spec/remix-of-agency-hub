@@ -130,22 +130,33 @@ export default function DiagnosticEditorPage() {
           label: 'Semana 2', 
           titulo: 'Engajamento', 
           cards: (data.cronograma?.semana2 || []).map((t: string) => ({
-            tipo: 'Engajamento', 
+            tipo: 'Sugestão de Vídeo', 
             titulo: t, 
             gancho: 'Sinergia de Marca', 
-            estrutura: 'Conteúdo de conexão', 
-            cta: 'Comente sua dúvida'
+            estrutura: 'Foco: Conexão e Comunidade (Reels/Stories)', 
+            cta: 'Engajar agora'
           })) 
         },
         { 
           label: 'Semana 3', 
           titulo: 'Conversão', 
           cards: (data.cronograma?.semana3 || []).map((t: string) => ({
-            tipo: 'Conversão', 
+            tipo: 'Sugestão de Vídeo', 
             titulo: t, 
             gancho: 'Chamada de Ação', 
-            estrutura: 'Oferta direta', 
-            cta: 'Link na Bio'
+            estrutura: 'Foco: Vendas e Desejo (Reels/Direto)', 
+            cta: 'Vender agora'
+          })) 
+        },
+        { 
+          label: 'Semana 4', 
+          titulo: 'Retenção e Escala', 
+          cards: (data.cronograma?.semana4 || []).map((t: string) => ({
+            tipo: 'Sugestão de Vídeo', 
+            titulo: t, 
+            gancho: 'Prova Social / Viral', 
+            estrutura: 'Foco: Escala e Resultados (Ads/Viral)', 
+            cta: 'Escalar agora'
           })) 
         }
       ]
