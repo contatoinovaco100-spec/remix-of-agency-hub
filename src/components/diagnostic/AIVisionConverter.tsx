@@ -15,6 +15,7 @@ export const AIVisionConverter: React.FC<AIVisionConverterProps> = ({ onDataExtr
   const [file, setFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [notes, setNotes] = useState("");
+  const [videoCount, setVideoCount] = useState(3);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -70,7 +71,7 @@ REGRAS DE OURO:
 1. Se houver nomes de contas (como @arroba), utilize-os.
 2. Identifique Pontos Positivos e Negativos de forma direta.
 3. Se houver uma Bio no print, analise-a especificamente.
-4. Gere um Plano de Ação prático de 4 semanas.
+4. Gere um Plano de Ação prático de 4 semanas, com EXATAMENTE ${videoCount} sugestões de vídeos (Reels/Shorts) por semana.
 5. Use linguagem de agência premium, focada em conversão e crescimento.
 6. CONSIDERE ESTAS OBSERVAÇÕES DO USUÁRIO: ${notes || 'Nenhuma observação extra.'}
 7. SEJA CONCISO E DIRETO. Evite parágrafos longos. Foco em impacto imediato.
@@ -95,10 +96,10 @@ O SEU RESULTADO DEVE SER UM JSON NO SEGUINTE FORMATO:
   },
   "planoAcao": ["recomendação 1", "recomendação 2", "recomendação 3"],
   "cronograma": {
-    "semana1": ["Sugestão de vídeo 1 (Autoridade): [Título]", "Sugestão de vídeo 2: [Título]", "Sugestão de vídeo 3: [Título]"],
-    "semana2": ["Sugestão de vídeo 1 (Engajamento): [Título]", "Sugestão de vídeo 2: [Título]", "Sugestão de vídeo 3: [Título]"],
-    "semana3": ["Sugestão de vídeo 1 (Conversão): [Título]", "Sugestão de vídeo 2: [Título]", "Sugestão de vídeo 3: [Título]"],
-    "semana4": ["Sugestão de vídeo 1 (Escala/Retenção): [Título]", "Sugestão de vídeo 2: [Título]", "Sugestão de vídeo 3: [Título]"]
+    "semana1": ["Sugestão de vídeo 1 (Autoridade): [Título]", "... (retorne ${videoCount} itens)"],
+    "semana2": ["Sugestão de vídeo 1 (Engajamento): [Título]", "... (retorne ${videoCount} itens)"],
+    "semana3": ["Sugestão de vídeo 1 (Conversão): [Título]", "... (retorne ${videoCount} itens)"],
+    "semana4": ["Sugestão de vídeo 1 (Escala/Retenção): [Título]", "... (retorne ${videoCount} itens)"]
   }
 }
 
@@ -186,14 +187,31 @@ IMPORTANTE: Retorne APENAS o JSON puro. Não explique nada fora do JSON.`;
           )}
         </div>
 
-        <div className="mt-6 text-left">
-           <label className="text-[10px] font-black uppercase text-primary tracking-widest mb-2 block ml-1">Observações Adicionais (Contexto)</label>
-           <textarea 
-             value={notes} 
-             onChange={e => setNotes(e.target.value)}
-             placeholder="Ex: Focar em branding, o cliente reclamou que não está vendendo no direct..."
-             className="w-full h-24 bg-white/5 border border-white/10 rounded-2xl p-4 text-sm text-white outline-none focus:border-primary/50 transition-all resize-none"
-           />
+        <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-6 text-left">
+           <div>
+              <label className="text-[10px] font-black uppercase text-primary tracking-widest mb-2 block ml-1">Observações Adicionais</label>
+              <textarea 
+                value={notes} 
+                onChange={e => setNotes(e.target.value)}
+                placeholder="Ex: Focar em branding..."
+                className="w-full h-24 bg-white/5 border border-white/10 rounded-2xl p-4 text-sm text-white outline-none focus:border-primary/50 transition-all resize-none"
+              />
+           </div>
+           <div>
+              <label className="text-[10px] font-black uppercase text-primary tracking-widest mb-2 block ml-1">Vídeos por Semana</label>
+              <div className="grid grid-cols-3 gap-2">
+                {[1, 2, 3, 4, 5, 6].map(num => (
+                  <button 
+                    key={num} 
+                    onClick={() => setVideoCount(num)}
+                    className={`h-11 rounded-xl font-black transition-all border ${videoCount === num ? 'bg-primary text-black border-primary' : 'bg-white/5 text-zinc-400 border-white/5 hover:bg-white/10'}`}
+                  >
+                    {num}
+                  </button>
+                ))}
+              </div>
+              <p className="mt-3 text-[10px] text-zinc-500 font-medium italic">* A IA gerará {videoCount} sugestões para cada uma das 4 semanas.</p>
+           </div>
         </div>
 
         <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
