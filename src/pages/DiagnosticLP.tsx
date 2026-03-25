@@ -227,8 +227,23 @@ export default function DiagnosticLP() {
       {config.aiAnalise && (
         <section className="min-h-[70vh] px-8 lg:px-24 py-24 bg-white border-y border-gray-100 overflow-hidden relative">
             <div className="max-w-6xl mx-auto space-y-16">
+                
+                {/* Print da Análise (Novo) */}
+                {config.aiAnalise.analysisImageUrl && (
+                  <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} className="space-y-8">
+                      <div className="text-center space-y-4">
+                          <span className="text-[10px] font-black uppercase tracking-[5px] text-[#0D6E5E]">Evidência Visual</span>
+                          <h2 className="text-3xl lg:text-5xl font-black text-black uppercase tracking-tighter">Print da Análise</h2>
+                      </div>
+                      <div className="relative max-w-4xl mx-auto rounded-[40px] overflow-hidden shadow-2xl border-8 border-gray-100 group">
+                          <img src={config.aiAnalise.analysisImageUrl} alt="Print da Análise" className="w-full h-auto grayscale-[0.2] group-hover:grayscale-0 transition-all duration-700" />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
+                      </div>
+                  </motion.div>
+                )}
+
                 <div className="text-center space-y-4">
-                    <span className="text-[10px] font-black uppercase tracking-[5px] text-[#0D6E5E]">Auditoria Visual IA</span>
+                    <span className="text-[10px] font-black uppercase tracking-[5px] text-[#0D6E5E]">Auditoria Detalhada</span>
                     <h2 className="text-4xl lg:text-6xl font-black text-black uppercase tracking-tighter">Análise de Perfil</h2>
                 </div>
 

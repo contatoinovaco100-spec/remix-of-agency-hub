@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, X, Sparkles, Image as ImageIcon, Loader2, AlertCircle, Wand2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
 interface AIVisionConverterProps {
   onDataExtracted: (data: any) => void;
@@ -40,19 +41,36 @@ export const AIVisionConverter: React.FC<AIVisionConverterProps> = ({ onDataExtr
     setIsProcessing(true);
     const toastId = toast.loading("IA analisando seu print...");
 
-    try {
-      // Get base64 without prefix
+    try {      // 1. Upload to Supabase Storage
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
+      const filePath = `diagnostics/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('task-attachments') // Using existing bucket for compatibility
+        .upload(filePath, file);
+
+      if (uploadError) {
+        console.error("Upload error:", uploadError);
+        // Fallback: Continue without image URL if bucket is missing
+      }
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('task-attachments')
+        .getPublicUrl(filePath);
+
+      // 2. Process with AI
       const base64Data = image.split(',')[1];
       
       const apiKey = "AIza" + "SyCYxYv8lwYqBl" + "E_czY6W9pBUnBx" + "ACfTC18";
       
       const systemPrompt = `Você é um Consultor de Marketing Estratégico Sênior. Sua tarefa é analisar um PRINT de tela (audit de rede social, bio ou análise manual) e transformar isso em um DIAGNÓSTICO ESTRATÉGICO PROFISSIONAL.
-
+      
 REGRAS DE OURO:
 1. Se houver nomes de contas (como @arroba), utilize-os.
 2. Identifique Pontos Positivos e Negativos de forma direta.
 3. Se houver uma Bio no print, analise-a especificamente.
-4. Gere um Plano de Ação prático de 3 semanas.
+4. Gere um Plano de Ação prático de 4 semanas.
 5. Use linguagem de agência premium, focada em conversão e crescimento.
 6. CONSIDERE ESTAS OBSERVAÇÕES DO USUÁRIO: ${notes || 'Nenhuma observação extra.'}
 7. SEJA CONCISO E DIRETO. Evite parágrafos longos. Foco em impacto imediato.
@@ -107,8 +125,12 @@ IMPORTANTE: Retorne APENAS o JSON puro. Não explique nada fora do JSON.`;
       if (!text) throw new Error("IA não retornou dados");
 
       const result = JSON.parse(text);
+      // Add the public URL to the result
+      result.imageUrl = publicUrl;
+      
       onDataExtracted(result);
       toast.success("Diagnóstico gerado com sucesso!", { id: toastId });
+  toast.success("Diagnóstico gerado com sucesso!", { id: toastId });
     } catch (error) {
       console.error("AI Vision Error:", error);
       toast.error("Erro ao processar imagem. Tente uma imagem mais nítida.", { id: toastId });

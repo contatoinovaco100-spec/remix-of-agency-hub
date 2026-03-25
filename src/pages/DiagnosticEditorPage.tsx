@@ -112,7 +112,8 @@ export default function DiagnosticEditorPage() {
         bioPositivos: data.analiseBio?.positivos || [],
         bioNegativos: data.analiseBio?.negativos || [],
         presencaPositivos: data.presencaDigital?.positivos || [],
-        presencaNegativos: data.presencaDigital?.negativos || []
+        presencaNegativos: data.presencaDigital?.negativos || [],
+        analysisImageUrl: data.imageUrl || null
       },
       semanas: [
         { 
