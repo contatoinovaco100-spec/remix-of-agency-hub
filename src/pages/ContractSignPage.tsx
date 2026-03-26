@@ -336,7 +336,12 @@ export default function ContractSignPage() {
                 Caso o CONTRATADO solicite o cancelamento antes do prazo mínimo de permanência, será aplicada multa rescisória correspondente a 30% do valor restante do contrato, a título de compensação pelos serviços contratados e planejamento realizado.
               </p>
 
-              <h3 className="font-bold text-gray-900">{deliverables.length > 0 ? 'CLÁUSULA 6ª' : 'CLÁUSULA 5ª'} - DO SIGILO</h3>
+              <h3 className="font-bold text-gray-900">{deliverables.length > 0 ? 'CLÁUSULA 6ª' : 'CLÁUSULA 5ª'} - RESPONSABILIDADE DO CLIENTE</h3>
+              <p>
+                Caso o CONTRATADO não disponibilize agenda para captação de conteúdo ou não envie materiais necessários para produção dentro do mês vigente, as entregas poderão ser reajustadas ou reagendadas conforme disponibilidade da equipe, sem obrigação de compensação de entregas acumuladas.
+              </p>
+
+              <h3 className="font-bold text-gray-900">{deliverables.length > 0 ? 'CLÁUSULA 7ª' : 'CLÁUSULA 6ª'} - DO SIGILO</h3>
               <p>
                 As partes se comprometem a manter sigilo sobre todas as informações confidenciais compartilhadas durante a
                 vigência deste contrato e por um período de 2 (dois) anos após seu término.
