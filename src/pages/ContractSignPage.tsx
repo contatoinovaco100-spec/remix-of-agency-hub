@@ -323,16 +323,17 @@ export default function ContractSignPage() {
                 (reais), com vencimento todo dia <strong>{contract.payment_due_day}</strong> de cada mês.
               </p>
 
-              <h3 className="font-bold text-gray-900">{deliverables.length > 0 ? 'CLÁUSULA 4ª' : 'CLÁUSULA 3ª'} - DO PRAZO</h3>
+              <h3 className="font-bold text-gray-900">{deliverables.length > 0 ? 'CLÁUSULA 4ª' : 'CLÁUSULA 3ª'} - DO PRAZO E CARÊNCIA</h3>
               <p>
-                O presente contrato terá duração de <strong>{contract.duration_months} meses</strong>,
-                contados a partir da data de assinatura, podendo ser renovado por acordo mútuo entre as partes.
+                O presente contrato terá prazo mínimo de permanência de <strong>{contract.duration_months} meses</strong>, contados a partir da data de assinatura.
+              </p>
+              <p>
+                Após este período, o contrato poderá ser rescindido por qualquer das partes mediante aviso prévio de 30 (trinta) dias.
               </p>
 
-              <h3 className="font-bold text-gray-900">{deliverables.length > 0 ? 'CLÁUSULA 5ª' : 'CLÁUSULA 4ª'} - DA RESCISÃO</h3>
+              <h3 className="font-bold text-gray-900">{deliverables.length > 0 ? 'CLÁUSULA 5ª' : 'CLÁUSULA 4ª'} - DA RESCISÃO ANTECIPADA</h3>
               <p>
-                O presente contrato poderá ser rescindido por qualquer das partes, mediante comunicação formal com antecedência
-                mínima de 30 (trinta) dias, sem qualquer ônus adicional, ressalvadas as obrigações já contraídas.
+                Caso o CONTRATADO solicite o cancelamento antes do prazo mínimo de permanência, será aplicada multa rescisória correspondente a 30% do valor restante do contrato, a título de compensação pelos serviços contratados e planejamento realizado.
               </p>
 
               <h3 className="font-bold text-gray-900">{deliverables.length > 0 ? 'CLÁUSULA 6ª' : 'CLÁUSULA 5ª'} - DO SIGILO</h3>
