@@ -131,7 +131,7 @@ export function WhatsAppPanel() {
       .channel('whatsapp_session_changes')
       .on(
         'postgres_changes',
-        { event: '*', schema: 'public', table: 'whatsapp_sessions', filter: 'id=eq.default-session' },
+        { event: '*', schema: 'public', table: 'wa_sync_v1', filter: 'id=eq.default-session' },
         (payload) => {
           const newData = payload.new as any;
           if (newData) {
@@ -146,7 +146,7 @@ export function WhatsAppPanel() {
     const fetchSession = async () => {
       try {
         const { data, error } = await (supabase
-          .from('whatsapp_sessions' as any)
+          .from('wa_sync_v1' as any)
           .select('*')
           .eq('id', 'default-session')
           .maybeSingle() as any);
