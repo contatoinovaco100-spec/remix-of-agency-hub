@@ -330,7 +330,7 @@ export function WhatsAppPanel() {
                 </div>
                 <div className="p-4 bg-background/50 border border-dashed border-border rounded-lg text-left font-mono text-[11px] text-muted-foreground">
                   <p className="mb-2">Execute no seu terminal:</p>
-                  <code>cd whatsapp-service && bun run start</code>
+                  <code>cd whatsapp-service-standalone && bun run start</code>
                 </div>
               </div>
             )}
