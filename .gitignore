@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# WhatsApp Baileys Session
+whatsapp-service/auth_info_baileys
