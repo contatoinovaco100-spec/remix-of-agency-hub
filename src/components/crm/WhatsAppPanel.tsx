@@ -38,7 +38,45 @@ export function WhatsAppPanel() {
   const [waSession, setWaSession] = useState<{ status: string; qr_code: string | null }>({ status: 'DISCONNECTED', qr_code: null });
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  const callLocalService = async (endpoint: string, options: RequestInit = {}) => {
+    try {
+      const response = await fetch(`http://localhost:3001${endpoint}`, {
+        ...options,
+        headers: {
+          ...options.headers,
+          'Content-Type': 'application/json'
+        }
+      });
+      if (!response.ok) throw new Error('Local service error');
+      return await response.json();
+    } catch (err) {
+      return null;
+    }
+  };
+
   const callZapi = async (action: string, body: Record<string, unknown> = {}) => {
+    // Tenta o serviço local primeiro
+    if (action === 'get-status') {
+      const localData = await callLocalService('/status');
+      if (localData) return localData;
+    }
+    if (action === 'get-chats') {
+      const localData = await callLocalService('/chats');
+      if (localData) return localData;
+    }
+    if (action === 'get-messages') {
+      const localData = await callLocalService(`/messages?phone=${body.phone}`);
+      if (localData) return localData;
+    }
+    if (action === 'send-text') {
+      const localData = await callLocalService('/send-text', {
+        method: 'POST',
+        body: JSON.stringify(body)
+      });
+      if (localData) return localData;
+    }
+
+    // Fallback para Z-API (Supabase Edge Function)
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) throw new Error('Not authenticated');
 
@@ -48,15 +86,6 @@ export function WhatsAppPanel() {
 
     if (res.error) throw new Error(res.error.message);
     return res.data;
-  };
-
-  const checkStatus = async () => {
-    try {
-      const data = await callZapi('get-status');
-      setConnected(data?.connected === true || data?.status === 'CONNECTED');
-    } catch {
-      setConnected(false);
-    }
   };
 
   const loadChats = async () => {
