@@ -149,7 +149,7 @@ export function WhatsAppPanel() {
           .from('whatsapp_sessions' as any)
           .select('*')
           .eq('id', 'default-session')
-          .single() as any);
+          .maybeSingle() as any);
         
         if (data) {
           setWaSession({ status: data.status, qr_code: data.qr_code });
