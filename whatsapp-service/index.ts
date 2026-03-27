@@ -2,15 +2,37 @@ import makeWASocket, {
     DisconnectReason, 
     useMultiFileAuthState, 
     fetchLatestBaileysVersion,
-    makeCacheableSignalKeyStore
+    makeCacheableSignalKeyStore,
+    ConnectionState
 } from '@whiskeysockets/baileys';
 import { Boom } from '@hapi/boom';
 import qrcode from 'qrcode-terminal';
 import pino from 'pino';
+import { createClient } from '@supabase/supabase-js';
+import * as dotenv from 'dotenv';
 import path from 'path';
-import fs from 'fs';
+
+dotenv.config();
 
 const logger = pino({ level: 'info' });
+const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_KEY!);
+
+async function syncToSupabase(status: string, qrCode?: string) {
+    try {
+        const { error } = await supabase
+            .from('whatsapp_sessions')
+            .upsert({ 
+                id: 'default-session', // Usando um ID fixo para a sessão padrão
+                status, 
+                qr_code: qrCode || null,
+                updated_at: new Date().toISOString()
+            });
+        
+        if (error) console.error('Erro ao sincronizar com Supabase:', error.message);
+    } catch (err) {
+        console.error('Erro de rede ao sincronizar com Supabase');
+    }
+}
 
 async function connectToWhatsApp() {
     const { state, saveCreds } = await useMultiFileAuthState('auth_info_baileys');
@@ -20,7 +42,7 @@ async function connectToWhatsApp() {
 
     const sock = makeWASocket({
         version,
-        printQRInTerminal: true, // Requisito: Exibir QR Code no console
+        printQRInTerminal: true,
         auth: {
             creds: state.creds,
             keys: makeCacheableSignalKeyStore(state.keys, logger),
@@ -28,36 +50,31 @@ async function connectToWhatsApp() {
         logger,
     });
 
-    // Salvar sessão para não precisar escanear sempre (Requisito)
     sock.ev.on('creds.update', saveCreds);
 
-    sock.ev.on('connection.update', (update) => {
+    sock.ev.on('connection.update', async (update: Partial<ConnectionState>) => {
         const { connection, lastDisconnect, qr } = update;
         
         if (qr) {
-            console.log('--- SCANNEIE O QR CODE ABAIXO ---');
+            console.log('--- SCANNEIE O QR CODE NO CONSOLE OU NA PLATAFORMA ---');
+            await syncToSupabase('CONNECTING', qr);
         }
 
         if (connection === 'close') {
             const shouldReconnect = (lastDisconnect?.error as Boom)?.output?.statusCode !== DisconnectReason.loggedOut;
-            console.log('Conexão fechada devido a:', lastDisconnect?.error, ', reconectando:', shouldReconnect);
+            console.log('Conexão fechada. Reconectando:', shouldReconnect);
+            await syncToSupabase('DISCONNECTED');
             if (shouldReconnect) {
                 connectToWhatsApp();
             }
         } else if (connection === 'open') {
-            // Requisito: Mostrar no log quando conectar com sucesso
             console.log('\n✅ WHATSAPP CONECTADO COM SUCESSO!\n');
+            await syncToSupabase('CONNECTED');
         }
-    });
-
-    // Ouvir mensagens (Opcional, mas útil para o CRM no futuro)
-    sock.ev.on('messages.upsert', async m => {
-        console.log('Nova mensagem recebida:', JSON.stringify(m, undefined, 2));
     });
 
     return sock;
 }
 
-// Iniciar o serviço
-console.log('Iniciando Serviço de WhatsApp Baileys...');
+console.log('Iniciando Serviço de WhatsApp Baileys com Sincronização Supabase...');
 connectToWhatsApp();

@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { toast } from '@/hooks/use-toast';
+import { QRCodeSVG } from 'qrcode.react';
 
 interface Chat {
   phone: string;
@@ -34,6 +35,7 @@ export function WhatsAppPanel() {
   const [sending, setSending] = useState(false);
   const [connected, setConnected] = useState<boolean | null>(null);
   const [search, setSearch] = useState('');
+  const [waSession, setWaSession] = useState<{ status: string; qr_code: string | null }>({ status: 'DISCONNECTED', qr_code: null });
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const callZapi = async (action: string, body: Record<string, unknown> = {}) => {
@@ -123,6 +125,45 @@ export function WhatsAppPanel() {
   useEffect(() => {
     checkStatus();
     loadChats();
+
+    // Listener Realtime para a sessão do WhatsApp
+    const channel = supabase
+      .channel('whatsapp_session_changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'whatsapp_sessions', filter: 'id=eq.default-session' },
+        (payload) => {
+          const newData = payload.new as any;
+          if (newData) {
+            setWaSession({ status: newData.status || 'DISCONNECTED', qr_code: newData.qr_code || null });
+            setConnected(newData.status === 'CONNECTED');
+          }
+        }
+      )
+      .subscribe();
+
+    // Carregar estado inicial
+    const fetchSession = async () => {
+      try {
+        const { data, error } = await (supabase
+          .from('whatsapp_sessions' as any)
+          .select('*')
+          .eq('id', 'default-session')
+          .single() as any);
+        
+        if (data) {
+          setWaSession({ status: data.status, qr_code: data.qr_code });
+          setConnected(data.status === 'CONNECTED');
+        }
+      } catch (err) {
+        console.error('Erro ao carregar sessão do WA');
+      }
+    };
+    fetchSession();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const filteredChats = chats.filter(c =>
@@ -207,58 +248,92 @@ export function WhatsAppPanel() {
 
       {/* Chat area */}
       <div className="flex flex-1 flex-col">
-        {selectedChat ? (
-          <>
-            {/* Chat header */}
-            <div className="flex items-center gap-3 border-b border-border px-4 py-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-success/20 text-sm font-medium text-success">
-                {selectedChat.name.charAt(0).toUpperCase()}
-              </div>
-              <div>
-                <p className="text-body font-medium text-foreground">{selectedChat.name}</p>
-                <p className="text-caption text-muted-foreground">+{selectedChat.phone}</p>
-              </div>
-            </div>
-
-            {/* Messages */}
-            <div className="flex-1 overflow-y-auto px-4 py-3 space-y-2">
-              {messages.map(msg => (
-                <div key={msg.messageId} className={cn('flex', msg.fromMe ? 'justify-end' : 'justify-start')}>
-                  <div className={cn(
-                    'max-w-[70%] rounded-lg px-3 py-2 text-body',
-                    msg.fromMe
-                      ? 'bg-success/20 text-foreground'
-                      : 'bg-secondary text-foreground'
-                  )}>
-                    <p className="whitespace-pre-wrap break-words">{msg.body || `[${msg.type}]`}</p>
-                    <span className="mt-1 block text-right text-[10px] text-muted-foreground">{formatTime(msg.timestamp)}</span>
-                  </div>
+        {connected ? (
+          selectedChat ? (
+            <>
+              {/* Chat header */}
+              <div className="flex items-center gap-3 border-b border-border px-4 py-3">
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-success/20 text-sm font-medium text-success">
+                  {selectedChat.name.charAt(0).toUpperCase()}
                 </div>
-              ))}
-              <div ref={messagesEndRef} />
-            </div>
+                <div>
+                  <p className="text-body font-medium text-foreground">{selectedChat.name}</p>
+                  <p className="text-caption text-muted-foreground">+{selectedChat.phone}</p>
+                </div>
+              </div>
 
-            {/* Input */}
-            <div className="flex items-end gap-2 border-t border-border px-4 py-3">
-              <Textarea
-                placeholder="Digite uma mensagem..."
-                value={newMessage}
-                onChange={e => setNewMessage(e.target.value)}
-                onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
-                className="min-h-[40px] max-h-[120px] resize-none"
-                rows={1}
-              />
-              <Button onClick={sendMessage} disabled={sending || !newMessage.trim()} size="icon" className="shrink-0">
-                <Send className="h-4 w-4" />
-              </Button>
+              {/* Messages */}
+              <div className="flex-1 overflow-y-auto px-4 py-3 space-y-2">
+                {messages.map(msg => (
+                  <div key={msg.messageId} className={cn('flex', msg.fromMe ? 'justify-end' : 'justify-start')}>
+                    <div className={cn(
+                      'max-w-[70%] rounded-lg px-3 py-2 text-body',
+                      msg.fromMe
+                        ? 'bg-success/20 text-foreground'
+                        : 'bg-secondary text-foreground'
+                    )}>
+                      <p className="whitespace-pre-wrap break-words">{msg.body || `[${msg.type}]`}</p>
+                      <span className="mt-1 block text-right text-[10px] text-muted-foreground">{formatTime(msg.timestamp)}</span>
+                    </div>
+                  </div>
+                ))}
+                <div ref={messagesEndRef} />
+              </div>
+
+              {/* Input */}
+              <div className="flex items-end gap-2 border-t border-border px-4 py-3">
+                <Textarea
+                  placeholder="Digite uma mensagem..."
+                  value={newMessage}
+                  onChange={e => setNewMessage(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
+                  className="min-h-[40px] max-h-[120px] resize-none"
+                  rows={1}
+                />
+                <Button onClick={sendMessage} disabled={sending || !newMessage.trim()} size="icon" className="shrink-0">
+                  <Send className="h-4 w-4" />
+                </Button>
+              </div>
+            </>
+          ) : (
+            <div className="flex flex-1 items-center justify-center text-muted-foreground">
+              <div className="text-center">
+                <MessageCircle className="mx-auto mb-3 h-12 w-12 opacity-30" />
+                <p className="text-body">Selecione uma conversa</p>
+              </div>
             </div>
-          </>
+          )
         ) : (
-          <div className="flex flex-1 items-center justify-center text-muted-foreground">
-            <div className="text-center">
-              <MessageCircle className="mx-auto mb-3 h-12 w-12 opacity-30" />
-              <p className="text-body">Selecione uma conversa</p>
-            </div>
+          <div className="flex flex-1 flex-col items-center justify-center p-8 text-center bg-secondary/10">
+            {waSession.qr_code ? (
+              <div className="space-y-6">
+                <div className="bg-white p-4 rounded-xl shadow-xl inline-block">
+                  <QRCodeSVG value={waSession.qr_code} size={256} />
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-lg font-semibold text-foreground">Escaneie o QR Code</h3>
+                  <p className="text-muted-foreground max-w-sm mx-auto">
+                    Abra o WhatsApp no seu celular, vá em Aparelhos Conectados e scaneie o código acima para integrar com o CRM.
+                  </p>
+                </div>
+                <div className="flex items-center justify-center gap-2 text-success animate-pulse">
+                  <RefreshCw className="h-4 w-4 animate-spin" />
+                  <span className="text-caption font-medium uppercase tracking-wider">Aguardando Conexão...</span>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <WifiOff className="mx-auto h-12 w-12 text-muted-foreground opacity-30" />
+                <div className="space-y-1">
+                  <p className="text-lg font-medium">WhatsApp Desconectado</p>
+                  <p className="text-muted-foreground">Inicie o serviço localmente para gerar o QR Code.</p>
+                </div>
+                <div className="p-4 bg-background/50 border border-dashed border-border rounded-lg text-left font-mono text-[11px] text-muted-foreground">
+                  <p className="mb-2">Execute no seu terminal:</p>
+                  <code>cd whatsapp-service && bun run start</code>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
