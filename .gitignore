@@ -25,3 +25,4 @@ dist-ssr
 
 # WhatsApp Baileys Session
 whatsapp-service/auth_info_baileys
+whatsapp-service-standalone/auth_info_baileys
