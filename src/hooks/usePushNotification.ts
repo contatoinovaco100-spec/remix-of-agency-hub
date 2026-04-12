@@ -7,30 +7,32 @@ export type NotificationSoundType = 'default' | 'sale' | 'agenda' | 'overdue' | 
 // URLs dos sons. Você pode trocar por arquivos locais depois (ex: '/sounds/dinheiro.mp3')
 const SOUND_URLS: Record<NotificationSoundType, string> = {
   default: "https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3",
-  // Efeito Zoeira selecionado pelo lab
-  sale: "https://www.myinstants.com/media/sounds/zoeira-efeito-caixa-registradora.mp3", 
-  // Som agradável de plim para agenda
+  // Som de caixa registradora estável (Mixkit)
+  sale: "https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3", 
   agenda: "https://assets.mixkit.co/active_storage/sfx/2868/2868-preview.mp3", 
-  // Som negativo/alerta para tarefa atrasada
   overdue: "https://assets.mixkit.co/active_storage/sfx/2866/2866-preview.mp3", 
-  // Som solicitado: Pense no Lula
+  // Mantendo os memes com fallback
   lula: "https://www.myinstants.com/media/sounds/pense-no-lula.mp3",
-  // Rodrigo Faro: Tome!
   tome: "https://www.myinstants.com/media/sounds/toma-rodrigo-faro.mp3",
-  // Rodrigo Faro: Cavalo!
   rodrigo_faro: "https://www.myinstants.com/media/sounds/cavalo_2.mp3",
-  // Som solicitado: Bom dia Magnata
   magnata: "https://www.myinstants.com/media/sounds/bom-dia-magnata.mp3",
 };
 
 export function usePushNotification() {
   const playSound = useCallback((type: NotificationSoundType = 'default') => {
+    console.log(`🎵 Attempting to play sound: ${type}`);
     try {
       const audioUrl = SOUND_URLS[type] || SOUND_URLS.default;
       const audio = new Audio(audioUrl);
-      audio.volume = type === 'sale' ? 0.7 : 0.5; // Dinheiro um pouquinho mais alto!
-      audio.play().catch(error => {
-        console.warn("Audio play failed, likely due to browser autoplay policy:", error);
+      audio.volume = type === 'sale' ? 0.8 : 0.6;
+      audio.play().then(() => {
+        console.log(`✅ Sound ${type} played successfully`);
+      }).catch(error => {
+        console.warn("❌ Audio play failed. Interaction might be required:", error);
+        toast.info("Clique na página para ativar os alertas sonoros! 🔊", {
+          position: "bottom-right",
+          duration: 3000
+        });
       });
     } catch (e) {
       console.error("Failed to play notification sound.", e);

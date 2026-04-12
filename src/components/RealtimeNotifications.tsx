@@ -21,21 +21,45 @@ export function RealtimeNotifications() {
           event: 'UPDATE',
           schema: 'public',
           table: 'contracts',
-          filter: 'status=eq.assinado'
         },
         (payload) => {
-          console.log('Change received!', payload);
+          console.log('🔔 Contract update received:', payload);
           const contract = payload.new;
           
+          // Trigger ONLY if status just changed to 'assinado'
+          if (contract.status === 'assinado' && payload.old?.status !== 'assinado') {
+            console.log('✅ Contract signed! Triggering sound...');
+            triggerNotification(
+              "Venda Confirmada! 💰", 
+              `O contrato "${contract.title}" foi assinado por ${contract.client_name}.`, 
+              "success", 
+              "sale"
+            );
+          }
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'contract_signatures',
+        },
+        (payload) => {
+          console.log('🔔 New signature record received:', payload);
+          const sig = payload.new;
+          
           triggerNotification(
-            "Venda Confirmada! 💰", 
-            `O contrato "${contract.title}" foi assinado por ${contract.client_name}.`, 
+            "Nova Assinatura! ✍️", 
+            `${sig.signer_name} acabou de assinar um contrato.`, 
             "success", 
             "sale"
           );
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log("📡 Realtime subscription status:", status);
+      });
 
     return () => {
       supabase.removeChannel(channel);

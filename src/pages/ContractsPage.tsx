@@ -8,8 +8,19 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
   FileText, Plus, Send, CheckCircle2, Edit2, Copy, Loader2, ExternalLink,
-  Trash2, Hash, MessageCircle,
+  Trash2, Hash, MessageCircle, RotateCcw,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -58,6 +69,7 @@ const statusConfig: Record<string, { label: string; color: string; icon: any }> 
   rascunho: { label: 'Rascunho', color: 'bg-muted text-muted-foreground', icon: Edit2 },
   enviado: { label: 'Enviado', color: 'bg-[hsl(var(--info))]/10 text-[hsl(var(--info))]', icon: Send },
   assinado: { label: 'Assinado', color: 'bg-[hsl(var(--success))]/10 text-[hsl(var(--success))]', icon: CheckCircle2 },
+  excluido: { label: 'Lixeira', color: 'bg-destructive/10 text-destructive', icon: Trash2 },
 };
 
 const DEFAULT_DELIVERABLES: Deliverable[] = [
@@ -98,6 +110,11 @@ export default function ContractsPage() {
   const [form, setForm] = useState(emptyContract);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  
+  // AlertDialog state
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [idToDelete, setIdToDelete] = useState<string | null>(null);
+  const [isPermanentDelete, setIsPermanentDelete] = useState(false);
 
   useEffect(() => { loadData(); }, []);
 
@@ -155,11 +172,32 @@ export default function ContractsPage() {
     await loadData();
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Tem certeza que deseja excluir este contrato?')) return;
-    await supabase.from('contract_signatures').delete().eq('contract_id', id);
-    await supabase.from('contracts').delete().eq('id', id);
-    toast.success('Contrato excluído');
+  const openDeleteDialog = (id: string, permanent: boolean = false) => {
+    setIdToDelete(id);
+    setIsPermanentDelete(permanent);
+    setDeleteConfirmOpen(true);
+  };
+
+  const executeDelete = async () => {
+    if (!idToDelete) return;
+
+    if (isPermanentDelete) {
+      await supabase.from('contract_signatures').delete().eq('contract_id', idToDelete);
+      await supabase.from('contracts').delete().eq('id', idToDelete);
+      toast.success('Contrato excluído permanentemente');
+    } else {
+      await supabase.from('contracts').update({ status: 'excluido' }).eq('id', idToDelete);
+      toast.success('Contrato movido para a lixeira');
+    }
+    
+    setDeleteConfirmOpen(false);
+    setIdToDelete(null);
+    await loadData();
+  };
+
+  const handleRestore = async (id: string) => {
+    await supabase.from('contracts').update({ status: 'rascunho' }).eq('id', id);
+    toast.success('Contrato restaurado para rascunho');
     await loadData();
   };
 
@@ -210,6 +248,94 @@ export default function ContractsPage() {
   if (loading) {
     return <div className="flex items-center justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
   }
+
+  const activeContracts = contracts.filter(c => c.status !== 'excluido');
+  const deletedContracts = contracts.filter(c => c.status === 'excluido');
+
+  const ContractItem = ({ c }: { c: Contract }) => {
+    const sig = getSignature(c.id);
+    const cfg = statusConfig[c.status] || statusConfig.rascunho;
+    const Icon = cfg.icon;
+    const isDeleted = c.status === 'excluido';
+
+    return (
+      <Card key={c.id} className="border-border/50 hover:border-border transition-colors">
+        <CardContent className="p-5">
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-1">
+                <h3 className="font-semibold text-foreground truncate">{c.title}</h3>
+                <span className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-medium ${cfg.color}`}>
+                  <Icon className="h-3 w-3" /> {cfg.label}
+                </span>
+              </div>
+              <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                <span>Cliente: <strong className="text-foreground">{c.client_name || '—'}</strong></span>
+                <span>Valor: <strong className="text-foreground">R$ {Number(c.monthly_value).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}/mês</strong></span>
+                {c.plan_name && <span>Plano: <strong className="text-foreground">{c.plan_name}</strong></span>}
+                <span>Duração: {c.duration_months} meses</span>
+                <span>Criado: {new Date(c.created_at).toLocaleDateString('pt-BR')}</span>
+              </div>
+              {sig && !isDeleted && (
+                <div className="mt-2 space-y-1">
+                  <div className="flex items-center gap-2 text-xs text-[hsl(var(--success))]">
+                    <CheckCircle2 className="h-3.5 w-3.5" />
+                    Assinado por {sig.signer_name} ({sig.signer_cpf}) em {new Date(sig.signed_at).toLocaleString('pt-BR')}
+                  </div>
+                  {sig.signature_hash && (
+                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-mono">
+                      <Hash className="h-3 w-3" />
+                      {sig.signature_hash.slice(0, 16)}...{sig.signature_hash.slice(-8)}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+            <div className="flex flex-col gap-2 shrink-0 sm:flex-row sm:items-center">
+              <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center">
+                {!isDeleted ? (
+                  <>
+                    <Button size="sm" variant="outline" className="h-8 w-full sm:w-auto" onClick={() => openEdit(c)} title="Editar"><Edit2 className="h-3.5 w-3.5" /></Button>
+                    <Button size="sm" variant="outline" className="h-8 w-full sm:w-auto text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => openDeleteDialog(c.id)} title="Excluir">
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button size="sm" variant="outline" className="h-8 w-full sm:w-auto text-primary hover:text-primary hover:bg-primary/10" onClick={() => handleRestore(c.id)} title="Restaurar">
+                      <RotateCcw className="h-3.5 w-3.5" />
+                    </Button>
+                    <Button size="sm" variant="outline" className="h-8 w-full sm:w-auto text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => openDeleteDialog(c.id, true)} title="Excluir Permanentemente">
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </>
+                )}
+              </div>
+              
+              {!isDeleted && (
+                <div className="grid grid-cols-1 gap-2 sm:flex sm:items-center">
+                  {c.status === 'rascunho' && (
+                    <Button size="sm" className="h-8 w-full sm:w-auto" onClick={() => handleSend(c)}><Send className="h-3.5 w-3.5 mr-1" /> Enviar</Button>
+                  )}
+                  {(c.status === 'enviado' || c.status === 'assinado') && (
+                    <div className="grid grid-cols-2 gap-2 w-full sm:flex sm:items-center sm:gap-2">
+                      <Button size="sm" variant="outline" className="h-8 px-2" onClick={() => copyLink(c.id)} title="Copiar Link"><Copy className="h-3.5 w-3.5" /></Button>
+                      <Button size="sm" variant="outline" className="h-8 px-2 text-green-600 hover:text-green-700 hover:bg-green-50" onClick={() => shareWhatsApp(c)} title="WhatsApp">
+                        <MessageCircle className="h-3.5 w-3.5" />
+                      </Button>
+                      <Button size="sm" variant="default" className="h-8 col-span-2 sm:col-auto" asChild>
+                        <a href={`/contrato/${c.id}`} target="_blank" rel="noopener noreferrer"><ExternalLink className="h-3.5 w-3.5 mr-1" /> Ver</a>
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  };
 
   return (
     <div className="space-y-6">
@@ -310,85 +436,64 @@ export default function ContractsPage() {
         </Dialog>
       </div>
 
-      {/* Contract List */}
-      {contracts.length === 0 ? (
-        <Card>
-          <CardContent className="flex flex-col items-center gap-3 py-16 text-center">
-            <FileText className="h-12 w-12 text-muted-foreground" />
-            <p className="text-muted-foreground">Nenhum contrato criado ainda.</p>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="grid gap-4">
-          {contracts.map(c => {
-            const sig = getSignature(c.id);
-            const cfg = statusConfig[c.status] || statusConfig.rascunho;
-            const Icon = cfg.icon;
-            return (
-              <Card key={c.id} className="border-border/50 hover:border-border transition-colors">
-                <CardContent className="p-5">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h3 className="font-semibold text-foreground truncate">{c.title}</h3>
-                        <span className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-medium ${cfg.color}`}>
-                          <Icon className="h-3 w-3" /> {cfg.label}
-                        </span>
-                      </div>
-                      <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
-                        <span>Cliente: <strong className="text-foreground">{c.client_name || '—'}</strong></span>
-                        <span>Valor: <strong className="text-foreground">R$ {Number(c.monthly_value).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}/mês</strong></span>
-                        {c.plan_name && <span>Plano: <strong className="text-foreground">{c.plan_name}</strong></span>}
-                        <span>Duração: {c.duration_months} meses</span>
-                        <span>Criado: {new Date(c.created_at).toLocaleDateString('pt-BR')}</span>
-                      </div>
-                      {sig && (
-                        <div className="mt-2 space-y-1">
-                          <div className="flex items-center gap-2 text-xs text-[hsl(var(--success))]">
-                            <CheckCircle2 className="h-3.5 w-3.5" />
-                            Assinado por {sig.signer_name} ({sig.signer_cpf}) em {new Date(sig.signed_at).toLocaleString('pt-BR')}
-                          </div>
-                          {sig.signature_hash && (
-                            <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-mono">
-                              <Hash className="h-3 w-3" />
-                              {sig.signature_hash.slice(0, 16)}...{sig.signature_hash.slice(-8)}
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex flex-col gap-2 shrink-0 sm:flex-row sm:items-center">
-                      <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center">
-                        <Button size="sm" variant="outline" className="h-8 w-full sm:w-auto" onClick={() => openEdit(c)} title="Editar"><Edit2 className="h-3.5 w-3.5" /></Button>
-                        <Button size="sm" variant="outline" className="h-8 w-full sm:w-auto text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => handleDelete(c.id)} title="Excluir">
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </Button>
-                      </div>
-                      
-                      <div className="grid grid-cols-1 gap-2 sm:flex sm:items-center">
-                        {c.status === 'rascunho' && (
-                          <Button size="sm" className="h-8 w-full sm:w-auto" onClick={() => handleSend(c)}><Send className="h-3.5 w-3.5 mr-1" /> Enviar</Button>
-                        )}
-                        {(c.status === 'enviado' || c.status === 'assinado') && (
-                          <div className="grid grid-cols-2 gap-2 w-full sm:flex sm:items-center sm:gap-2">
-                            <Button size="sm" variant="outline" className="h-8 px-2" onClick={() => copyLink(c.id)} title="Copiar Link"><Copy className="h-3.5 w-3.5" /></Button>
-                            <Button size="sm" variant="outline" className="h-8 px-2 text-green-600 hover:text-green-700 hover:bg-green-50" onClick={() => shareWhatsApp(c)} title="WhatsApp">
-                              <MessageCircle className="h-3.5 w-3.5" />
-                            </Button>
-                            <Button size="sm" variant="default" className="h-8 col-span-2 sm:col-auto" asChild>
-                              <a href={`/contrato/${c.id}`} target="_blank" rel="noopener noreferrer"><ExternalLink className="h-3.5 w-3.5 mr-1" /> Ver</a>
-                            </Button>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-      )}
+      <Tabs defaultValue="all" className="w-full">
+        <TabsList className="grid w-full grid-cols-2 max-w-[400px]">
+          <TabsTrigger value="all">Ativos ({activeContracts.length})</TabsTrigger>
+          <TabsTrigger value="deleted">Lixeira ({deletedContracts.length})</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="all" className="mt-6">
+          {activeContracts.length === 0 ? (
+            <Card>
+              <CardContent className="flex flex-col items-center gap-3 py-16 text-center">
+                <FileText className="h-12 w-12 text-muted-foreground" />
+                <p className="text-muted-foreground">Nenhum contrato ativo.</p>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid gap-4">
+              {activeContracts.map(c => <ContractItem key={c.id} c={c} />)}
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="deleted" className="mt-6">
+          {deletedContracts.length === 0 ? (
+            <Card>
+              <CardContent className="flex flex-col items-center gap-3 py-16 text-center">
+                <Trash2 className="h-12 w-12 text-muted-foreground" />
+                <p className="text-muted-foreground">Sua lixeira está vazia.</p>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid gap-4">
+              {deletedContracts.map(c => <ContractItem key={c.id} c={c} />)}
+            </div>
+          )}
+        </TabsContent>
+      </Tabs>
+
+      {/* Reusable Alert Dialog for Confirmations */}
+      <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {isPermanentDelete ? "Excluir permanentemente?" : "Mover para a lixeira?"}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {isPermanentDelete 
+                ? "Esta ação é irreversível. O contrato e todos os dados de assinatura serão removidos para sempre." 
+                : "O contrato será movido para a aba Lixeira e poderá ser restaurado futuramente."}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={executeDelete} className={isPermanentDelete ? "bg-destructive text-destructive-foreground hover:bg-destructive/90" : ""}>
+              {isPermanentDelete ? "Excluir para sempre" : "Mover para Lixeira"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
