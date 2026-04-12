@@ -16,7 +16,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { ClientDiagnosisTab } from '@/components/clients/ClientDiagnosisTab';
-import { Shield, Lock, Mail, Key, Loader2, Link as LinkIcon, Target, Sparkles } from 'lucide-react';
+import { Shield, Lock, Mail, Key, Loader2, Link as LinkIcon, Target, Sparkles, Eye, EyeOff } from 'lucide-react';
 
 const serviceOptions: ServiceType[] = ['Tráfego Pago', 'Social Media', 'Design', 'Copy', 'SEO', 'Landing Page', 'Branding', 'Email Marketing'];
 const statusOptions: ClientStatus[] = ['Ativo', 'Pausado', 'Cancelado'];
@@ -289,6 +289,7 @@ function ClientPortalTab({ client }: { client: Client }) {
   const [email, setEmail] = useState(client.email || '');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   async function handleGenerateAccess() {
     if (!email || !password) {
@@ -350,12 +351,19 @@ function ClientPortalTab({ client }: { client: Client }) {
           <div className="relative">
             <Key className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground opacity-50" />
             <Input 
-              type="password" 
+              type={showPassword ? "text" : "password"}
               placeholder="••••••••" 
               value={password} 
               onChange={e => setPassword(e.target.value)}
-              className="pl-9 h-11 bg-secondary/20 border-border/40 focus:border-primary/50 transition-all rounded-xl shadow-sm"
+              className="pl-9 pr-10 h-11 bg-secondary/20 border-border/40 focus:border-primary/50 transition-all rounded-xl shadow-sm"
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
           </div>
         </div>
       </div>

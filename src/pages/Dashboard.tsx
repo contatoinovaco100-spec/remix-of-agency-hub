@@ -7,8 +7,10 @@ import { useState, useEffect } from 'react';
 import {
   Users, DollarSign, Target, CheckSquare, FolderOpen,
   TrendingUp, PieChart, BarChart3, ArrowUpRight, ArrowDownRight,
-  Clock, AlertTriangle, CheckCircle2, Briefcase, FileText,
+  Clock, AlertTriangle, CheckCircle2, Briefcase, FileText, BellRing
 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { usePushNotification } from '@/hooks/usePushNotification';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
@@ -43,6 +45,7 @@ function formatCurrency(v: number) {
 export default function Dashboard() {
   const { clients, tasks, leads } = useAgency();
   const { isAdmin } = useModuleAccess();
+  const { triggerNotification, requestPermission } = usePushNotification();
 
   const activeClients = clients.filter(c => c.status === 'Ativo');
   const pausedClients = clients.filter(c => c.status === 'Pausado');
@@ -116,11 +119,45 @@ export default function Dashboard() {
       <SmartAlerts />
 
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">Painel Administrativo</h1>
-        <p className="text-sm text-muted-foreground">
-          Visão completa do financeiro e entregas da agência
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">Painel Administrativo</h1>
+          <p className="text-sm text-muted-foreground">
+            Visão completa do financeiro e entregas da agência
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => requestPermission()}
+            className="hidden sm:flex gap-2"
+          >
+            Habilitar Push
+          </Button>
+          <Button 
+            size="sm"
+            onClick={() => triggerNotification("Nova Venda Realizada! 🎉", "O cliente fechou o contrato de R$ 5.000,00.", "success", "sale")}
+            className="gap-2 bg-[hsl(var(--success))] hover:bg-[hsl(var(--success))]/90 text-white"
+          >
+            <BellRing className="h-4 w-4" /> Venda
+          </Button>
+          <Button 
+            size="sm"
+            onClick={() => triggerNotification("Reunião em 10 minutos 📅", "Alinhamento com Cliente X.", "info", "agenda")}
+            className="gap-2"
+          >
+            <BellRing className="h-4 w-4" /> Agenda
+          </Button>
+          <Button 
+            size="sm"
+            variant="destructive"
+            onClick={() => triggerNotification("Tarefa Atrasada 🚨", "A entrega da Landing Page está atrasada.", "error", "overdue")}
+            className="gap-2"
+          >
+            <AlertTriangle className="h-4 w-4" /> Atraso
+          </Button>
+        </div>
       </div>
 
       {/* Tabs */}
@@ -526,12 +563,41 @@ function SimpleDashboard({ clients, tasks, leads, mrr, activeClients, pendingTas
     { label: 'Atrasadas', value: overdueTasks.length.toString(), icon: AlertTriangle, accent: overdueTasks.length > 0 ? 'text-destructive' : 'text-muted-foreground', bg: overdueTasks.length > 0 ? 'bg-destructive/10' : 'bg-muted/50' },
   ];
 
+  const { triggerNotification, requestPermission } = usePushNotification();
+
   return (
     <div className="space-y-6">
       <SmartAlerts />
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
-        <p className="text-sm text-muted-foreground">Visão geral das suas tarefas e entregas</p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
+          <p className="text-sm text-muted-foreground">Visão geral das suas tarefas e entregas</p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => requestPermission()}
+            className="hidden sm:flex gap-2"
+          >
+            Habilitar Push
+          </Button>
+          <Button 
+            size="sm"
+            onClick={() => triggerNotification("Lembrete da Agenda 📅", "Sua próxima gravação é em breve.", "info", "agenda")}
+            className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground"
+          >
+            <BellRing className="h-4 w-4" /> Testar Agenda
+          </Button>
+          <Button 
+            size="sm"
+            variant="destructive"
+            onClick={() => triggerNotification("Tarefa Atrasada 🚨", "O roteiro do cliente atrasou.", "error", "overdue")}
+            className="gap-2"
+          >
+            <AlertTriangle className="h-4 w-4" /> Testar Atraso
+          </Button>
+        </div>
       </div>
 
       {/* KPIs */}
