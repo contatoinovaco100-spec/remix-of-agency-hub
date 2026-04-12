@@ -7,8 +7,8 @@ export type NotificationSoundType = 'default' | 'sale' | 'agenda' | 'overdue';
 // URLs dos sons. Você pode trocar por arquivos locais depois (ex: '/sounds/dinheiro.mp3')
 const SOUND_URLS: Record<NotificationSoundType, string> = {
   default: "https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3",
-  // Som clássico de venda (Estilo Hotmart Ka-Ching)
-  sale: "https://www.myinstants.com/media/sounds/kaching.mp3", 
+  // Efeito Zoeira selecionado pelo lab
+  sale: "https://www.myinstants.com/media/sounds/zoeira-efeito-caixa-registradora.mp3", 
   // Som agradável de plim para agenda
   agenda: "https://assets.mixkit.co/active_storage/sfx/2868/2868-preview.mp3", 
   // Som negativo/alerta para tarefa atrasada
