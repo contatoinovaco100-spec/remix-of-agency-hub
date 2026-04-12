@@ -98,6 +98,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         {/* Logo (Desktop) */}
         <div className="hidden h-14 items-center gap-2 border-b border-border px-4 lg:flex flex-shrink-0">
           <img src={logoInova} alt="INOVA Co." className={cn('transition-all duration-300', collapsed ? 'h-8 w-8 object-contain' : 'h-8')} />
+          {!collapsed && <span className="text-[10px] font-bold text-primary bg-primary/10 px-1.5 py-0.5 rounded border border-primary/20">v1.1</span>}
         </div>
 
         {/* Nav */}
