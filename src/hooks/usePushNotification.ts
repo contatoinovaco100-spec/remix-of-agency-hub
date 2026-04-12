@@ -1,5 +1,5 @@
 import { toast } from "sonner";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 
 // Típos de sons disponíveis
 export type NotificationSoundType = 'default' | 'sale' | 'agenda' | 'overdue' | 'lula' | 'rodrigo_faro' | 'tome' | 'magnata';
@@ -88,9 +88,24 @@ export function usePushNotification() {
     return false;
   }, [playSound]);
 
+  const [isPrimed, setIsPrimed] = useState(() => {
+    // Check if audio was already primed in this session
+    return sessionStorage.getItem('audio_primed') === 'true';
+  });
+
+  const primeAudio = useCallback(() => {
+    console.log("🔔 Priming audio context...");
+    playSound('default');
+    setIsPrimed(true);
+    sessionStorage.setItem('audio_primed', 'true');
+    toast.success("Alertas sonoros ativados para esta sessão! 🔊");
+  }, [playSound]);
+
   return {
     triggerNotification,
     requestPermission,
-    playSound
+    playSound,
+    primeAudio,
+    isPrimed
   };
 }

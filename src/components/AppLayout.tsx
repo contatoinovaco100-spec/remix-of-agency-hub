@@ -19,11 +19,13 @@ import {
   Sparkles,
   Settings,
   Bell,
+  BellRing,
 } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
 import { useModuleAccess, ROUTE_MODULE_MAP, type AppModule } from '@/hooks/useUserRole';
+import { usePushNotification } from '@/hooks/usePushNotification';
 import logoInova from '@/assets/logo-inova.png';
 
 type NavItem = { title: string; url: string; icon: any; module?: AppModule };
@@ -144,12 +146,15 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               <LogOut className="h-4 w-4 shrink-0" />
               {(!collapsed || mobileMenuOpen) && <span>Sair</span>}
             </button>
-            <button
-              onClick={() => setCollapsed(!collapsed)}
-              className="hidden lg:flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-all duration-200 hover:bg-secondary hover:text-foreground"
-            >
-              <ChevronLeft className={cn('h-4 w-4 transition-all duration-300', collapsed && 'rotate-180')} />
-            </button>
+            <div className="flex items-center gap-1">
+              <AudioActivator collapsed={collapsed && !mobileMenuOpen} />
+              <button
+                onClick={() => setCollapsed(!collapsed)}
+                className="hidden lg:flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-all duration-200 hover:bg-secondary hover:text-foreground"
+              >
+                <ChevronLeft className={cn('h-4 w-4 transition-all duration-300', collapsed && 'rotate-180')} />
+              </button>
+            </div>
           </div>
         </div>
       </aside>
@@ -161,5 +166,24 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         </div>
       </main>
     </div>
+  );
+}
+
+function AudioActivator({ collapsed }: { collapsed: boolean }) {
+  const { primeAudio, isPrimed } = usePushNotification();
+
+  return (
+    <button
+      onClick={primeAudio}
+      className={cn(
+        "flex h-8 w-8 items-center justify-center rounded-md transition-all duration-300",
+        isPrimed 
+          ? "text-primary bg-primary/10" 
+          : "text-amber-500 bg-amber-500/10 animate-pulse hover:bg-amber-500/20"
+      )}
+      title={isPrimed ? "Alertas Ativos" : "Clique para Ativar Alertas"}
+    >
+      {isPrimed ? <Bell className="h-4 w-4" /> : <BellRing className="h-4 w-4" />}
+    </button>
   );
 }
