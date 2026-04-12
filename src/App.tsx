@@ -34,6 +34,7 @@ import ClientPortalPage from "./pages/ClientPortalPage";
 import NotFound from "./pages/NotFound";
 import BriefingFormPage from "./pages/BriefingFormPage";
 import BriefingsPage from "./pages/BriefingsPage";
+import NotificationsPage from "./pages/NotificationsPage";
 
 const queryClient = new QueryClient();
 
@@ -88,6 +89,7 @@ function AppRoutes() {
                 <Route path="/prospeccao" element={<ProspectionPage />} />
                 <Route path="/proposta/editar" element={<SalesEditorPage />} />
                 <Route path="/diagnostico/editar" element={<DiagnosticEditorPage />} />
+                <Route path="/notificacoes" element={<NotificationsPage />} />
                 
                 <Route path="*" element={<NotFound />} />
               </Routes>

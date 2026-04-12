@@ -2,7 +2,7 @@ import { toast } from "sonner";
 import { useCallback } from "react";
 
 // Típos de sons disponíveis
-export type NotificationSoundType = 'default' | 'sale' | 'agenda' | 'overdue';
+export type NotificationSoundType = 'default' | 'sale' | 'agenda' | 'overdue' | 'lula' | 'rodrigo_faro' | 'tome' | 'magnata';
 
 // URLs dos sons. Você pode trocar por arquivos locais depois (ex: '/sounds/dinheiro.mp3')
 const SOUND_URLS: Record<NotificationSoundType, string> = {
@@ -13,6 +13,14 @@ const SOUND_URLS: Record<NotificationSoundType, string> = {
   agenda: "https://assets.mixkit.co/active_storage/sfx/2868/2868-preview.mp3", 
   // Som negativo/alerta para tarefa atrasada
   overdue: "https://assets.mixkit.co/active_storage/sfx/2866/2866-preview.mp3", 
+  // Som solicitado: Pense no Lula
+  lula: "https://www.myinstants.com/media/sounds/pense-no-lula.mp3",
+  // Rodrigo Faro: Tome!
+  tome: "https://www.myinstants.com/media/sounds/toma-rodrigo-faro.mp3",
+  // Rodrigo Faro: Cavalo!
+  rodrigo_faro: "https://www.myinstants.com/media/sounds/cavalo_2.mp3",
+  // Som solicitado: Bom dia Magnata
+  magnata: "https://www.myinstants.com/media/sounds/bom-dia-magnata.mp3",
 };
 
 export function usePushNotification() {
