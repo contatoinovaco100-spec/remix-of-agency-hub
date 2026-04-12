@@ -8,7 +8,7 @@ export type NotificationSoundType = 'default' | 'sale' | 'agenda' | 'overdue';
 const SOUND_URLS: Record<NotificationSoundType, string> = {
   default: "https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3",
   // Som de caixa registradora (Ka-ching!)
-  sale: "https://cdn.pixabay.com/audio/2022/03/10/audio_51a3a30af9.mp3", 
+  sale: "https://www.myinstants.com/media/sounds/kaching.mp3", 
   // Som agradável de plim para agenda
   agenda: "https://assets.mixkit.co/active_storage/sfx/2868/2868-preview.mp3", 
   // Som negativo/alerta para tarefa atrasada
