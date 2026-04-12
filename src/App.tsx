@@ -35,6 +35,7 @@ import NotFound from "./pages/NotFound";
 import BriefingFormPage from "./pages/BriefingFormPage";
 import BriefingsPage from "./pages/BriefingsPage";
 import NotificationsPage from "./pages/NotificationsPage";
+import { RealtimeNotifications } from "@/components/RealtimeNotifications";
 
 const queryClient = new QueryClient();
 
@@ -107,6 +108,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <AuthProvider>
+        <RealtimeNotifications />
         <AgencyProvider>
           <BrowserRouter>
             <AppRoutes />

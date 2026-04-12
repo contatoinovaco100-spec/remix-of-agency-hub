@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Loader2, CheckCircle2, FileText, Shield, Hash, Copy } from 'lucide-react';
 import { toast } from 'sonner';
+import { usePushNotification } from '@/hooks/usePushNotification';
 import logoInova from '@/assets/logo-inova.png';
 
 interface Deliverable {
@@ -57,6 +58,7 @@ async function generateSignatureHash(data: string): Promise<string> {
 
 export default function ContractSignPage() {
   const { contractId } = useParams<{ contractId: string }>();
+  const { triggerNotification } = usePushNotification();
   const [contract, setContract] = useState<Contract | null>(null);
   const [loading, setLoading] = useState(true);
   const [alreadySigned, setAlreadySigned] = useState(false);
@@ -145,6 +147,15 @@ export default function ContractSignPage() {
 
       setSignatureHash(hash);
       setSigned(true);
+      
+      // Celebration!
+      triggerNotification(
+        "Contrato Assinado! 🏆", 
+        `${signerName}, seu contrato foi registrado com sucesso.`, 
+        "success", 
+        "sale"
+      );
+      
       toast.success('Contrato assinado com sucesso!');
     } catch (err) {
       console.error(err);
