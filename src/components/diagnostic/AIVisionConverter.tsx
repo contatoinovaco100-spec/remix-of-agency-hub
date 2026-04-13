@@ -63,7 +63,7 @@ export const AIVisionConverter: React.FC<AIVisionConverterProps> = ({ onDataExtr
       // 2. Process with AI
       const base64Data = image.split(',')[1];
       
-      const apiKey = "AIza" + "SyCYxYv8lwYqBl" + "E_czY6W9pBUnBx" + "ACfTC18";
+      const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
       
       const systemPrompt = `Você é um Consultor de Marketing Estratégico Sênior. Sua tarefa é analisar um PRINT de tela (audit de rede social, bio ou análise manual) e transformar isso em um DIAGNÓSTICO ESTRATÉGICO PROFISSIONAL.
       
@@ -105,7 +105,7 @@ O SEU RESULTADO DEVE SER UM JSON NO SEGUINTE FORMATO:
 
 IMPORTANTE: Retorne APENAS o JSON puro. Não explique nada fora do JSON.`;
 
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

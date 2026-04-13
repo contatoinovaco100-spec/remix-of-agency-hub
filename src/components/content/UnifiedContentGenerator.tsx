@@ -111,7 +111,7 @@ export function UnifiedContentGenerator({ clientId }: { clientId: string }) {
     }
 
     // Split the key to bypass GitHub secret scanning rules that block the push
-    let apiKey = "AIza" + "SyCYxYv8lwYqBl" + "E_czY6W9pBUnBx" + "ACfTC18";
+    let apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 
     updateItem(itemId, 'isGeneratingAi', true);
 
@@ -155,7 +155,7 @@ Retorne SOMENTE um JSON válido:
 
 IMPORTANTE: Cada roteiro deve ser ÚNICO, INESPERADO e fazer a pessoa pensar "caramba, isso é genial". Nunca seja óbvio ou previsível.`;
 
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

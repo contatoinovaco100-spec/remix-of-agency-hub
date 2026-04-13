@@ -73,7 +73,7 @@ export default function ProspectionPage() {
   const [magicText, setMagicText] = useState('');
   const [isExtracting, setIsExtracting] = useState(false);
 
-  const geminiKey = "AIza" + "SyCYxYv8lwYqBl" + "E_czY6W9pBUnBx" + "ACfTC18";
+  const geminiKey = import.meta.env.VITE_GEMINI_API_KEY;
 
   const searchGooglePlaces = async () => {
     if (!searchNiche.trim() || !searchCity.trim()) {
@@ -166,7 +166,7 @@ export default function ProspectionPage() {
       Se não houver telefone no lead, ignore-o. Se não houver website ou instagram, deixe como string vazia "".
       Texto: ${magicText}`;
 
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`, {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -297,7 +297,7 @@ REGRAS DA MENSAGEM:
 
 Retorne SOMENTE o texto da mensagem, sem aspas, sem explicações.`;
 
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`, {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
