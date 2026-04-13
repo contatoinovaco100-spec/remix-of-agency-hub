@@ -521,7 +521,10 @@ export default function DiagnosticEditorPage() {
       {/* SIDEBAR EDITOR */}
       <aside className="w-[350px] h-full flex flex-col border-r border-[#2a2a2a] bg-[#111] no-print z-20 shrink-0">
         <header className="bg-[#0D6E5E] p-6 flex justify-between items-center shrink-0">
-          <img src={LogoInova} className="h-6" alt="Inova" />
+          <div className="flex flex-col">
+            <img src={LogoInova} className="h-6" alt="Inova" />
+            <span className="text-[7px] text-white/20 font-bold uppercase tracking-[2px] mt-1 text-right">Engine v2.1.0</span>
+          </div>
           <span className="text-[9px] text-[#bff720] font-black uppercase tracking-[3px]">Estratégico</span>
         </header>
 
