@@ -44,8 +44,8 @@ export default function DiagnosticEditorPage() {
   const [step, setStep] = useState<'setup' | 'choice' | 'wizard' | 'ai_upload' | 'preview'>('setup');
   const [wizardStep, setWizardStep] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [clientInfo, setClientInfo] = useState<{nome: string; nicho: string; subtitulo: string; tema: string; tipo: BusinessType}>({ 
-    nome: '', nicho: '', subtitulo: 'Diagnóstico de Maturidade Estratégica', tema: 'teal', tipo: 'servico' 
+  const [clientInfo, setClientInfo] = useState<{nome: string; nicho: string; subtitulo: string; tema: string; tipo: BusinessType; instaAgencia?: string; whatsAgencia?: string}>({ 
+    nome: '', nicho: '', subtitulo: 'Diagnóstico de Maturidade Estratégica', tema: 'teal', tipo: 'servico', instaAgencia: '@inovaco.br', whatsAgencia: '(62) 99999-9999' 
   });
   const [slug, setSlug] = useState('');
   const [config, setConfig] = useState<any>(null);
@@ -85,6 +85,8 @@ export default function DiagnosticEditorPage() {
       cliente: {
         ...clientInfo,
         nome: data.cliente?.nome || clientInfo.nome,
+        instaAgencia: clientInfo.instaAgencia,
+        whatsAgencia: clientInfo.whatsAgencia
       },
       intro: { 
         titulo: 'Diagnóstico Estratégico de IA', 
@@ -585,6 +587,16 @@ export default function DiagnosticEditorPage() {
                             <option value="black">Preto</option>
                           </select>
                       </div>
+                      <div className="pt-2 space-y-3 border-t border-white/5">
+                        <div className="space-y-1.5">
+                            <Label className="text-[8px] font-black uppercase tracking-widest text-white/30">Seu Instagram</Label>
+                            <Input className="h-9 bg-black/40 border-white/10 text-white text-[10px] font-bold rounded-lg" value={clientInfo.instaAgencia} onChange={e => setClientInfo({...clientInfo, instaAgencia: e.target.value})} />
+                        </div>
+                        <div className="space-y-1.5">
+                            <Label className="text-[8px] font-black uppercase tracking-widest text-white/30">Seu WhatsApp</Label>
+                            <Input className="h-9 bg-black/40 border-white/10 text-white text-[10px] font-bold rounded-lg" value={clientInfo.whatsAgencia} onChange={e => setClientInfo({...clientInfo, whatsAgencia: e.target.value})} />
+                        </div>
+                      </div>
                   </div>
                </div>
 
@@ -909,7 +921,7 @@ export default function DiagnosticEditorPage() {
                     <h4 className="text-xl font-bold text-white uppercase tracking-[10px]">Estratégia & ROI</h4>
                     <p className="text-white/20 text-[10px] font-medium leading-relaxed uppercase tracking-[3px]">
                         Este documento é confidencial e exclusivo para @{clientInfo.nome.replace('@','')}.<br />
-                        © 2026 INOVA Co. High Performance Marketing.
+                        © 2026 INOVA Co. | {clientInfo.instaAgencia} | {clientInfo.whatsAgencia}
                     </p>
                </div>
           </footer>

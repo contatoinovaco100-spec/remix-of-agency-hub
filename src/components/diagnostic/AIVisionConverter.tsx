@@ -119,11 +119,18 @@ IMPORTANTE: Retorne APENAS o JSON puro. Não explique nada fora do JSON.`;
         })
       });
 
-      if (!response.ok) throw new Error("Falha na API da IA");
+      if (!response.ok) {
+        const errorDetail = await response.json().catch(() => ({}));
+        console.error("Gemini API Error Detail:", errorDetail);
+        throw new Error(`Falha na API da IA: ${response.status}`);
+      }
 
       const resData = await response.json();
       const text = resData.candidates?.[0]?.content?.parts?.[0]?.text;
-      if (!text) throw new Error("IA não retornou dados");
+      if (!text) {
+        console.error("Gemini Response Data:", resData);
+        throw new Error("IA não retornou dados");
+      }
 
       const result = JSON.parse(text);
       // Add the public URL to the result
@@ -131,10 +138,9 @@ IMPORTANTE: Retorne APENAS o JSON puro. Não explique nada fora do JSON.`;
       
       onDataExtracted(result);
       toast.success("Diagnóstico gerado com sucesso!", { id: toastId });
-  toast.success("Diagnóstico gerado com sucesso!", { id: toastId });
-    } catch (error) {
+    } catch (error: any) {
       console.error("AI Vision Error:", error);
-      toast.error("Erro ao processar imagem. Tente uma imagem mais nítida.", { id: toastId });
+      toast.error(`Erro: ${error.message || "Tente uma imagem mais nítida."}`, { id: toastId });
     } finally {
       setIsProcessing(false);
     }
